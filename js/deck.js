@@ -1,8 +1,21 @@
 // --- CONSTRUCTOR DE MAZOS ---
 // Persistencia (localStorage), drag & drop, editor de mazo y colección.
+
+// --- ALMACENAMIENTO SEGURO ---
+// En visores embebidos (iframe sandbox) localStorage lanza SecurityError al
+// tocarlo; con este respaldo en memoria el juego carga igual y solo se pierde
+// la persistencia entre recargas.
+const _memStorage = {};
+function safeStorageGet(key) {
+    try { return localStorage.getItem(key); } catch (e) { return _memStorage[key] !== undefined ? _memStorage[key] : null; }
+}
+function safeStorageSet(key, value) {
+    try { localStorage.setItem(key, value); } catch (e) { _memStorage[key] = value; }
+}
+
         // --- INICIALIZACIÓN ---
         function loadDeck() {
-            let saved = localStorage.getItem('nexo_deck_v1');
+            let saved = safeStorageGet('nexo_deck_v1');
             if (saved) {
                 try {
                     let savedIds = JSON.parse(saved);
@@ -16,7 +29,7 @@
 
         function saveDeck() {
             try { 
-                localStorage.setItem('nexo_deck_v1', JSON.stringify(playerDeck.map(c => c.id))); 
+                safeStorageSet('nexo_deck_v1', JSON.stringify(playerDeck.map(c => c.id)));
                 let indicator = document.getElementById('save-indicator');
                 indicator.style.opacity = '1';
                 setTimeout(() => { indicator.style.opacity = '0'; }, 2000);
