@@ -1,0 +1,1043 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Expedition Myth: El Nexo del Tejido</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+<style>
+/*
+ * Expedition Myth: El Nexo del Tejido
+ * Hoja de estilos del juego (tema cósmico + panel néon)
+ */
+
+@import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@500;700;900&family=Rajdhani:wght@500;600;700&display=swap');
+
+body {
+    font-family: 'Rajdhani', sans-serif;
+    background-color: #020617;
+    color: #e2e8f0;
+    touch-action: manipulation;
+    user-select: none;
+    overflow: hidden;
+}
+
+.font-orbitron { font-family: 'Orbitron', sans-serif; }
+::-webkit-scrollbar { width: 3px; }
+::-webkit-scrollbar-track { background: rgba(15, 23, 42, 0.6); }
+::-webkit-scrollbar-thumb { background: #3b82f6; border-radius: 4px; }
+
+.neon-border-blue { box-shadow: 0 0 10px rgba(59, 130, 246, 0.5), inset 0 0 10px rgba(59, 130, 246, 0.2); border: 1px solid rgba(59, 130, 246, 0.8); }
+.glow-text-blue { text-shadow: 0 0 8px rgba(59, 130, 246, 0.8); }
+.glow-text-purple { text-shadow: 0 0 8px rgba(217, 70, 239, 0.8); }
+
+@keyframes deployCard { 0% { transform: scale(0.8) translateY(-15px); opacity: 0; } 100% { transform: scale(1) translateY(0); opacity: 1; } }
+.animate-deploy { animation: deployCard 0.35s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards; }
+
+.bg-space-pattern {
+    background-image: 
+        radial-gradient(circle at 20% 20%, rgba(29, 78, 216, 0.15) 0%, transparent 40%),
+        radial-gradient(circle at 80% 80%, rgba(126, 34, 206, 0.15) 0%, transparent 40%),
+        radial-gradient(circle at 50% 50%, rgba(15, 23, 42, 0.8) 0%, rgba(5, 5, 15, 1) 100%);
+}
+
+.bg-combat-planet {
+    background: radial-gradient(circle at 50% 50%, rgba(16, 185, 129, 0.15) 0%, transparent 60%), radial-gradient(circle at 50% 50%, rgba(5, 5, 15, 1) 30%, #020617 100%);
+}
+.planet-sphere {
+    position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
+    width: 90vw; height: 90vw; max-width: 500px; max-height: 500px;
+    border-radius: 50%;
+    background: radial-gradient(circle at 30% 30%, rgba(52, 211, 153, 0.2), rgba(6, 78, 59, 0.4), transparent 70%);
+    box-shadow: 0 0 80px rgba(16, 185, 129, 0.2), inset -20px -20px 60px rgba(0,0,0,0.9);
+    pointer-events: none; z-index: 0;
+}
+
+.view-section { transition: opacity 0.3s ease, transform 0.3s ease; position: absolute; top: 0; left: 0; width: 100%; height: 100%; display: flex; flex-direction: column; }
+.hidden-view { opacity: 0; pointer-events: none; transform: scale(0.98); z-index: -1; }
+
+#app-container { width: 100vw; height: 100vh; max-width: 480px; margin: 0 auto; position: relative; overflow: hidden; }
+
+/* --- MODAL DE CARTA (Idéntico a la captura) --- */
+.card-modal-frame {
+    position: relative;
+    width: 100%;
+    max-width: 340px;
+    aspect-ratio: 1.5 / 1; /* Formato apaisado */
+    background: #0f172a;
+    border-radius: 1rem;
+    overflow: hidden;
+    border: 3px solid transparent;
+    background-clip: padding-box;
+    border-image: linear-gradient(135deg, #fbbf24, #3b82f6, #a855f7) 1;
+    box-shadow: 0 0 30px rgba(59, 130, 246, 0.3);
+}
+
+.card-art-bg {
+    position: absolute;
+    inset: 0;
+    background-size: cover;
+    background-position: center;
+    background-color: #1e293b;
+}
+
+.card-gradient-top {
+    position: absolute; top: 0; left: 0; width: 100%; height: 35%;
+    background: linear-gradient(to bottom, rgba(0,0,0,0.85) 0%, rgba(0,0,0,0) 100%);
+    pointer-events: none;
+}
+
+.card-cost-badge {
+    position: absolute; top: 8px; left: 8px;
+    width: 32px; height: 32px; border-radius: 50%;
+    background: #e0f2fe; color: #0c4a6e;
+    display: flex; align-items: center; justify-content: center;
+    font-weight: 900; font-size: 1.1rem;
+    border: 2px solid #fff; box-shadow: 0 2px 8px rgba(0,0,0,0.6);
+    z-index: 20;
+}
+
+.card-name-badge {
+    position: absolute; top: 10px; left: 48px; right: 12px;
+    z-index: 20; display: flex; justify-content: space-between; align-items: center;
+}
+
+/* Recuadro de Efecto (Abajo Izquierda) */
+.card-effect-box {
+    position: absolute; bottom: 8px; left: 8px; width: 65%;
+    background: rgba(15, 23, 42, 0.95);
+    border: 1px solid rgba(255,255,255,0.3);
+    padding: 6px; border-radius: 6px;
+    z-index: 20;
+}
+
+/* Stats (Abajo Derecha, encima del efecto) */
+.card-stats-box {
+    position: absolute; bottom: 8px; right: 8px;
+    display: flex; gap: 4px; z-index: 20;
+}
+
+/* Drag & Drop visual */
+.dragging { opacity: 0.5; transform: scale(0.95); }
+.drag-over { border: 2px dashed #38bdf8 !important; background-color: rgba(56, 189, 248, 0.2) !important; }
+
+/* Zonas de drop invisibles para arreglar el bug de caída */
+.drop-zone-min-height { min-height: 40px; }
+
+.pause-overlay {
+    position: absolute; inset: 0; background: rgba(0,0,0,0.7); z-index: 30;
+    display: flex; justify-content: center; align-items: center; backdrop-filter: blur(2px);
+}
+
+</style>
+</head>
+<body class="bg-black flex justify-center items-center">
+
+    <div id="app-container" class="bg-space-pattern">
+        
+        <!-- MENÚ PRINCIPAL -->
+        <div id="view-home" class="view-section z-10">
+            <div class="flex-1 flex flex-col items-center justify-center relative">
+                <h1 class="text-white font-orbitron font-black text-3xl tracking-widest glow-text-blue z-20 text-center leading-tight">
+                    EL NEXO DEL<br>TEJIDO PRIMORDIAL
+                </h1>
+                <p class="text-amber-400 font-orbitron text-sm mt-2 z-20">Capítulo 1: La Hélade</p>
+                <div class="mt-8 w-64 h-64 rounded-full bg-blue-900 shadow-[0_0_40px_rgba(59,130,246,0.4)] border border-blue-500/30"></div>
+            </div>
+            <div class="px-4 pb-20 z-20">
+                <button onclick="startGame()" class="w-full bg-gradient-to-r from-blue-600 to-indigo-600 border border-blue-400 py-3 rounded-full text-white font-orbitron font-black text-xl tracking-wider flex items-center justify-center gap-2 shadow-[0_0_15px_rgba(59,130,246,0.5)] active:scale-95 transition-transform">
+                    JUGAR <i class="fa-solid fa-bolt text-amber-300"></i>
+                </button>
+            </div>
+        </div>
+
+        <!-- LISTA DE MAZOS -->
+        <div id="view-decks" class="view-section hidden-view bg-slate-950 z-10">
+            <div class="flex items-center justify-between px-4 pt-6 pb-2 border-b border-slate-800">
+                <div class="flex gap-4">
+                    <span class="text-blue-400 font-bold border-b-2 border-blue-400 pb-1 font-orbitron">MAZOS</span>
+                </div>
+            </div>
+            <div class="flex-1 p-4 overflow-y-auto pb-20">
+                <div class="grid grid-cols-2 gap-4">
+                    <div onclick="switchView('view-deckbuilder')" class="flex flex-col items-center gap-2 cursor-pointer active:scale-95 transition-transform">
+                        <div class="w-full aspect-[4/3] rounded-xl border-2 border-blue-500 relative overflow-hidden bg-slate-800 card-glow-blue" style="background-image: url('https://images.unsplash.com/photo-1534447677768-be436bb09401?q=80&w=400&auto=format&fit=crop'); background-size: cover; background-position: center;">
+                            <div class="absolute inset-0 bg-black/50"></div>
+                        </div>
+                        <div class="text-center">
+                            <div class="text-sm font-bold text-white font-orbitron">MAZO HELÁDICO</div>
+                            <div class="text-[10px] text-slate-400 font-bold flex items-center justify-center gap-1">
+                                <span id="deck-count-label">10</span>/10 
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- DECKBUILDER -->
+        <div id="view-deckbuilder" class="view-section hidden-view bg-slate-950 z-10">
+            <div class="flex items-center justify-between px-3 py-3 border-b border-slate-800">
+                <div class="font-bold text-lg text-white font-orbitron">Mazo Heládico</div>
+                <div class="flex items-center gap-3">
+                    <span id="save-indicator" class="text-[10px] text-green-400 opacity-0 transition-opacity duration-300">✓ Guardado</span>
+                    <div class="flex items-center gap-1 bg-slate-800 px-2 py-1 rounded-full border border-slate-600">
+                        <span id="builder-deck-count" class="font-bold text-sm">10</span>/10
+                    </div>
+                    <button onclick="startGame()" class="bg-blue-600 text-white font-bold px-4 py-1 rounded-full text-sm neon-border-blue">JUGAR</button>
+                </div>
+            </div>
+
+            <div class="flex-1 flex overflow-hidden pb-16">
+                <!-- Columna Izquierda: Mazo -->
+                <div class="w-1/2 flex flex-col border-r border-blue-500/30">
+                    <div class="flex justify-between items-center px-2 py-1 bg-slate-900 border-b border-slate-800">
+                        <span class="text-xs font-bold text-white font-orbitron">TU MAZO</span>
+                    </div>
+                    <div id="deck-list-container" 
+                         class="flex-1 overflow-y-auto p-1 space-y-1 bg-slate-900/50 drop-zone-min-height" 
+                         ondragover="handleDragOver(event)" 
+                         ondragenter="handleDragEnter(event)"
+                         ondragleave="handleDragLeave(event)"
+                         ondrop="handleDropOnDeck(event)">
+                        <!-- Renderizado JS -->
+                    </div>
+                </div>
+                <!-- Columna Derecha: Colección -->
+                <div class="w-1/2 flex flex-col bg-slate-950">
+                    <div class="flex justify-between items-center px-2 py-1 border-b border-slate-800">
+                        <span class="text-xs font-bold text-blue-400 font-orbitron">DISPONIBLES</span>
+                    </div>
+                    <div id="collection-container" 
+                         class="flex-1 overflow-y-auto p-1 grid grid-cols-2 gap-1 content-start drop-zone-min-height" 
+                         ondragover="handleDragOver(event)" 
+                         ondragenter="handleDragEnter(event)"
+                         ondragleave="handleDragLeave(event)"
+                         ondrop="handleDropOnCollection(event)">
+                        <!-- Renderizado JS -->
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- COMBATE -->
+        <div id="view-game" class="view-section hidden-view z-10 bg-combat-planet">
+            <div class="planet-sphere"></div>
+
+            <header class="w-full px-2 pt-2 pb-2 flex flex-col gap-2 bg-slate-950/80 backdrop-blur-md border-b border-slate-800/50 z-20 relative">
+                <div class="flex justify-between items-center px-1">
+                    <div class="flex items-center gap-2 bg-slate-900/60 border border-blue-500/50 rounded-lg px-2 py-1 w-[40%] shadow-[0_0_10px_rgba(59,130,246,0.2)]">
+                        <div class="w-6 h-6 rounded-full bg-purple-900/50 border border-purple-400 flex items-center justify-center text-purple-300">
+                            <i class="fa-solid fa-user text-[10px]"></i>
+                        </div>
+                        <div class="flex flex-col">
+                            <span class="text-[10px] font-bold text-white leading-none">Tú</span>
+                            <span class="text-[8px] text-blue-300 font-bold leading-none mt-0.5">HÉLADE <i class="fa-solid fa-bolt"></i></span>
+                        </div>
+                    </div>
+                    <div class="flex flex-col items-center">
+                        <span class="text-[9px] tracking-widest text-slate-400 uppercase font-bold leading-none">TURNO</span>
+                        <span id="turn-counter" class="text-xl font-extrabold text-white font-orbitron leading-none mt-1">1</span>
+                    </div>
+                    <div class="flex items-center justify-end gap-2 bg-slate-900/60 border border-fuchsia-500/50 rounded-lg px-2 py-1 w-[40%] shadow-[0_0_10px_rgba(217,70,239,0.2)]">
+                        <div class="flex flex-col text-right">
+                            <span class="text-[10px] font-bold text-white leading-none">Caos</span>
+                            <span class="text-[8px] text-fuchsia-300 font-bold leading-none mt-0.5">TELAR <i class="fa-solid fa-eye"></i></span>
+                        </div>
+                        <div class="w-6 h-6 rounded-full bg-fuchsia-900/50 border border-fuchsia-400 flex items-center justify-center text-fuchsia-300">
+                            <i class="fa-solid fa-user-ninja text-[10px]"></i>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="flex items-center gap-2 px-1">
+                    <span id="p1-score" class="text-xl font-black text-cyan-300 font-orbitron glow-text-blue">0</span>
+                    <div class="flex-1 h-4 bg-slate-800 rounded-full border border-slate-700 relative overflow-hidden">
+                        <div id="p1-bar" class="absolute left-0 top-0 h-full bg-gradient-to-r from-blue-600 to-cyan-400 transition-all duration-300" style="width: 50%;"></div>
+                        <div id="p2-bar" class="absolute right-0 top-0 h-full bg-gradient-to-l from-fuchsia-600 to-purple-400 transition-all duration-300" style="width: 50%;"></div>
+                        <div class="absolute left-1/2 top-0 bottom-0 w-0.5 bg-white z-10 -translate-x-1/2 opacity-50"></div>
+                    </div>
+                    <span id="p2-score" class="text-xl font-black text-fuchsia-300 font-orbitron glow-text-purple">0</span>
+                </div>
+
+                <div class="flex justify-between items-start mt-1">
+                    <div class="flex items-center gap-2 w-[45%]">
+                        <div id="p1-energy-badge" class="w-7 h-7 rounded-full bg-blue-950/80 border-2 border-cyan-400 text-white font-bold font-orbitron text-xs flex items-center justify-center shadow-[0_0_8px_rgba(6,182,212,0.5)] z-10">1</div>
+                        <div class="flex flex-col flex-1">
+                            <span class="text-[8px] text-slate-400 uppercase font-bold leading-none ml-1">Siguiente</span>
+                            <div class="bg-slate-900/80 border border-slate-700 rounded-lg p-1 flex items-center gap-2 mt-0.5">
+                                <div class="w-8 h-8 rounded bg-blue-900 flex items-center justify-center text-blue-300 shrink-0">
+                                    <i id="p1-next-icon" class="fa-solid fa-wine-glass text-xs"></i>
+                                </div>
+                                <span id="p1-next-card-name" class="text-[10px] text-white truncate font-semibold">Carta</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="flex items-center gap-2 w-[45%] flex-row-reverse">
+                        <div id="p2-energy-badge" class="w-7 h-7 rounded-full bg-fuchsia-950/80 border-2 border-fuchsia-400 text-white font-bold font-orbitron text-xs flex items-center justify-center shadow-[0_0_8px_rgba(217,70,239,0.5)] z-10">1</div>
+                        <div class="flex flex-col flex-1 text-right">
+                            <span class="text-[8px] text-slate-400 uppercase font-bold leading-none mr-1">Siguiente</span>
+                            <div class="bg-slate-900/80 border border-slate-700 rounded-lg p-1 flex items-center justify-end gap-2 mt-0.5 flex-row-reverse">
+                                <div class="w-8 h-8 rounded bg-fuchsia-900 flex items-center justify-center text-fuchsia-300 shrink-0">
+                                    <i id="p2-next-icon" class="fa-solid fa-skull text-xs"></i>
+                                </div>
+                                <span id="p2-next-card-name" class="text-[10px] text-white truncate font-semibold">Carta</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </header>
+
+            <main class="flex-1 px-2 py-1 flex justify-between gap-2 overflow-y-auto z-10 relative">
+                <div id="p1-board" class="w-1/2 flex flex-col items-end gap-1 pb-16"></div>
+                <div id="p2-board" class="w-1/2 flex flex-col items-start gap-1 pb-16"></div>
+            </main>
+
+            <div id="pause-overlay" class="pause-overlay hidden-view">
+                <div class="bg-slate-900 border border-slate-700 px-8 py-4 rounded-2xl flex flex-col items-center">
+                    <i class="fa-solid fa-pause text-4xl text-cyan-400 mb-2"></i>
+                    <span class="font-orbitron font-bold text-white tracking-widest">PAUSA</span>
+                </div>
+            </div>
+
+            <footer class="p-3 bg-slate-950/90 border-t border-slate-800 backdrop-blur-md z-40 flex items-center justify-between gap-2">
+                <button onclick="switchView('view-home')" class="w-10 h-10 rounded-full border-2 border-slate-700 text-slate-300 flex items-center justify-center active:scale-95 transition-all hover:border-slate-500">
+                    <i class="fa-solid fa-chevron-left text-sm"></i>
+                </button>
+                <button id="btn-pause-game" onclick="togglePauseOverlay()" class="w-10 h-10 rounded-full border-2 border-slate-700 text-slate-300 flex items-center justify-center active:scale-95 transition-all hover:border-slate-500">
+                    <i id="icon-pause-game" class="fa-solid fa-pause text-sm"></i>
+                </button>
+                <button id="btn-play-pause" onclick="togglePlayPause()" class="flex-1 max-w-[100px] bg-slate-950 border-2 border-cyan-400 text-white py-2 px-2 rounded-full font-orbitron font-extrabold text-xs shadow-[0_0_15px_rgba(6,182,212,0.4)] flex items-center justify-center gap-2 active:scale-95 transition-all">
+                    <span id="lbl-play-pause">SEGUIR</span>
+                </button>
+                <button id="btn-speed" onclick="cycleSpeed()" class="w-12 h-10 bg-slate-950 border-2 border-slate-700 text-white font-orbitron font-bold text-sm rounded-full flex items-center justify-center active:scale-95 transition-all">1x</button>
+                <button onclick="skipTurn()" class="w-10 h-10 rounded-full border-2 border-slate-700 text-slate-300 flex items-center justify-center active:scale-95 transition-all hover:border-slate-500">
+                    <i class="fa-solid fa-chevron-right text-sm"></i>
+                </button>
+            </footer>
+        </div>
+
+        <!-- MODAL DE CARTA (Fiel a la captura) -->
+        <div id="card-modal" class="absolute inset-0 bg-black/80 z-50 flex flex-col items-center justify-center p-4 hidden-view">
+            <div class="card-modal-frame">
+                <div id="modal-card-art" class="card-art-bg"></div>
+                <div class="card-gradient-top"></div>
+
+                <div id="modal-card-cost" class="card-cost-badge">1</div>
+
+                <div class="card-name-badge">
+                    <h3 id="modal-card-name" class="font-bold text-lg text-white font-orbitron truncate drop-shadow-md">Nombre</h3>
+                    <span id="modal-card-kind" class="text-[9px] bg-black/60 text-white px-1.5 py-0.5 rounded border border-white/20 backdrop-blur-sm">SER</span>
+                </div>
+
+                <!-- Recuadro del Efecto (Abajo Izquierda) -->
+                <div class="card-effect-box">
+                    <div class="flex items-center gap-1 mb-1">
+                        <i id="modal-card-type-icon" class="fa-solid fa-shield-halved text-[8px] text-white"></i>
+                        <span id="modal-card-type" class="text-white text-[8px] font-bold uppercase tracking-wider">TIPO</span>
+                    </div>
+                    <p id="modal-card-desc" class="text-[10px] text-slate-200 leading-tight"></p>
+                </div>
+
+                <!-- Stats (Abajo Derecha, POR ENCIMA del efecto) -->
+                <div class="card-stats-box">
+                    <div id="modal-card-atk" class="w-8 h-8 rounded-full bg-blue-950/80 border-2 border-blue-500 flex items-center justify-center text-white font-bold text-sm shadow-lg z-20">0</div>
+                    <div id="modal-card-hp" class="w-8 h-8 rounded-full bg-red-950/80 border-2 border-red-500 flex items-center justify-center text-white font-bold text-sm shadow-lg z-20">2</div>
+                </div>
+            </div>
+
+            <!-- Lore (Fuera de la carta) -->
+            <div class="w-full max-w-xs mt-4 bg-slate-900/90 border border-slate-700 p-3 rounded-lg">
+                <p class="text-[10px] text-slate-400 italic leading-tight text-center" id="modal-card-lore"></p>
+            </div>
+
+            <button onclick="closeCardModal()" class="mt-4 text-slate-400 font-bold text-sm tracking-widest uppercase hover:text-white transition">Cerrar</button>
+        </div>
+
+        <!-- FIN DE PARTIDA -->
+        <div id="gameover-modal" class="absolute inset-0 bg-black/90 z-50 flex flex-col items-center justify-center p-6 hidden-view backdrop-blur-sm">
+            <div class="text-center w-full max-w-xs">
+                <h2 id="gameover-title" class="text-3xl font-orbitron font-black text-amber-400 mb-2 glow-text-blue">¡VICTORIA!</h2>
+                <div class="bg-slate-900 border border-slate-700 rounded-xl p-4 mb-6">
+                    <p class="text-slate-400 text-sm mb-2">Puntuación Final</p>
+                    <div class="flex justify-between text-xl font-bold font-orbitron">
+                        <span class="text-cyan-400">Tú: <span id="final-p1">0</span></span>
+                        <span class="text-fuchsia-400">Rival: <span id="final-p2">0</span></span>
+                    </div>
+                </div>
+                <button onclick="closeGameOverAndRestart()" class="w-full bg-blue-600 py-3 rounded-xl font-bold text-white mb-3 shadow-lg active:scale-95 transition">Jugar de nuevo</button>
+                <button onclick="switchView('view-home'); closeGameOverModal();" class="w-full bg-slate-800 py-3 rounded-xl font-bold text-slate-300 active:scale-95 transition">Volver al menú</button>
+            </div>
+        </div>
+
+        <!-- NAVEGACIÓN -->
+        <nav class="absolute bottom-0 w-full bg-slate-950 border-t border-slate-800 flex justify-around items-end pb-2 pt-1 z-40 h-16">
+            <button onclick="switchView('view-home')" class="flex flex-col items-center gap-1 w-1/4 text-slate-500 hover:text-blue-400">
+                <i class="fa-solid fa-house text-xl"></i><span class="text-[9px] font-bold">INICIO</span>
+            </button>
+            <button onclick="switchView('view-decks')" class="flex flex-col items-center gap-1 w-1/4 text-slate-500 hover:text-blue-400">
+                <i class="fa-solid fa-layer-group text-xl"></i><span class="text-[9px] font-bold">MAZOS</span>
+            </button>
+            <button onclick="startGame()" class="w-1/4 relative flex justify-center">
+                <div class="absolute -top-6 w-14 h-14 bg-slate-950 rounded-full border-t-2 border-blue-400 flex items-center justify-center shadow-[0_-4px_10px_rgba(59,130,246,0.3)]">
+                    <div class="w-12 h-12 bg-slate-900 rounded-full flex flex-col items-center justify-center"><i class="fa-solid fa-bolt text-blue-400 text-lg"></i></div>
+                </div>
+                <span class="text-[9px] font-bold text-blue-400 mt-8">JUGAR</span>
+            </button>
+            <button class="flex flex-col items-center gap-1 w-1/4 text-slate-500 hover:text-blue-400">
+                <i class="fa-solid fa-flask text-xl"></i><span class="text-[9px] font-bold">ALTAR</span>
+            </button>
+        </nav>
+
+    </div>
+
+
+    <script>
+// --- DATOS DE LAS CARTAS (Solo SER o EVENTO) ---
+// Plantillas compartidas: las instancias en tablero son copias, así las
+// funciones effect/startTurn sobreviven para ambos jugadores.
+        // --- DATOS DE LAS CARTAS (Solo SER o EVENTO) ---
+        const ALL_CARDS = [
+            { 
+                id: 'c1', name: 'Mortal de Arcadia', kind: 'Ser', cost: 1, atk: 1, hp: 1, 
+                icon: 'fa-user', 
+                desc: 'Sin habilidades, solo voluntad.', 
+                lore: 'En las laderas de los valles oscuros, pequeños grupos de hombres y mujeres intentan sobrevivir al frío y a la intemperie. No tienen armas de bronce ni armaduras pesadas, solo una frágil voluntad y fogatas improvisadas para espantar a la noche.',
+                art: 'https://images.unsplash.com/photo-1534447677768-be436bb09401?q=80&w=600&auto=format&fit=crop',
+                effect: null, startTurn: null 
+            },
+            { 
+                id: 'c2', name: 'Sátiro de los Bosques', kind: 'Ser', cost: 2, atk: 0, hp: 2, 
+                icon: 'fa-leaf', 
+                desc: 'Inicio de turno: Gana +1 ATK por cada otro Ser aliado en el tablero (hasta el final del turno).', 
+                lore: 'De la espesura más profunda de los matorrales surgen criaturas híbridas de torso humano y patas caprinas. Son seres salvajes y caóticos que no obedecen a ninguna ley humana, merodeando los bordes de los caminos para asustar y desorientar a los viajeros.',
+                art: 'https://images.unsplash.com/photo-1511497584788-876760111969?q=80&w=600&auto=format&fit=crop',
+                effect: null, 
+                startTurn: (self, player) => { self.atk = 0; let others = player.activeBoard.filter(c => c.uid !== self.uid && c.kind === 'Ser').length; if (others > 0) self.atk += others; } 
+            },
+            { 
+                id: 'c3', name: 'Minotauro Joven', kind: 'Ser', cost: 3, atk: 3, hp: 4, 
+                icon: 'fa-cow', 
+                desc: 'Sin habilidades, pero un muro sólido.', 
+                lore: 'Encerrados en cuevas profundas y laberintos naturales de piedra tosca crecen bestias colosales con cuerpo de hombre y cabeza de toro. Su fuerza bruta es incontrolable y comienzan a salir de sus guaridas atraídos por el olor del ganado humano.',
+                art: 'https://images.unsplash.com/photo-1509316785289-025f5b846b35?q=80&w=600&auto=format&fit=crop',
+                effect: null, startTurn: null 
+            },
+            { 
+                id: 'c4', name: 'Plegaria Arcana', kind: 'Evento', cost: 1, atk: 0, hp: 0, 
+                icon: 'fa-hands-praying', 
+                desc: 'Otorga +2 Puntos de Gloria instantáneos.', 
+                lore: 'Ante el terror de la oscuridad, los jefes de las tribus alzan las manos al cielo estrellado y elevan sus primeros cánticos y ofrendas. Esta devoción pura resuena por primera vez en las alturas, atrayendo la atención de fuerzas invisibles.',
+                art: 'https://images.unsplash.com/photo-1419242902214-272b3f66ee7a?q=80&w=600&auto=format&fit=crop',
+                effect: (p) => { p.score += 2; } 
+            },
+            { 
+                id: 'c5', name: 'Niebla del Caos', kind: 'Evento', cost: 2, atk: 0, hp: 0, 
+                icon: 'fa-cloud', 
+                desc: 'Reduce en -2 el ATK del Ser rival que esté en la posición 1 (cima de su columna).', 
+                lore: 'Una densa penumbra inexplorada desciende de los cielos y cubre los valles arcaicos de Grecia. Esta neblina antinatural nubla el juicio de las tribus y debilita los primeros asentamientos humanos, obligándolos a dar sus primeros pasos a ciegas en la oscuridad.',
+                art: 'https://images.unsplash.com/photo-1487621167305-5d248087c724?q=80&w=600&auto=format&fit=crop',
+                effect: (p, opp) => { if(opp.activeBoard.length > 0) { opp.activeBoard[0].atk = Math.max(0, opp.activeBoard[0].atk - 2); } } 
+            },
+            { 
+                id: 'c6', name: 'El Lamento de la Fuente Seca', kind: 'Ser', cost: 2, atk: 1, hp: 3, 
+                icon: 'fa-water', 
+                desc: 'Al entrar: Reduce en -1 el ATK del Ser rival en la posición 1.', 
+                lore: 'Las protectoras de los manantiales sufren la corrupción de la niebla. Al verse marchitas y sin agua pura, pierden la razón y se convierten en espectros errantes que lloran desconsoladamente, confundiendo con sus cantos a cualquiera que se acerque.',
+                art: 'https://images.unsplash.com/photo-1500375592092-40eb2168fd21?q=80&w=600&auto=format&fit=crop',
+                effect: (p, opp) => { if(opp.activeBoard.length > 0) { opp.activeBoard[0].atk = Math.max(0, opp.activeBoard[0].atk - 1); } }, startTurn: null 
+            },
+            { 
+                id: 'c7', name: 'La Embestida de Erimanto', kind: 'Ser', cost: 5, atk: 4, hp: 3, 
+                icon: 'fa-hippo', 
+                desc: 'Inicio de turno: Inflige 1 daño al Ser rival de su misma fila y pierde 1 HP propio.', 
+                lore: 'Desde las cumbres heladas desciende una bestia descomunal: un jabalí salvaje de piel acorazada y colmillos afilados que arrasa con los primeros cultivos y siembra el pánico absoluto en las laderas de Arcadia.',
+                art: 'https://images.unsplash.com/photo-1470071459604-3b5ec3a7fe05?q=80&w=600&auto=format&fit=crop',
+                effect: null, 
+                startTurn: (self, player, opp) => { let myIndex = player.activeBoard.indexOf(self); if(opp.activeBoard[myIndex]) { opp.activeBoard[myIndex].hp -= 1; if (opp.activeBoard[myIndex].hp <= 0) opp.activeBoard.splice(myIndex, 1); } self.hp -= 1; if (self.hp <= 0) { let idx = player.activeBoard.indexOf(self); if (idx > -1) player.activeBoard.splice(idx, 1); } } 
+            },
+            { 
+                id: 'c8', name: 'El Balbuceo del Oráculo Ciego', kind: 'Ser', cost: 1, atk: 0, hp: 2, 
+                icon: 'fa-eye-slash', 
+                desc: 'Mientras esté en el tablero, tus Eventos cuestan -1 Energía (mínimo 0).', 
+                lore: 'En una cueva donde los vapores de la tierra escapan por las grietas, un anciano inhala los efluvios telúricos. Entra en un profundo trance y comienza a escupir profecías indescifrables sobre un destino escrito con sangre y bronce.',
+                art: 'https://images.unsplash.com/photo-1462331940025-496dfbfc7564?q=80&w=600&auto=format&fit=crop',
+                effect: null, startTurn: null 
+            },
+            { 
+                id: 'c9', name: 'Pacto de Sangre en el Altar de Piedra', kind: 'Evento', cost: 3, atk: 0, hp: 0, 
+                icon: 'fa-droplet', 
+                desc: 'Destruye el Ser rival con menos HP y otorga +6 Puntos de Gloria.', 
+                lore: 'Desesperados por detener las malas cosechas y los ataques, los mortales construyen altares toscos de roca y entregan la vida de sus cazadores en un ritual oscuro para apaciguar a las fuerzas que los acechan.',
+                art: 'https://images.unsplash.com/photo-1518709268805-4e9042af9f23?q=80&w=600&auto=format&fit=crop',
+                effect: (p, opp) => { p.score += 6; if(opp.activeBoard.length > 0) { let weakest = opp.activeBoard.reduce((min, c) => c.hp < min.hp ? c : min, opp.activeBoard[0]); let idx = opp.activeBoard.indexOf(weakest); if (idx > -1) opp.activeBoard.splice(idx, 1); } } 
+            },
+            { 
+                id: 'c10', name: 'Los Ecos del Bosque de Dodona', kind: 'Evento', cost: 1, atk: 0, hp: 0, 
+                icon: 'fa-tree', 
+                desc: 'Reduce en -1 el ATK de todos los Seres rivales durante este turno.', 
+                lore: 'Los robles milenarios de los bosques sagrados guardan secretos antiguos. Cuando los intrusos se adentran sin respeto, las hojas y el viento susurran nombres prohibidos que paralizan la voluntad y confunden las mentes de los enemigos.',
+                art: 'https://images.unsplash.com/photo-1441974231531-c6227db76b6e?q=80&w=600&auto=format&fit=crop',
+                effect: (p, opp) => { opp.activeBoard.forEach(c => { c.tempAtkMod = (c.tempAtkMod || 0) - 1; }); } 
+            }
+        ];
+
+        // FIX: antes rivalDeck se clonaba con JSON.stringify/parse, lo que ELIMINABA
+        // las funciones effect/startTurn: las cartas del rival no hacían nada.
+        // Ahora comparte las mismas plantillas (las instancias en tablero son copias).
+        let rivalDeck = ALL_CARDS;
+
+</script>
+    <script>
+// --- ESTADO GLOBAL ---
+// Única fuente de verdad de la partida y de la selección de mazo.
+        // --- ESTADO GLOBAL ---
+        let playerDeck = []; 
+        let draggedCardId = null; 
+        let modalAutoPaused = false;
+        let gameState = {
+            turn: 1,
+            isPlaying: false,
+            speed: 1,
+            timer: null,
+            justDeployed: [],
+            p1: { score: 0, energy: 1, deckPointer: 0, activeBoard: [], lastPlayed: null, costDiscount: 0, extraPoints: 0, extraDraws: 0 },
+            p2: { score: 0, energy: 1, deckPointer: 0, activeBoard: [], lastPlayed: null, costDiscount: 0, extraPoints: 0, extraDraws: 0 }
+        };
+
+</script>
+    <script>
+// --- CONSTRUCTOR DE MAZOS ---
+// Persistencia (localStorage), drag & drop, editor de mazo y colección.
+        // --- INICIALIZACIÓN ---
+        function loadDeck() {
+            let saved = localStorage.getItem('nexo_deck_v1');
+            if (saved) {
+                try {
+                    let savedIds = JSON.parse(saved);
+                    let uniqueIds = [...new Set(savedIds)];
+                    playerDeck = uniqueIds.map(id => ALL_CARDS.find(c => c.id === id)).filter(c => c !== undefined);
+                } catch(e) { console.error("Error loading deck", e); }
+            }
+            if (!playerDeck || playerDeck.length === 0) playerDeck = [...ALL_CARDS];
+            if (playerDeck.length > 10) playerDeck = playerDeck.slice(0, 10);
+        }
+
+        function saveDeck() {
+            try { 
+                localStorage.setItem('nexo_deck_v1', JSON.stringify(playerDeck.map(c => c.id))); 
+                let indicator = document.getElementById('save-indicator');
+                indicator.style.opacity = '1';
+                setTimeout(() => { indicator.style.opacity = '0'; }, 2000);
+            } catch(e) {}
+        }
+        // --- DRAG & DROP ---
+        function handleDragStart(e, cardId, source) {
+            draggedCardId = cardId;
+            e.target.classList.add('opacity-40');
+            e.dataTransfer.effectAllowed = 'move';
+            e.dataTransfer.setData('text/plain', source); 
+        }
+
+        function handleDragEnd(e) {
+            e.target.classList.remove('opacity-40');
+            document.querySelectorAll('.drag-over').forEach(el => el.classList.remove('drag-over'));
+        }
+
+        function handleDragOver(e) {
+            e.preventDefault(); // Crucial para permitir el drop
+            e.dataTransfer.dropEffect = 'move';
+        }
+
+        function handleDragEnter(e) {
+            e.preventDefault();
+            e.currentTarget.classList.add('drag-over');
+        }
+
+        function handleDragLeave(e) {
+            e.currentTarget.classList.remove('drag-over');
+        }
+
+        // Soltar en el contenedor del MAZO (incluye fondo vacío)
+        function handleDropOnDeck(e) {
+            e.preventDefault();
+            e.currentTarget.classList.remove('drag-over');
+            let source = e.dataTransfer.getData('text/plain');
+            let card = ALL_CARDS.find(c => c.id === draggedCardId);
+            if (!card) return;
+
+            if (source === 'collection') {
+                if (playerDeck.length >= 10) { alert("El mazo está lleno (10/10)."); return; }
+                playerDeck.push(card); // Lo añade al final del array
+                saveDeck(); renderDeckEditor(); renderCollection();
+            }
+        }
+
+        // Soltar en el contenedor de la COLECCIÓN
+        function handleDropOnCollection(e) {
+            e.preventDefault();
+            e.currentTarget.classList.remove('drag-over');
+            let source = e.dataTransfer.getData('text/plain');
+            if (source === 'deck') {
+                let idx = playerDeck.findIndex(c => c.id === draggedCardId);
+                if (idx > -1) {
+                    playerDeck.splice(idx, 1);
+                    saveDeck(); renderDeckEditor(); renderCollection();
+                }
+            }
+        }
+
+        // Soltar SOBRE una carta específica del mazo
+        function handleDropOnCard(e, targetIndex) {
+            e.preventDefault();
+            e.stopPropagation(); 
+            let source = e.dataTransfer.getData('text/plain');
+            let card = ALL_CARDS.find(c => c.id === draggedCardId);
+            if (!card) return;
+
+            if (source === 'deck') {
+                // Reordenar dentro del mazo
+                let sourceIndex = playerDeck.findIndex(c => c.id === card.id);
+                if (sourceIndex > -1 && sourceIndex !== targetIndex) {
+                    let [movedCard] = playerDeck.splice(sourceIndex, 1);
+                    // FIX: tras extraer, si la carta venía de antes el índice destino
+                    // se desplaza una posición (off-by-one al reordenar).
+                    let insertAt = sourceIndex < targetIndex ? targetIndex - 1 : targetIndex;
+                    playerDeck.splice(insertAt, 0, movedCard);
+                    saveDeck(); renderDeckEditor();
+                }
+            } else if (source === 'collection') {
+                // FIX: soltar una carta de la colección ENCIMA de una carta del mazo
+                // antes "caía al vacío" (stopPropagation impedía que llegara al contenedor).
+                if (playerDeck.length >= 10) { alert("El mazo está lleno (10/10)."); return; }
+                playerDeck.splice(targetIndex, 0, card);
+                saveDeck(); renderDeckEditor(); renderCollection();
+            }
+        }
+
+        // --- ACCIONES TÁCTILES ---
+        // El drag & drop HTML5 no funciona en pantallas táctiles; estos tres
+        // métodos ofrecen la misma funcionalidad con toques (y sirven en escritorio).
+        function addCardToDeck(cardId) {
+            let card = ALL_CARDS.find(c => c.id === cardId);
+            if (!card) return;
+            if (playerDeck.some(c => c.id === cardId)) return;
+            if (playerDeck.length >= 10) { alert("El mazo está lleno (10/10)."); return; }
+            playerDeck.push(card);
+            saveDeck(); renderDeckEditor(); renderCollection();
+        }
+
+        function removeCardFromDeck(cardId) {
+            let idx = playerDeck.findIndex(c => c.id === cardId);
+            if (idx > -1) {
+                playerDeck.splice(idx, 1);
+                saveDeck(); renderDeckEditor(); renderCollection();
+            }
+        }
+
+        function moveDeckCard(index, dir) {
+            let target = index + dir;
+            if (target < 0 || target >= playerDeck.length) return;
+            let [movedCard] = playerDeck.splice(index, 1);
+            playerDeck.splice(target, 0, movedCard);
+            saveDeck(); renderDeckEditor();
+        }
+
+        // --- RENDERIZADO DEL DECKBUILDER ---
+        function renderDeckEditor() {
+            let container = document.getElementById('deck-list-container');
+            container.innerHTML = '';
+            document.getElementById('builder-deck-count').innerText = playerDeck.length;
+
+            if(playerDeck.length === 0) {
+                container.innerHTML = `<div class="text-center text-slate-500 text-xs p-4">Toca el botón + de la colección para añadir cartas a tu mazo.</div>`;
+                return;
+            }
+
+            playerDeck.forEach((card, idx) => {
+                let item = document.createElement('div');
+                item.className = "relative rounded-lg overflow-hidden border border-slate-700 cursor-grab hover:border-blue-500 transition-colors h-14";
+                item.draggable = true;
+                item.ondragstart = (e) => handleDragStart(e, card.id, 'deck');
+                item.ondragend = handleDragEnd;
+                item.ondragover = (e) => { e.preventDefault(); item.classList.add('border-cyan-400'); };
+                item.ondragleave = (e) => { item.classList.remove('border-cyan-400'); };
+                item.ondrop = (e) => handleDropOnCard(e, idx);
+                item.onclick = () => openCardModal(card.id);
+
+                item.innerHTML = `
+                    <div class="absolute inset-0 bg-cover bg-center" style="background-image: url('${card.art}');"></div>
+                    <div class="absolute inset-0 bg-gradient-to-r from-black/80 via-black/40 to-transparent"></div>
+                    <div class="absolute top-1 left-1 w-5 h-5 rounded-full bg-cyan-200 text-cyan-900 text-[10px] font-bold flex items-center justify-center border border-white">${card.cost}</div>
+                    <div class="absolute bottom-1 left-2 right-9 flex justify-between items-end">
+                        <span class="text-[10px] text-white font-bold truncate drop-shadow-md">${card.name}</span>
+                        <div class="flex gap-1">
+                            ${card.kind === 'Ser' ? `
+                                <span class="w-4 h-4 rounded-full bg-blue-900/90 border border-blue-400 text-white text-[8px] flex items-center justify-center">${card.atk}</span>
+                                <span class="w-4 h-4 rounded-full bg-red-900/90 border border-red-400 text-white text-[8px] flex items-center justify-center">${card.hp}</span>
+                            ` : ''}
+                        </div>
+                    </div>
+                    <div class="absolute top-0 right-0 bottom-0 w-7 flex flex-col bg-black/70 border-l border-slate-600/50 z-10">
+                        <button class="move-btn flex-1 text-cyan-300 text-[10px] leading-none flex items-center justify-center hover:bg-cyan-500/20 active:bg-cyan-500/40" data-dir="-1" aria-label="Subir carta" ${idx === 0 ? 'disabled' : ''}>▲</button>
+                        <button class="move-btn flex-1 text-slate-300 text-[10px] leading-none flex items-center justify-center hover:bg-slate-500/20 active:bg-slate-500/40 border-y border-slate-600/50" data-dir="1" aria-label="Bajar carta" ${idx === playerDeck.length - 1 ? 'disabled' : ''}>▼</button>
+                        <button class="remove-btn flex-1 text-red-400 text-[10px] leading-none flex items-center justify-center hover:bg-red-500/20 active:bg-red-500/40" aria-label="Quitar del mazo">✕</button>
+                    </div>
+                `;
+                item.querySelectorAll('.move-btn').forEach(btn => {
+                    btn.onclick = (e) => { e.stopPropagation(); moveDeckCard(idx, parseInt(btn.dataset.dir)); };
+                });
+                item.querySelector('.remove-btn').onclick = (e) => { e.stopPropagation(); removeCardFromDeck(card.id); };
+                container.appendChild(item);
+            });
+        }
+
+        function renderCollection() {
+            let container = document.getElementById('collection-container');
+            container.innerHTML = '';
+            let availableCards = ALL_CARDS.filter(card => !playerDeck.some(d => d.id === card.id));
+
+            if (availableCards.length === 0) {
+                container.innerHTML = `<div class="text-center text-slate-500 text-xs p-4 col-span-2">Todas las cartas están en tu mazo.</div>`;
+                return;
+            }
+
+            availableCards.forEach((card) => {
+                let el = document.createElement('div');
+                el.className = "relative rounded-lg overflow-hidden border border-slate-700 cursor-grab active:scale-95 transition hover:border-blue-500 aspect-[3/4]";
+                el.draggable = true;
+                el.ondragstart = (e) => handleDragStart(e, card.id, 'collection');
+                el.ondragend = handleDragEnd;
+                el.onclick = () => openCardModal(card.id);
+                
+                el.innerHTML = `
+                    <div class="absolute inset-0 bg-cover bg-center" style="background-image: url('${card.art}');"></div>
+                    <div class="absolute inset-0 bg-black/40"></div>
+                    <div class="absolute top-1 left-1 w-5 h-5 rounded-full bg-slate-800/90 border border-slate-500 text-[9px] font-bold flex items-center justify-center text-white z-10">${card.cost}</div>
+                    <button class="add-btn absolute top-0.5 right-0.5 w-6 h-6 rounded-full bg-cyan-500 text-slate-900 font-black text-sm flex items-center justify-center shadow-lg z-10 active:scale-90 transition-transform" aria-label="Añadir al mazo">+</button>
+                    <div class="absolute bottom-0 left-0 right-0 p-1 bg-gradient-to-t from-black/90 to-transparent">
+                        <div class="text-[8px] text-center text-white font-bold truncate">${card.name}</div>
+                    </div>
+                `;
+                el.querySelector('.add-btn').onclick = (e) => { e.stopPropagation(); addCardToDeck(card.id); };
+                container.appendChild(el);
+            });
+        }
+
+</script>
+    <script>
+// --- INTERFAZ ---
+// Modal de detalle de carta, HUD, tableros y pantallas de fin de partida.
+        // --- MODAL DE CARTA ---
+        function openCardModal(cardId) {
+            let card = ALL_CARDS.find(c => c.id === cardId);
+            if(!card) return;
+
+            // FIX: al abrir el detalle en combate se pausaba y al cerrar nunca se reanudaba.
+            modalAutoPaused = false;
+            if (gameState.isPlaying) { pauseGame(); modalAutoPaused = true; }
+
+            document.getElementById('modal-card-art').style.backgroundImage = `url('${card.art}')`;
+            document.getElementById('modal-card-cost').innerText = card.cost;
+            document.getElementById('modal-card-name').innerText = card.name;
+            document.getElementById('modal-card-desc').innerText = card.desc;
+            document.getElementById('modal-card-lore').innerText = card.lore;
+            
+            // Configurar el Tipo (SER o EVENTO)
+            let kindBadge = document.getElementById('modal-card-kind');
+            kindBadge.innerText = card.kind.toUpperCase();
+            
+            let typeIcon = document.getElementById('modal-card-type-icon');
+            let typeText = document.getElementById('modal-card-type');
+            
+            if (card.kind === 'Ser') {
+                kindBadge.className = "text-[9px] bg-blue-900/80 text-blue-200 px-1.5 py-0.5 rounded border border-blue-600 backdrop-blur-sm";
+                typeIcon.className = "fa-solid fa-shield-halved text-[8px] text-blue-400";
+                typeText.innerText = "SER";
+                typeText.className = "text-blue-400 text-[8px] font-bold uppercase tracking-wider";
+                
+                document.getElementById('modal-card-atk').innerText = card.atk;
+                document.getElementById('modal-card-hp').innerText = card.hp;
+                document.getElementById('modal-card-atk').style.display = 'flex';
+                document.getElementById('modal-card-hp').style.display = 'flex';
+            } else {
+                kindBadge.className = "text-[9px] bg-amber-900/80 text-amber-200 px-1.5 py-0.5 rounded border border-amber-600 backdrop-blur-sm";
+                typeIcon.className = "fa-solid fa-bolt text-[8px] text-amber-400";
+                typeText.innerText = "EVENTO";
+                typeText.className = "text-amber-400 text-[8px] font-bold uppercase tracking-wider";
+                
+                document.getElementById('modal-card-atk').style.display = 'none';
+                document.getElementById('modal-card-hp').style.display = 'none';
+            }
+
+            document.getElementById('card-modal').classList.remove('hidden-view');
+        }
+
+        function closeCardModal() { 
+            document.getElementById('card-modal').classList.add('hidden-view'); 
+            // FIX: reanudar solo si esta modal fue quien pausó el juego.
+            if (modalAutoPaused) {
+                modalAutoPaused = false;
+                if (!document.getElementById('view-game').classList.contains('hidden-view')) {
+                    startGame();
+                }
+            }
+        }
+        function updateHUD() {
+            document.getElementById('turn-counter').innerText = Math.max(1, gameState.turn);
+            document.getElementById('p1-score').innerText = gameState.p1.score;
+            document.getElementById('p2-score').innerText = gameState.p2.score;
+
+            let total = gameState.p1.score + gameState.p2.score;
+            let p1Pct = total === 0 ? 50 : Math.min(95, Math.max(5, (gameState.p1.score / total) * 100));
+            document.getElementById('p1-bar').style.width = `${p1Pct}%`;
+            document.getElementById('p2-bar').style.width = `${100 - p1Pct}%`;
+
+            document.getElementById('p1-energy-badge').innerText = gameState.p1.energy;
+            document.getElementById('p2-energy-badge').innerText = gameState.p2.energy;
+
+            let p1Next = playerDeck[gameState.p1.deckPointer];
+            document.getElementById('p1-next-card-name').innerText = p1Next ? p1Next.name : "No quedan cartas";
+            document.getElementById('p1-next-icon').className = p1Next ? `fa-solid ${p1Next.icon} text-xs` : "fa-solid fa-ban text-xs opacity-50";
+
+            let p2Next = rivalDeck[gameState.p2.deckPointer];
+            document.getElementById('p2-next-card-name').innerText = p2Next ? p2Next.name : "No quedan cartas";
+            document.getElementById('p2-next-icon').className = p2Next ? `fa-solid ${p2Next.icon} text-xs` : "fa-solid fa-ban text-xs opacity-50";
+        }
+
+        function renderBoards() {
+            let p1Board = document.getElementById('p1-board');
+            p1Board.innerHTML = '';
+            gameState.p1.activeBoard.forEach((card) => { 
+                p1Board.appendChild(createCardElement(card, 'blue', gameState.justDeployed.includes(card.uid))); 
+            });
+
+            let p2Board = document.getElementById('p2-board');
+            p2Board.innerHTML = '';
+            gameState.p2.activeBoard.forEach((card) => { 
+                p2Board.appendChild(createCardElement(card, 'purple', gameState.justDeployed.includes(card.uid))); 
+            });
+        }
+
+        function createCardElement(card, theme, animate) {
+            let cardDiv = document.createElement('div');
+            let isBlue = theme === 'blue';
+            let borderColor = isBlue ? 'border-blue-400 shadow-[0_0_10px_rgba(59,130,246,0.5)]' : 'border-fuchsia-400 shadow-[0_0_10px_rgba(217,70,239,0.5)]';
+            
+            cardDiv.className = `w-full max-w-[160px] h-[60px] border-2 ${borderColor} rounded-lg relative overflow-hidden flex flex-col justify-between ${animate ? 'animate-deploy' : ''} cursor-pointer hover:scale-105 transition-transform`;
+            cardDiv.onclick = () => openCardModal(card.id);
+            
+            let displayAtk = Math.max(0, card.atk + (card.tempAtkMod || 0));
+
+            cardDiv.innerHTML = `
+                <div class="absolute inset-0 bg-cover bg-center" style="background-image: url('${card.art}');"></div>
+                <div class="absolute inset-0 bg-black/50"></div>
+                <div class="absolute top-0.5 left-1 w-full text-[7px] text-white/70 font-bold truncate pointer-events-none px-1 drop-shadow-md">${card.name}</div>
+                <div class="absolute bottom-1 right-1 flex gap-1 z-10 pointer-events-none">
+                    <div class="w-5 h-5 rounded-full bg-blue-950/90 border border-cyan-400 flex items-center justify-center text-white font-bold text-[9px] shadow-lg">${displayAtk}</div>
+                    <div class="w-5 h-5 rounded-full bg-red-950/90 border border-red-400 flex items-center justify-center text-white font-bold text-[9px] shadow-lg">${card.hp}</div>
+                </div>
+            `;
+            return cardDiv;
+        }
+
+        function showGameOver() {
+            let p1Score = gameState.p1.score;
+            let p2Score = gameState.p2.score;
+            let title = document.getElementById('gameover-title');
+            
+            if (p1Score > p2Score) { title.innerText = "¡VICTORIA!"; title.className = "text-3xl font-orbitron font-black text-amber-400 mb-2 glow-text-blue"; }
+            else if (p1Score < p2Score) { title.innerText = "DERROTA"; title.className = "text-3xl font-orbitron font-black text-red-500 mb-2"; }
+            else { title.innerText = "EMPATE"; title.className = "text-3xl font-orbitron font-black text-slate-300 mb-2"; }
+            
+            document.getElementById('final-p1').innerText = p1Score;
+            document.getElementById('final-p2').innerText = p2Score;
+            document.getElementById('gameover-modal').classList.remove('hidden-view');
+        }
+
+        function closeGameOverModal() { document.getElementById('gameover-modal').classList.add('hidden-view'); }
+        function closeGameOverAndRestart() { closeGameOverModal(); resetMatch(); startGame(); }
+
+</script>
+    <script>
+// --- LÓGICA DE COMBATE ---
+// Reloj de turnos, despliegue por energía, resolución de efectos y fin de partida.
+        // --- LÓGICA DE COMBATE ---
+        function gameTick() {
+            gameState.turn++;
+            gameState.p1.energy += 1;
+            gameState.p2.energy += 1;
+
+            gameState.p1.activeBoard.slice().forEach(card => { if(card.startTurn) card.startTurn(card, gameState.p1, gameState.p2); });
+            gameState.p2.activeBoard.slice().forEach(card => { if(card.startTurn) card.startTurn(card, gameState.p2, gameState.p1); });
+
+            gameState.p1.activeBoard.forEach(c => c.tempAtkMod = 0);
+            gameState.p2.activeBoard.forEach(c => c.tempAtkMod = 0);
+
+            playPhase(gameState.p1, gameState.p2, playerDeck);
+            playPhase(gameState.p2, gameState.p1, rivalDeck);
+
+            let p1TurnPoints = gameState.p1.activeBoard.reduce((sum, card) => sum + Math.max(0, card.atk + (card.tempAtkMod || 0)), 0) + gameState.p1.extraPoints;
+            let p2TurnPoints = gameState.p2.activeBoard.reduce((sum, card) => sum + Math.max(0, card.atk + (card.tempAtkMod || 0)), 0) + gameState.p2.extraPoints;
+            
+            gameState.p1.score += p1TurnPoints;
+            gameState.p2.score += p2TurnPoints;
+            
+            gameState.p1.extraPoints = 0;
+            gameState.p2.extraPoints = 0;
+
+            gameState.p1.activeBoard.forEach(c => { if (c.id === 'c2') c.atk = 0; });
+            gameState.p2.activeBoard.forEach(c => { if (c.id === 'c2') c.atk = 0; });
+
+            // FIX: animar solo las cartas recién desplegadas, no todo el tablero cada tick.
+            gameState.justDeployed = [gameState.p1.lastPlayed, gameState.p2.lastPlayed]
+                .filter(c => c && c.kind === 'Ser')
+                .map(c => c.uid);
+
+            updateHUD();
+            renderBoards();
+
+            let scoreDiff = Math.abs(gameState.p1.score - gameState.p2.score);
+            let p1Finished = gameState.p1.deckPointer >= playerDeck.length;
+            let p2Finished = gameState.p2.deckPointer >= rivalDeck.length;
+
+            if (scoreDiff >= 50 || (p1Finished && p2Finished) || gameState.turn > 20) {
+                pauseGame();
+                showGameOver();
+            }
+        }
+
+        function playPhase(player, opponent, deck) {
+            if (player.deckPointer >= deck.length) return;
+            if (player.activeBoard.length >= 12) return;
+
+            let nextCard = deck[player.deckPointer];
+            
+            let oracleDiscount = player.activeBoard.some(c => c.id === 'c8') && nextCard.kind === 'Evento' ? 1 : 0;
+            let effectiveCost = Math.max(0, nextCard.cost - oracleDiscount);
+
+            if (player.energy >= effectiveCost) {
+                player.energy -= effectiveCost;
+
+                let cardInstance = { ...nextCard, hp: nextCard.hp, uid: Math.random().toString(36).substr(2, 9), tempAtkMod: 0 };
+                
+                if(nextCard.effect) nextCard.effect(player, opponent, player.lastPlayed);
+
+                if (cardInstance.kind === 'Ser') {
+                    player.activeBoard.unshift(cardInstance); 
+                } 
+                
+                player.lastPlayed = cardInstance;
+                player.deckPointer++;
+            }
+        }
+
+        function startGame() {
+            if(playerDeck.length === 0) { alert("¡Tu mazo está vacío!"); return; }
+            
+            if (gameState.isPlaying) { pauseGame(); return; }
+
+            let gameView = document.getElementById('view-game');
+            if (gameView.classList.contains('hidden-view')) {
+                switchView('view-game'); // entra al combate y resetea la partida
+            }
+
+            document.getElementById('pause-overlay').classList.add('hidden-view');
+            gameState.isPlaying = true;
+            syncControls();
+            
+            clearInterval(gameState.timer);
+            gameState.timer = setInterval(gameTick, 1500 / gameState.speed);
+            gameTick(); 
+        }
+
+        function togglePlayPause() {
+            if (gameState.isPlaying) pauseGame();
+            else startGame();
+        }
+
+        function pauseGame() {
+            gameState.isPlaying = false;
+            clearInterval(gameState.timer);
+            syncControls();
+        }
+
+        function togglePauseOverlay() {
+            let overlay = document.getElementById('pause-overlay');
+            if (overlay.classList.contains('hidden-view')) {
+                overlay.classList.remove('hidden-view');
+                if (gameState.isPlaying) pauseGame();
+            } else {
+                overlay.classList.add('hidden-view');
+            }
+            syncControls(); // FIX: los iconos siempre reflejan el estado real
+        }
+
+        function skipTurn() {
+            if(gameState.isPlaying) {
+                clearInterval(gameState.timer);
+                gameTick();
+                gameState.timer = setInterval(gameTick, 1500 / gameState.speed);
+            } else {
+                gameTick();
+            }
+        }
+
+        function cycleSpeed() {
+            if (gameState.speed === 1) gameState.speed = 2;
+            else if (gameState.speed === 2) gameState.speed = 4;
+            else gameState.speed = 1;
+
+            document.getElementById('btn-speed').innerText = `${gameState.speed}x`;
+            if (gameState.isPlaying) {
+                clearInterval(gameState.timer);
+                gameState.timer = setInterval(gameTick, 1500 / gameState.speed);
+            }
+        }
+
+        function resetMatch() {
+            pauseGame();
+            gameState.turn = 0; // el primer tick pasa a mostrar TURNO 1 (antes mostraba 2)
+            gameState.justDeployed = [];
+            gameState.p1 = { score: 0, energy: 1, deckPointer: 0, activeBoard: [], lastPlayed: null, costDiscount: 0, extraPoints: 0, extraDraws: 0 };
+            gameState.p2 = { score: 0, energy: 1, deckPointer: 0, activeBoard: [], lastPlayed: null, costDiscount: 0, extraPoints: 0, extraDraws: 0 };
+            document.getElementById('pause-overlay').classList.add('hidden-view');
+            updateHUD();
+            renderBoards();
+        }
+
+</script>
+    <script>
+// --- ARRANQUE Y NAVEGACIÓN ---
+// Cambio de vistas, sincronización de controles e inicialización.
+        // --- NAVEGACIÓN ---
+        function switchView(viewId) {
+            // FIX: al salir del combate hay que parar el timer y ocultar la pausa,
+            // si no el juego seguía corriendo en segundo plano tras volver al menú.
+            if (viewId !== 'view-game') {
+                pauseGame();
+                document.getElementById('pause-overlay').classList.add('hidden-view');
+            }
+            document.querySelectorAll('.view-section').forEach(el => el.classList.add('hidden-view'));
+            document.getElementById(viewId).classList.remove('hidden-view');
+            if (viewId === 'view-game') resetMatch();
+            if (viewId === 'view-deckbuilder') { renderDeckEditor(); renderCollection(); }
+            if (viewId === 'view-decks') document.getElementById('deck-count-label').innerText = playerDeck.length;
+        }
+
+        // --- CONTROLES DE REPRODUCCIÓN (estado centralizado) ---
+        function syncControls() {
+            document.getElementById('lbl-play-pause').innerText = gameState.isPlaying ? "PAUSA" : "SEGUIR";
+            document.getElementById('icon-pause-game').className = gameState.isPlaying ? "fa-solid fa-pause text-sm" : "fa-solid fa-play text-sm";
+        }
+        window.onload = () => { 
+            loadDeck(); 
+            document.getElementById('deck-count-label').innerText = playerDeck.length;
+            updateHUD(); 
+            renderBoards(); 
+        };
+
+</script>
+</body>
+</html>

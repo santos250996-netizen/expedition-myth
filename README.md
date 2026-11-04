@@ -6,7 +6,7 @@ Juego de cartas coleccionables **auto-batalla** inspirado en los mitos del mundo
 
 ## Cómo se juega
 
-1. **MAZOS:** arma tu mazo (máx. 10 copias de las 10 cartas) arrastrando cartas de la colección.
+1. **MAZOS:** arma tu mazo (máx. 10 copias de las 10 cartas). En móvil toca el botón **+** de la colección para añadir cartas, y usa **▲ ▼ ✕** sobre cada carta del mazo para reordenarla o quitarla. En escritorio también puedes arrastrarlas.
 2. **JUGAR:** la partida corre sola — cada jugador despliega una carta por turno si tiene Energía suficiente.
 3. Cada turno, el **ATK** total de tu tablero se suma a tu marcador; el rival hace lo propio.
 4. Al agotarse ambos mazos, gana quien acumuló más puntos. Guarda detalles de cada carta tocándola (con su lore).
@@ -21,7 +21,7 @@ expedition-myth/
 ├── js/
 │   ├── cards.js        # Datos: plantillas de cartas (stats, arte, lore, efectos)
 │   ├── state.js        # Estado global de la partida
-│   ├── deck.js         # Constructor de mazos: persistencia, drag & drop, colección
+│   ├── deck.js         # Constructor de mazos: persistencia, drag & drop y acciones táctiles
 │   ├── ui.js           # Modal de carta, HUD, tableros y fin de partida
 │   ├── game.js         # Motor: reloj de turnos, despliegue, efectos y victoria
 │   └── main.js         # Navegación entre vistas e inicialización

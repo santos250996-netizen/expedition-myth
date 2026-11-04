@@ -106,6 +106,34 @@
             }
         }
 
+        // --- ACCIONES TÁCTILES ---
+        // El drag & drop HTML5 no funciona en pantallas táctiles; estos tres
+        // métodos ofrecen la misma funcionalidad con toques (y sirven en escritorio).
+        function addCardToDeck(cardId) {
+            let card = ALL_CARDS.find(c => c.id === cardId);
+            if (!card) return;
+            if (playerDeck.some(c => c.id === cardId)) return;
+            if (playerDeck.length >= 10) { alert("El mazo está lleno (10/10)."); return; }
+            playerDeck.push(card);
+            saveDeck(); renderDeckEditor(); renderCollection();
+        }
+
+        function removeCardFromDeck(cardId) {
+            let idx = playerDeck.findIndex(c => c.id === cardId);
+            if (idx > -1) {
+                playerDeck.splice(idx, 1);
+                saveDeck(); renderDeckEditor(); renderCollection();
+            }
+        }
+
+        function moveDeckCard(index, dir) {
+            let target = index + dir;
+            if (target < 0 || target >= playerDeck.length) return;
+            let [movedCard] = playerDeck.splice(index, 1);
+            playerDeck.splice(target, 0, movedCard);
+            saveDeck(); renderDeckEditor();
+        }
+
         // --- RENDERIZADO DEL DECKBUILDER ---
         function renderDeckEditor() {
             let container = document.getElementById('deck-list-container');
@@ -113,7 +141,7 @@
             document.getElementById('builder-deck-count').innerText = playerDeck.length;
 
             if(playerDeck.length === 0) {
-                container.innerHTML = `<div class="text-center text-slate-500 text-xs p-4">Arrastra cartas aquí para armar tu mazo.</div>`;
+                container.innerHTML = `<div class="text-center text-slate-500 text-xs p-4">Toca el botón + de la colección para añadir cartas a tu mazo.</div>`;
                 return;
             }
 
@@ -127,12 +155,12 @@
                 item.ondragleave = (e) => { item.classList.remove('border-cyan-400'); };
                 item.ondrop = (e) => handleDropOnCard(e, idx);
                 item.onclick = () => openCardModal(card.id);
-                
+
                 item.innerHTML = `
                     <div class="absolute inset-0 bg-cover bg-center" style="background-image: url('${card.art}');"></div>
                     <div class="absolute inset-0 bg-gradient-to-r from-black/80 via-black/40 to-transparent"></div>
                     <div class="absolute top-1 left-1 w-5 h-5 rounded-full bg-cyan-200 text-cyan-900 text-[10px] font-bold flex items-center justify-center border border-white">${card.cost}</div>
-                    <div class="absolute bottom-1 left-2 right-2 flex justify-between items-end">
+                    <div class="absolute bottom-1 left-2 right-9 flex justify-between items-end">
                         <span class="text-[10px] text-white font-bold truncate drop-shadow-md">${card.name}</span>
                         <div class="flex gap-1">
                             ${card.kind === 'Ser' ? `
@@ -141,7 +169,16 @@
                             ` : ''}
                         </div>
                     </div>
+                    <div class="absolute top-0 right-0 bottom-0 w-7 flex flex-col bg-black/70 border-l border-slate-600/50 z-10">
+                        <button class="move-btn flex-1 text-cyan-300 text-[10px] leading-none flex items-center justify-center hover:bg-cyan-500/20 active:bg-cyan-500/40" data-dir="-1" aria-label="Subir carta" ${idx === 0 ? 'disabled' : ''}>▲</button>
+                        <button class="move-btn flex-1 text-slate-300 text-[10px] leading-none flex items-center justify-center hover:bg-slate-500/20 active:bg-slate-500/40 border-y border-slate-600/50" data-dir="1" aria-label="Bajar carta" ${idx === playerDeck.length - 1 ? 'disabled' : ''}>▼</button>
+                        <button class="remove-btn flex-1 text-red-400 text-[10px] leading-none flex items-center justify-center hover:bg-red-500/20 active:bg-red-500/40" aria-label="Quitar del mazo">✕</button>
+                    </div>
                 `;
+                item.querySelectorAll('.move-btn').forEach(btn => {
+                    btn.onclick = (e) => { e.stopPropagation(); moveDeckCard(idx, parseInt(btn.dataset.dir)); };
+                });
+                item.querySelector('.remove-btn').onclick = (e) => { e.stopPropagation(); removeCardFromDeck(card.id); };
                 container.appendChild(item);
             });
         }
@@ -168,10 +205,12 @@
                     <div class="absolute inset-0 bg-cover bg-center" style="background-image: url('${card.art}');"></div>
                     <div class="absolute inset-0 bg-black/40"></div>
                     <div class="absolute top-1 left-1 w-5 h-5 rounded-full bg-slate-800/90 border border-slate-500 text-[9px] font-bold flex items-center justify-center text-white z-10">${card.cost}</div>
+                    <button class="add-btn absolute top-0.5 right-0.5 w-6 h-6 rounded-full bg-cyan-500 text-slate-900 font-black text-sm flex items-center justify-center shadow-lg z-10 active:scale-90 transition-transform" aria-label="Añadir al mazo">+</button>
                     <div class="absolute bottom-0 left-0 right-0 p-1 bg-gradient-to-t from-black/90 to-transparent">
                         <div class="text-[8px] text-center text-white font-bold truncate">${card.name}</div>
                     </div>
                 `;
+                el.querySelector('.add-btn').onclick = (e) => { e.stopPropagation(); addCardToDeck(card.id); };
                 container.appendChild(el);
             });
         }
