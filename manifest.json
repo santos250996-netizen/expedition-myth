@@ -1,0 +1,20 @@
+{
+    "name": "Ecos del Olimpo",
+    "short_name": "Ecos",
+    "description": "Juego de cartas auto-batalla por capítulos: construye tu mazo y deja que las criaturas y eventos de la Hélade luchen solos.",
+    "lang": "es",
+    "start_url": "./index.html",
+    "scope": "./",
+    "display": "standalone",
+    "orientation": "portrait",
+    "background_color": "#020617",
+    "theme_color": "#020617",
+    "icons": [
+        {
+            "src": "icon.svg",
+            "sizes": "any",
+            "type": "image/svg+xml",
+            "purpose": "any"
+        }
+    ]
+}

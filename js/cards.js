@@ -1,8 +1,7 @@
 // --- DATOS DE LAS CARTAS (Solo SER o EVENTO) ---
 // Plantillas compartidas: las instancias en tablero son copias, así las
 // funciones effect/startTurn sobreviven para ambos jugadores.
-        // --- DATOS DE LAS CARTAS (Solo SER o EVENTO) ---
-        const ALL_CARDS = [
+const ALL_CARDS = [
             { 
                 id: 'c1', name: 'Mortal de Arcadia', kind: 'Ser', cost: 1, atk: 1, hp: 1, 
                 icon: 'fa-user', 
@@ -42,7 +41,7 @@
                 desc: 'Reduce en -2 el ATK del Ser rival que esté en la posición 1 (cima de su columna).', 
                 lore: 'Una densa penumbra inexplorada desciende de los cielos y cubre los valles arcaicos de Grecia. Esta neblina antinatural nubla el juicio de las tribus y debilita los primeros asentamientos humanos, obligándolos a dar sus primeros pasos a ciegas en la oscuridad.',
                 art: 'assets/cartas/carta-05-niebla-del-caos.webp',
-                effect: (p, opp) => { let target = opp.activeBoard[0]; if (target) { target.atk = Math.max(0, target.atk - 2); queueFx({ t: 'debuff', side: sideOf(opp), uid: target.uid, text: '-2 ATK', icon: 'fa-cloud', overlay: 'fog', pulse: 'fx-pulse-gray', cls: 'fx-gray' }); } } 
+                effect: (p, opp) => { let target = opp.activeBoard[0]; if (target && !target.dying) { target.atk = Math.max(0, target.atk - 2); queueFx({ t: 'debuff', side: sideOf(opp), uid: target.uid, text: '-2 ATK', icon: 'fa-cloud', overlay: 'fog', pulse: 'fx-pulse-gray', cls: 'fx-gray' }); } } 
             },
             { 
                 id: 'c6', name: 'El Lamento de la Fuente Seca', kind: 'Ser', cost: 2, atk: 1, hp: 3, 
@@ -50,7 +49,7 @@
                 desc: 'Al entrar: Reduce en -1 el ATK del Ser rival en la posición 1.', 
                 lore: 'Las protectoras de los manantiales sufren la corrupción de la niebla. Al verse marchitas y sin agua pura, pierden la razón y se convierten en espectros errantes que lloran desconsoladamente, confundiendo con sus cantos a cualquiera que se acerque.',
                 art: 'assets/cartas/carta-06-lamento-fuente-seca.webp',
-                effect: (p, opp) => { let target = opp.activeBoard[0]; if (target) { target.atk = Math.max(0, target.atk - 1); queueFx({ t: 'debuff', side: sideOf(opp), uid: target.uid, text: '-1 ATK', icon: 'fa-water', overlay: 'tears' }); } }, startTurn: null 
+                effect: (p, opp) => { let target = opp.activeBoard[0]; if (target && !target.dying) { target.atk = Math.max(0, target.atk - 1); queueFx({ t: 'debuff', side: sideOf(opp), uid: target.uid, text: '-1 ATK', icon: 'fa-water', overlay: 'tears' }); } }, startTurn: null 
             },
             { 
                 id: 'c7', name: 'La Embestida de Erimanto', kind: 'Ser', cost: 5, atk: 4, hp: 3, 
@@ -62,7 +61,7 @@
                 startTurn: (self, player, opp) => { 
                     let myIndex = player.activeBoard.indexOf(self); 
                     let target = opp.activeBoard[myIndex];
-                    if (target) { 
+                    if (target && !target.dying) { 
                         target.hp -= 1; 
                         queueFx({ t: 'clash', side: sideOf(player), uidA: self.uid, uidB: target.uid });
                         if (target.hp <= 0) { target.hp = 0; target.dying = true; }
@@ -109,7 +108,6 @@
             }
         ];
 
-        // FIX: antes rivalDeck se clonaba con JSON.stringify/parse, lo que ELIMINABA
-        // las funciones effect/startTurn: las cartas del rival no hacían nada.
-        // Ahora comparte las mismas plantillas (las instancias en tablero son copias).
-        let rivalDeck = ALL_CARDS;
+// El mazo del rival comparte estas mismas plantillas (las instancias en
+// tablero son copias; clonar con JSON eliminaría effect/startTurn).
+let rivalDeck = ALL_CARDS;

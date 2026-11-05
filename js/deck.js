@@ -13,8 +13,8 @@ function safeStorageSet(key, value) {
     try { localStorage.setItem(key, value); } catch (e) { _memStorage[key] = value; }
 }
 
-        // --- INICIALIZACIÓN ---
-        function loadDeck() {
+// --- INICIALIZACIÓN ---
+function loadDeck() {
             let saved = safeStorageGet('nexo_deck_v1');
             if (saved) {
                 try {

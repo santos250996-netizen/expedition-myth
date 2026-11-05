@@ -5,14 +5,16 @@
 // La velocidad de partida escala la duración vía la variable CSS --fx-k.
 
         // Multiplicador de duración según la velocidad (1x, 2x, 4x).
+        function fxK() {
+            return gameState.speed === 4 ? 0.4 : (gameState.speed === 2 ? 0.65 : 1);
+        }
+
         function applyFxSpeed() {
-            let k = gameState.speed === 4 ? 0.4 : (gameState.speed === 2 ? 0.65 : 1);
-            document.body.style.setProperty('--fx-k', k);
+            document.body.style.setProperty('--fx-k', fxK());
         }
 
         function fxDurationMs(baseSec) {
-            let k = gameState.speed === 4 ? 0.4 : (gameState.speed === 2 ? 0.65 : 1);
-            return Math.round(baseSec * 1000 * k);
+            return Math.round(baseSec * 1000 * fxK());
         }
 
         function queueFx(fx) {
@@ -122,7 +124,7 @@
                             fxEventCast(fx.card, fx.side);
                             break;
                         case 'gloria':
-                            fxGloriaBeam(fx.side, fx.beam ? '' : 'fx-beam-soft');
+                            fxGloriaBeam(fx.side, 'fx-beam-soft');
                             fxFloatOver(fx.side, fx.uid, fx.text, 'fx-gold', fx.icon);
                             break;
                         case 'buff':

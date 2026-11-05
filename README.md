@@ -15,19 +15,28 @@ Juego de cartas coleccionables **auto-batalla** inspirado en los mitos del mundo
 
 ```
 expedition-myth/
-├── index.html          # Marcado de las 4 vistas (menú, combate, mazos, altador)
+├── index.html          # Marcado de las vistas (menú, capítulos, combate, mazos, deckbuilder)
+├── manifest.json       # Manifiesto PWA (instalable en móvil)
+├── icon.svg            # Icono de la app / favicon
+├── sw.js               # Service worker: precachea e imagen del juego (apertura instantánea)
 ├── css/
-│   └── styles.css      # Tema cósmico, animaciones y paneles néon
+│   └── styles.css      # Tema cósmico, animaciones, FX y paneles néon
 ├── js/
 │   ├── cards.js        # Datos: plantillas de cartas (stats, arte, lore, efectos)
 │   ├── state.js        # Estado global de la partida
+│   ├── fx.js           # Motor de efectos visuales: cola por tick, proyección de eventos, textos flotantes
 │   ├── deck.js         # Constructor de mazos: persistencia, drag & drop y acciones táctiles
-│   ├── ui.js           # Modal de carta, HUD, tableros y fin de partida
+│   ├── chapters.js     # Datos narrativos de la campaña y mazos del bot
+│   ├── ui.js           # Modal de carta, HUD, tableros (reconciliados por uid) y fin de partida
 │   ├── game.js         # Motor: reloj de turnos, despliegue, efectos y victoria
-│   └── main.js         # Navegación entre vistas e inicialización
+│   └── main.js         # Navegación entre vistas, service worker e inicialización
 ├── netlify.toml        # Config de despliegue estático
 └── README.md
 ```
+
+## Caché y rendimiento
+
+Un service worker (`sw.js`) precachea el shell y **todas las imágenes** de cartas y capítulos en la primera visita; a partir de ahí todo se sirve desde caché (stale-while-revalidate) y reabrir el juego es instantáneo, incluso sin conexión. Para publicar cambios de assets, sube la versión `CACHE` de `sw.js` y los `?v=` del HTML. El tablero de combate se reconcilia por `uid` (los nodos del DOM se reutilizan), así que los cambios de ATK/HP se animan en el sitio sin repintar imágenes.
 
 ## Ejecutar en local
 

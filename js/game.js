@@ -1,7 +1,15 @@
 // --- LÓGICA DE COMBATE ---
 // Reloj de turnos, despliegue por energía, resolución de efectos y fin de partida.
-        // --- LÓGICA DE COMBATE ---
-        function gameTick() {
+
+// Descuento del Oráculo Ciego (c8): los Eventos cuestan -1 mientras haya un
+// Oráculo vivo en tablero. Única fuente: la usa la partida y el HUD, así el
+// coste mostrado siempre coincide con el cobrado.
+function oracleDiscountFor(player, card) {
+    if (!card || card.kind !== 'Evento') return 0;
+    return player.activeBoard.some(c => c.id === 'c8' && !c.dying) ? 1 : 0;
+}
+
+function gameTick() {
             gameState.turn++;
             // Las cartas que murieron el turno anterior ya se vieron
             // disolverse durante ese tick: ahora se retiran del tablero.
@@ -30,8 +38,9 @@
             gameState.p1.extraPoints = 0;
             gameState.p2.extraPoints = 0;
 
-            gameState.p1.activeBoard.forEach(c => { if (c.id === 'c2') c.atk = 0; });
-            gameState.p2.activeBoard.forEach(c => { if (c.id === 'c2') c.atk = 0; });
+            // FIX: el ATK buffado del Sátiro (c2) ya no se resetea aquí. Su
+            // startTurn parte de 0 cada turno, y este reset ANTES del render
+            // hacía que el buff nunca se viera en pantalla (sí puntuaba).
 
             // FIX: animar solo las cartas recién desplegadas, no todo el tablero cada tick.
             gameState.justDeployed = [gameState.p1.lastPlayed, gameState.p2.lastPlayed]
@@ -59,13 +68,13 @@
 
             let nextCard = deck[player.deckPointer];
             
-            let oracleDiscount = player.activeBoard.some(c => c.id === 'c8') && nextCard.kind === 'Evento' ? 1 : 0;
+            let oracleDiscount = oracleDiscountFor(player, nextCard);
             let effectiveCost = Math.max(0, nextCard.cost - oracleDiscount);
 
             if (player.energy >= effectiveCost) {
                 player.energy -= effectiveCost;
 
-                let cardInstance = { ...nextCard, hp: nextCard.hp, uid: Math.random().toString(36).substr(2, 9), tempAtkMod: 0 };
+                let cardInstance = { ...nextCard, uid: Math.random().toString(36).slice(2, 9), tempAtkMod: 0 };
                 
                 if(nextCard.effect) nextCard.effect(player, opponent, player.lastPlayed);
 
@@ -156,14 +165,13 @@
 
         function resetMatch() {
             pauseGame();
-            // El mazo del bot sale de los datos del capítulo activo
-            // (Capítulo 1: las 10 cartas del mazo Heládico).
+            // El mazo del bot sale de los datos del capítulo activo.
             rivalDeck = getChapterBotDeck();
             gameState.turn = 0; // el primer tick pasa a mostrar TURNO 1 (antes mostraba 2)
             gameState.justDeployed = [];
             gameState.fxQueue = [];
-            gameState.p1 = { score: 0, energy: 1, deckPointer: 0, activeBoard: [], lastPlayed: null, costDiscount: 0, extraPoints: 0, extraDraws: 0 };
-            gameState.p2 = { score: 0, energy: 1, deckPointer: 0, activeBoard: [], lastPlayed: null, costDiscount: 0, extraPoints: 0, extraDraws: 0 };
+            gameState.p1 = { score: 0, energy: 1, deckPointer: 0, activeBoard: [], lastPlayed: null, extraPoints: 0 };
+            gameState.p2 = { score: 0, energy: 1, deckPointer: 0, activeBoard: [], lastPlayed: null, extraPoints: 0 };
             document.getElementById('pause-overlay').classList.add('hidden-view');
             updateHUD();
             renderBoards();

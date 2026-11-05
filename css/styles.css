@@ -98,7 +98,6 @@ body {
 }
 
 /* Drag & Drop visual */
-.dragging { opacity: 0.5; transform: scale(0.95); }
 .drag-over { border: 2px dashed #38bdf8 !important; background-color: rgba(56, 189, 248, 0.2) !important; }
 
 /* Zonas de drop invisibles para arreglar el bug de caída */
@@ -326,4 +325,41 @@ body {
     0%   { opacity: 0; transform: translateX(0) rotate(0deg); }
     15%  { opacity: 1; }
     100% { opacity: 0; transform: translateX(calc(100vw)) rotate(320deg); }
+}
+
+/* ============================================================
+   FLUIDEZ DEL COMBATE
+   El tablero se reconcilia por uid (los nodos se reutilizan),
+   así estos flashes animan el CAMBIO de ATK/HP en el sitio.
+   ============================================================ */
+.stat-up { animation: statUp calc(0.6s * var(--fx-k, 1)) ease-out; }
+@keyframes statUp {
+    0%   { transform: scale(1); box-shadow: 0 0 0 rgba(74,222,128,0); }
+    30%  { transform: scale(1.45); box-shadow: 0 0 10px rgba(74,222,128,0.95); border-color: #4ade80; }
+    100% { transform: scale(1); }
+}
+.stat-down { animation: statDown calc(0.6s * var(--fx-k, 1)) ease-out; }
+@keyframes statDown {
+    0%   { transform: scale(1); }
+    25%  { transform: scale(1.4) rotate(-8deg); box-shadow: 0 0 10px rgba(248,113,113,0.95); border-color: #f87171; }
+    60%  { transform: scale(1.15) rotate(4deg); }
+    100% { transform: scale(1); }
+}
+
+/* El número de turno late al cambiar (transición de turno legible). */
+.turn-pulse { animation: turnPulse 0.5s ease-out; }
+@keyframes turnPulse {
+    0%   { transform: scale(1.55); color: #fbbf24; }
+    100% { transform: scale(1); }
+}
+#turn-counter { display: inline-block; }
+
+/* Accesibilidad: sin movimiento decorativo si el sistema lo pide. Los
+   envoltorios de FX se autodestruyen solos; aquí solo se silencian. */
+@media (prefers-reduced-motion: reduce) {
+    .fx-float, .fx-float-wrap, .fx-overlay, .fx-event-cast, .fx-event-shine,
+    .fx-gloria-beam, .fx-leaf, .animate-deploy, .animate-dissolve,
+    .fx-pulse-green, .fx-pulse-gray, .fx-clash-r, .fx-clash-l, .fx-shake,
+    .oracle-aura, .stat-up, .stat-down, .turn-pulse { animation: none !important; }
+    .fx-float, .fx-overlay, .fx-event-cast, .fx-gloria-beam, .fx-leaf { opacity: 0 !important; }
 }
