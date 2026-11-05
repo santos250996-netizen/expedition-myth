@@ -6,7 +6,7 @@
 const CHAPTERS = [
     {
         id: 1,
-        number: 1,
+        number: '1.0',
         title: 'El Despertar en la Hélade',
         subtitle: 'La historia comienza en una Grecia arcaica y dividida. Las tribus moran en valles oscuros y en las laderas de Arcadia, temiendo la noche y rindiendo culto a las fuerzas telúricas de la tierra.',
         beats: [
@@ -17,6 +17,21 @@ const CHAPTERS = [
         epilogue: 'La fe de los mortales encendió la primera chispa y el Olimpo respondió: la primera intervención divina marca el amanecer de una nueva era. La Niebla del Caos retrocede por ahora, pero las criaturas siguen acechando entre los bosques antiguos... y la Hélade necesitará héroes para lo que viene.',
         art: 'assets/capitulos/capitulo-01-el-despertar-en-la-helade.webp',
         rival: { name: 'Caos', sub: 'TELAR' },
+        botDeck: ['c1', 'c2', 'c3', 'c4', 'c5', 'c6', 'c7', 'c8', 'c9', 'c10']
+    },
+    {
+        id: 2,
+        number: '1.1',
+        title: 'Las Grietas de la Discordia',
+        subtitle: 'La frágil paz que las tribus y los espíritus intentaban mantener en los valles arcaicos comienza a romperse. La Niebla del Caos y los primeros rituales oscuros no han pasado desapercibidos: han alterado el equilibrio natural.',
+        beats: [
+            { icon: 'fa-fire', title: 'El Olor de la Sangre', text: 'Las bestias que antes merodeaban los límites del bosque ahora se sienten atraídas por el olor de la sangre de los altares, y acechan cada vez más cerca de los asentamientos.' },
+            { icon: 'fa-handshake-slash', title: 'Mortales Divididos', text: 'Consumidos por el miedo y la desconfianza, los mortales empiezan a dividirse: quienes buscan la protección de los dioses frente a quienes prefieren pactar con las sombras de la tierra.' },
+            { icon: 'fa-burst', title: 'Primeros Conflictos', text: 'Este choque de intereses genera los primeros conflictos directos en la Hélade. La discordia abre grietas que ni los espíritus ni los dioses pueden cerrar solos.' }
+        ],
+        epilogue: 'El choque se apaga y las grietas de la discordia se calman por ahora, pero la Hélade ha quedado marcada: los que pactaron con las sombras siguen entre los valles y la Niebla del Caos no se ha retirado del todo. Desde las alturas, los primeros ecos del Olimpo comienzan a resonar sobre los mortales...',
+        art: 'assets/capitulos/capitulo-1-1-las-grietas-de-la-discordia.webp',
+        rival: { name: 'Discordia', sub: 'GRIETAS' },
         botDeck: ['c1', 'c2', 'c3', 'c4', 'c5', 'c6', 'c7', 'c8', 'c9', 'c10']
     }
 ];

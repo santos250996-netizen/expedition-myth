@@ -196,7 +196,13 @@
             try {
                 let frag = document.createDocumentFragment();
 
-                CHAPTERS.forEach((ch) => {
+                // Los completados se desplazan al fondo: arriba queda siempre
+                // el próximo capítulo a jugar (orden estable entre iguales).
+                let ordered = [...CHAPTERS].sort((a, b) =>
+                    (isChapterCompleted(a.id) ? 1 : 0) - (isChapterCompleted(b.id) ? 1 : 0)
+                );
+
+                ordered.forEach((ch) => {
                     let done = isChapterCompleted(ch.id);
                     let item = document.createElement('div');
                     item.className = "active:scale-[0.98] transition-transform cursor-pointer";

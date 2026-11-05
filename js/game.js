@@ -118,7 +118,9 @@
             if(gameState.isPlaying) {
                 clearInterval(gameState.timer);
                 gameTick();
-                gameState.timer = setInterval(gameTick, 1500 / gameState.speed);
+                // FIX: si el tick forzó el fin de partida, no rearmar el reloj
+                // (antes la partida seguía avanzando detrás del modal final).
+                if (gameState.isPlaying) gameState.timer = setInterval(gameTick, 1500 / gameState.speed);
             } else {
                 gameTick();
             }
