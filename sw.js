@@ -7,19 +7,19 @@
 //    revalidate: respuesta instantánea desde caché y refresco en segundo
 //    plano. Reabrir el juego no vuelve a descargar ninguna imagen.
 // Para publicar cambios: subir la versión de CACHE (y los ?v= del HTML).
-const CACHE = 'nexo-v20261106b';
+const CACHE = 'nexo-v20261106c';
 
 const PRECACHE = [
     './', './index.html', './manifest.json', './icon.svg',
-    './css/styles.css?v=20261106b',
-    './js/cards.js?v=20261106b',
-    './js/state.js?v=20261106b',
-    './js/fx.js?v=20261106b',
-    './js/deck.js?v=20261106b',
-    './js/chapters.js?v=20261106b',
-    './js/ui.js?v=20261106b',
-    './js/game.js?v=20261106b',
-    './js/main.js?v=20261106b',
+    './css/styles.css?v=20261106c',
+    './js/cards.js?v=20261106c',
+    './js/state.js?v=20261106c',
+    './js/fx.js?v=20261106c',
+    './js/deck.js?v=20261106c',
+    './js/chapters.js?v=20261106c',
+    './js/ui.js?v=20261106c',
+    './js/game.js?v=20261106c',
+    './js/main.js?v=20261106c',
     // Artes de cartas
     './assets/cartas/carta-01-mortal-de-arcadia.webp',
     './assets/cartas/carta-02-satiro-de-los-bosques.webp',

@@ -18,14 +18,32 @@ function gameTick() {
             gameState.p1.energy += 1;
             gameState.p2.energy += 1;
 
+            // Inicio de turno SIMULTÁNEO: los choques de Embestida se
+            // registran contra el mismo estado del tablero y el daño se
+            // aplica después, para que ni el orden de los tableros ni una
+            // muerte temprana den ventaja a ningún lado.
+            gameState.clashQueue = [];
             gameState.p1.activeBoard.slice().forEach(card => { if(card.startTurn) card.startTurn(card, gameState.p1, gameState.p2); });
             gameState.p2.activeBoard.slice().forEach(card => { if(card.startTurn) card.startTurn(card, gameState.p2, gameState.p1); });
+            gameState.clashQueue.forEach(h => {
+                h.target.hp -= 1;
+                if (h.target.hp <= 0) { h.target.hp = 0; h.target.dying = true; }
+            });
 
             gameState.p1.activeBoard.forEach(c => c.tempAtkMod = 0);
             gameState.p2.activeBoard.forEach(c => c.tempAtkMod = 0);
 
-            playPhase(gameState.p1, gameState.p2, playerDeck);
-            playPhase(gameState.p2, gameState.p1, rivalDeck);
+            // Turno COMPARTIDO: no hay "primero" ni "segundo". Fase 1: ambos
+            // eligen y pagan su carta contra el mismo estado; los Seres entran
+            // a la vez a la cima. Fase 2: los efectos resuelven, todos contra
+            // tableros ya actualizados por los dos — así el debuff de nadie
+            // ve un despliegue que el otro aún no hizo.
+            let play1 = beginPlay(gameState.p1, playerDeck);
+            let play2 = beginPlay(gameState.p2, rivalDeck);
+            if (play1) deployPlay(gameState.p1, play1);
+            if (play2) deployPlay(gameState.p2, play2);
+            if (play1) resolvePlay(gameState.p1, gameState.p2, play1);
+            if (play2) resolvePlay(gameState.p2, gameState.p1, play2);
 
             // Las cartas muriendo este turno ya no suman gloria.
             let boardPoints = (board) => board.reduce((sum, card) => sum + (card.dying ? 0 : Math.max(0, card.atk + (card.tempAtkMod || 0))), 0);
@@ -52,45 +70,53 @@ function gameTick() {
             // Los FX se materializan tras el render (el render borra el DOM).
             playQueuedFx();
 
-            let scoreDiff = Math.abs(gameState.p1.score - gameState.p2.score);
-            let p1Finished = gameState.p1.deckPointer >= playerDeck.length;
-            let p2Finished = gameState.p2.deckPointer >= rivalDeck.length;
-
-            if (scoreDiff >= 50 || (p1Finished && p2Finished) || gameState.turn > 20) {
+            // La partida SOLO termina por diferencia de 50: aunque ambos mazos
+            // se agoten, los tableros siguen puntuando turno a turno hasta que
+            // alguien abra esa ventaja.
+            if (Math.abs(gameState.p1.score - gameState.p2.score) >= 50) {
                 pauseGame();
                 showGameOver();
             }
         }
 
-        function playPhase(player, opponent, deck) {
-            if (player.deckPointer >= deck.length) return;
-            if (player.activeBoard.length >= 12) return;
+        // Fase 1 del turno compartido: comprometer la jugada (pagar y avanzar
+        // el mazo) contra el estado que ambos comparten, sin aplicar nada aún.
+        function beginPlay(player, deck) {
+            if (player.deckPointer >= deck.length) return null;
+            if (player.activeBoard.length >= 12) return null;
 
             let nextCard = deck[player.deckPointer];
-            
             let oracleDiscount = oracleDiscountFor(player, nextCard);
             let effectiveCost = Math.max(0, nextCard.cost - oracleDiscount);
+            if (player.energy < effectiveCost) return null;
 
-            if (player.energy >= effectiveCost) {
-                player.energy -= effectiveCost;
+            player.energy -= effectiveCost;
+            player.deckPointer++;
+            return {
+                card: nextCard,
+                inst: { ...nextCard, uid: Math.random().toString(36).slice(2, 9), tempAtkMod: 0 },
+                discount: oracleDiscount
+            };
+        }
 
-                let cardInstance = { ...nextCard, uid: Math.random().toString(36).slice(2, 9), tempAtkMod: 0 };
-                
-                if(nextCard.effect) nextCard.effect(player, opponent, player.lastPlayed);
+        // Los Seres de AMBOS lados entran a la cima antes de que ningún
+        // efecto resuelva: la cima del rival es la misma para los dos.
+        function deployPlay(player, play) {
+            if (play.inst.kind === 'Ser') player.activeBoard.unshift(play.inst);
+        }
 
-                // Los eventos no entran en tablero: se proyectan como hechizo
-                // para que su activación se vea. El descuento del Oráculo
-                // también avisa junto al contador de energía.
-                if (nextCard.kind === 'Evento') queueFx({ t: 'cast', side: sideOf(player), card: nextCard });
-                if (oracleDiscount > 0) queueFx({ t: 'discount', side: sideOf(player), text: '−' + oracleDiscount });
+        // Fase 2 del turno compartido: efectos y avisos visuales, contra
+        // tableros ya actualizados por los dos jugadores.
+        function resolvePlay(player, opponent, play) {
+            if (play.card.effect) play.card.effect(player, opponent, player.lastPlayed);
 
-                if (cardInstance.kind === 'Ser') {
-                    player.activeBoard.unshift(cardInstance); 
-                } 
-                
-                player.lastPlayed = cardInstance;
-                player.deckPointer++;
-            }
+            // Los eventos no entran en tablero: se proyectan como hechizo
+            // para que su activación se vea. El descuento del Oráculo
+            // también avisa junto al contador de energía.
+            if (play.card.kind === 'Evento') queueFx({ t: 'cast', side: sideOf(player), card: play.card });
+            if (play.discount > 0) queueFx({ t: 'discount', side: sideOf(player), text: '−' + play.discount });
+
+            player.lastPlayed = play.inst;
         }
 
         function startGame() {
@@ -170,6 +196,7 @@ function gameTick() {
             gameState.turn = 0; // el primer tick pasa a mostrar TURNO 1 (antes mostraba 2)
             gameState.justDeployed = [];
             gameState.fxQueue = [];
+            gameState.clashQueue = [];
             gameState.p1 = { score: 0, energy: 1, deckPointer: 0, activeBoard: [], lastPlayed: null, extraPoints: 0 };
             gameState.p2 = { score: 0, energy: 1, deckPointer: 0, activeBoard: [], lastPlayed: null, extraPoints: 0 };
             document.getElementById('pause-overlay').classList.add('hidden-view');

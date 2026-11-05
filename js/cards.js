@@ -33,7 +33,7 @@ const ALL_CARDS = [
                 desc: 'Otorga +2 Puntos de Gloria instantáneos.', 
                 lore: 'Ante el terror de la oscuridad, los jefes de las tribus alzan las manos al cielo estrellado y elevan sus primeros cánticos y ofrendas. Esta devoción pura resuena por primera vez en las alturas, atrayendo la atención de fuerzas invisibles.',
                 art: 'assets/cartas/carta-04-plegaria-arcana.webp',
-                effect: (p) => { p.score += 2; queueFx({ t: 'gloria', side: sideOf(p), text: '+2 GLORIA', icon: 'fa-hands-praying' }); } 
+                effect: (p) => { p.score += 2; queueFx({ t: 'gloria', side: sideOf(p), text: '+2 GLORIA', icon: 'fa-hands-praying', num: 2 }); }
             },
             { 
                 id: 'c5', name: 'Niebla del Caos', kind: 'Evento', cost: 2, atk: 0, hp: 0, 
@@ -58,17 +58,19 @@ const ALL_CARDS = [
                 lore: 'Desde las cumbres heladas desciende una bestia descomunal: un jabalí salvaje de piel acorazada y colmillos afilados que arrasa con los primeros cultivos y siembra el pánico absoluto en las laderas de Arcadia.',
                 art: 'assets/cartas/carta-07-embestida-de-erimanto.webp',
                 effect: null, 
-                startTurn: (self, player, opp) => { 
-                    let myIndex = player.activeBoard.indexOf(self); 
+                startTurn: (self, player, opp) => {
+                    let myIndex = player.activeBoard.indexOf(self);
                     let target = opp.activeBoard[myIndex];
-                    if (target && !target.dying) { 
-                        target.hp -= 1; 
+                    if (target && !target.dying) {
+                        // El daño del choque se ENCOLA: gameTick lo aplica
+                        // después de leer ambos tableros (turno compartido —
+                        // ninguna Embestida golpea antes que otra).
+                        gameState.clashQueue.push({ target: target });
                         queueFx({ t: 'clash', side: sideOf(player), uidA: self.uid, uidB: target.uid });
-                        if (target.hp <= 0) { target.hp = 0; target.dying = true; }
-                    } 
-                    self.hp -= 1; 
+                    }
+                    self.hp -= 1;
                     if (self.hp <= 0) { self.hp = 0; self.dying = true; }
-                } 
+                }
             },
             { 
                 id: 'c8', name: 'El Balbuceo del Oráculo Ciego', kind: 'Ser', cost: 1, atk: 0, hp: 2, 
@@ -86,7 +88,7 @@ const ALL_CARDS = [
                 art: 'assets/cartas/carta-09-pacto-de-sangre.webp',
                 effect: (p, opp) => { 
                     p.score += 6; 
-                    queueFx({ t: 'gloria', side: sideOf(p), text: '+6 GLORIA', icon: 'fa-droplet' });
+                    queueFx({ t: 'gloria', side: sideOf(p), text: '+6 GLORIA', icon: 'fa-droplet', num: 6 });
                     let alive = opp.activeBoard.filter(c => !c.dying);
                     if (alive.length > 0) { 
                         let weakest = alive.reduce((min, c) => c.hp < min.hp ? c : min, alive[0]); 

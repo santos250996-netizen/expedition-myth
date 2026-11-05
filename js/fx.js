@@ -46,9 +46,13 @@
         }
 
         // Capa animada DENTRO de la carta (niebla, lágrimas, flash...).
+        // Si ya hay una capa del mismo tipo se reemplaza: evita apilar
+        // overlays y garantiza que la animación se vea en cada aplicación.
         function fxOverlayOnCard(uid, cls, innerHtml) {
             let el = cardElByUid(uid);
             if (!el) return;
+            let old = el.querySelector(':scope > .fx-overlay.' + cls);
+            if (old) old.remove();
             let ov = document.createElement('div');
             ov.className = 'fx-overlay ' + cls;
             if (innerHtml) ov.innerHTML = innerHtml;
@@ -56,9 +60,15 @@
         }
 
         // Clase de animación sobre la carta (pulso, embestida, temblor...).
+        // Se reinicia la clase: si ya estaba aplicada, la animación CSS no
+        // volvería a verse (el choque de Embestida y el pulso del Sátiro
+        // ocurren CADA inicio de turno y deben notarse cada vez).
         function fxClassOnCard(uid, cls) {
             let el = cardElByUid(uid);
-            if (el) el.classList.add(cls);
+            if (!el) return;
+            el.classList.remove(cls);
+            void el.offsetWidth; // forzar reflow para reiniciar la animación
+            el.classList.add(cls);
         }
 
         // Proyección de carta-evento sobre el tablero de quien la castea:
@@ -86,6 +96,22 @@
             setTimeout(() => beam.remove(), fxDurationMs(0.9));
         }
 
+        // Contador flotante "+N" anclado al número del marcador: la gloria
+        // instantánea de los Eventos se ve SUBIR en su sitio (además del
+        // conteo animado del marcador).
+        function fxScorePop(side, amount) {
+            let el = document.getElementById(side + '-score');
+            if (!el || !amount) return;
+            let row = el.parentElement;
+            let pop = document.createElement('span');
+            pop.className = 'fx-float fx-gold fx-score-pop';
+            pop.innerHTML = `+${amount} <i class="fa-solid fa-star" style="font-size:9px"></i>`;
+            pop.style.left = (el.offsetLeft + el.offsetWidth / 2) + 'px';
+            pop.style.top = (el.offsetTop - 4) + 'px';
+            row.appendChild(pop);
+            setTimeout(() => pop.remove(), fxDurationMs(1.05));
+        }
+
         // Oleada de hojas que barre la fila (Ecos de Dodona).
         function fxLeafWave(side) {
             let board = boardEl(side);
@@ -101,15 +127,20 @@
             setTimeout(() => wave.remove(), fxDurationMs(1));
         }
 
-        // Aviso "−1⚡" junto al contador de energía (descuento del Oráculo).
+        // Aviso "−1⚡" junto al contador de energía (descuento del Oráculo):
+        // grande, con brillo propio y pulso verde del badge para que se
+        // distinga de un vistazo.
         function fxDiscountPop(side, text) {
             let badge = document.getElementById(side + '-energy-badge');
             if (!badge) return;
+            badge.classList.remove('fx-badge-pulse');
+            void badge.offsetWidth;
+            badge.classList.add('fx-badge-pulse');
             let pop = document.createElement('span');
-            pop.className = 'fx-float fx-green fx-at-badge';
+            pop.className = 'fx-float fx-green fx-at-badge fx-discount-pop';
             pop.innerHTML = `${text} <i class="fa-solid fa-bolt"></i>`;
             badge.appendChild(pop);
-            setTimeout(() => pop.remove(), fxDurationMs(0.9));
+            setTimeout(() => pop.remove(), fxDurationMs(1.1));
         }
 
         // Materializa la cola: un único punto por tipo para mantener
@@ -126,6 +157,7 @@
                         case 'gloria':
                             fxGloriaBeam(fx.side, 'fx-beam-soft');
                             fxFloatOver(fx.side, fx.uid, fx.text, 'fx-gold', fx.icon);
+                            fxScorePop(fx.side, fx.num);
                             break;
                         case 'buff':
                             fxClassOnCard(fx.uid, 'fx-pulse-green');
