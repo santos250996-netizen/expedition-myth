@@ -71,6 +71,9 @@
         }
 
         function startGame() {
+            // El combate siempre ocurre dentro de un capítulo: si no hay
+            // capítulo activo se lleva al jugador a la selección.
+            if (!currentChapter) { openChapters(); return; }
             if(playerDeck.length === 0) { alert("¡Tu mazo está vacío!"); return; }
             
             if (gameState.isPlaying) { pauseGame(); return; }
@@ -135,6 +138,9 @@
 
         function resetMatch() {
             pauseGame();
+            // El mazo del bot sale de los datos del capítulo activo
+            // (Capítulo 1: las 10 cartas del mazo Heládico).
+            rivalDeck = getChapterBotDeck();
             gameState.turn = 0; // el primer tick pasa a mostrar TURNO 1 (antes mostraba 2)
             gameState.justDeployed = [];
             gameState.p1 = { score: 0, energy: 1, deckPointer: 0, activeBoard: [], lastPlayed: null, costDiscount: 0, extraPoints: 0, extraDraws: 0 };

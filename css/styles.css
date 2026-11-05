@@ -120,3 +120,20 @@ body {
     position: absolute; inset: 0; background: rgba(0,0,0,0.7); z-index: 30;
     display: flex; justify-content: center; align-items: center; backdrop-filter: blur(2px);
 }
+
+/* --- CAPÍTULOS --- */
+/* Capa de arte del capítulo: intro narrativa y fondo de combate. */
+.chapter-bg {
+    position: absolute; inset: 0;
+    background-size: cover; background-position: center;
+    opacity: 0; transition: opacity 0.6s ease;
+    z-index: 0; pointer-events: none;
+}
+.chapter-bg.active { opacity: 1; }
+/* Velo para que el HUD y las cartas se lean sobre el arte del capítulo. */
+.chapter-bg-shade {
+    position: absolute; inset: 0; z-index: 1; pointer-events: none;
+    opacity: 0; transition: opacity 0.6s ease;
+    background: linear-gradient(to bottom, rgba(2,6,23,0.72) 0%, rgba(2,6,23,0.42) 45%, rgba(2,6,23,0.85) 100%);
+}
+.chapter-bg-shade.active { opacity: 1; }

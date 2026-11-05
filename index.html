@@ -22,9 +22,45 @@
                 <div class="mt-8 w-64 h-64 rounded-full bg-blue-900 shadow-[0_0_40px_rgba(59,130,246,0.4)] border border-blue-500/30"></div>
             </div>
             <div class="px-4 pb-20 z-20">
-                <button onclick="startGame()" class="w-full bg-gradient-to-r from-blue-600 to-indigo-600 border border-blue-400 py-3 rounded-full text-white font-orbitron font-black text-xl tracking-wider flex items-center justify-center gap-2 shadow-[0_0_15px_rgba(59,130,246,0.5)] active:scale-95 transition-transform">
+                <button onclick="openChapters()" class="w-full bg-gradient-to-r from-blue-600 to-indigo-600 border border-blue-400 py-3 rounded-full text-white font-orbitron font-black text-xl tracking-wider flex items-center justify-center gap-2 shadow-[0_0_15px_rgba(59,130,246,0.5)] active:scale-95 transition-transform">
                     JUGAR <i class="fa-solid fa-bolt text-amber-300"></i>
                 </button>
+            </div>
+        </div>
+
+        <!-- SELECCIÓN DE CAPÍTULOS -->
+        <div id="view-chapters" class="view-section hidden-view bg-slate-950 z-10">
+            <div class="flex items-center justify-between px-4 pt-6 pb-2 border-b border-slate-800">
+                <span class="text-blue-400 font-bold border-b-2 border-blue-400 pb-1 font-orbitron">CAPÍTULOS</span>
+                <span class="text-[10px] text-slate-500 font-bold">La campaña se narra capítulo a capítulo</span>
+            </div>
+            <div class="flex-1 p-4 overflow-y-auto pb-20">
+                <div id="chapters-list" class="space-y-5">
+                    <!-- Renderizado JS -->
+                </div>
+            </div>
+        </div>
+
+        <!-- INTRO NARRATIVA DEL CAPÍTULO -->
+        <div id="view-chapter-intro" class="view-section hidden-view z-10">
+            <div id="chapter-intro-bg" class="chapter-bg active"></div>
+            <div class="chapter-bg-shade active"></div>
+            <div class="flex-1 overflow-y-auto relative z-10 px-5 pt-8 pb-44">
+                <span class="text-amber-400 font-orbitron text-[11px] tracking-[0.3em] font-bold">CAPÍTULO <span id="intro-chapter-number">1</span></span>
+                <h2 id="intro-chapter-title" class="text-white font-orbitron font-black text-2xl mt-1 leading-tight glow-text-blue"></h2>
+                <p id="intro-chapter-subtitle" class="text-slate-300 text-sm mt-3 leading-snug"></p>
+                <div id="intro-beats" class="mt-5 space-y-3">
+                    <!-- Renderizado JS -->
+                </div>
+            </div>
+            <div class="absolute bottom-0 w-full px-5 pb-24 z-20">
+                <button onclick="launchChapterCombat()" class="w-full bg-gradient-to-r from-blue-600 to-indigo-600 border border-blue-400 py-3 rounded-full text-white font-orbitron font-black text-lg tracking-wider flex items-center justify-center gap-2 shadow-[0_0_15px_rgba(59,130,246,0.5)] active:scale-95 transition-transform">
+                    COMENZAR COMBATE <i class="fa-solid fa-bolt text-amber-300"></i>
+                </button>
+                <button onclick="switchView('view-deckbuilder')" class="w-full mt-2 bg-slate-900/90 border border-slate-600 py-2.5 rounded-full text-slate-200 font-orbitron font-bold text-sm tracking-wider active:scale-95 transition-transform">
+                    PREPARAR MAZO
+                </button>
+                <button onclick="switchView('view-chapters')" class="w-full mt-1 text-slate-400 font-bold text-xs tracking-widest uppercase py-2 hover:text-white transition">Volver a capítulos</button>
             </div>
         </div>
 
@@ -99,6 +135,8 @@
 
         <!-- COMBATE -->
         <div id="view-game" class="view-section hidden-view z-10 bg-combat-planet">
+            <div id="combat-chapter-bg" class="chapter-bg"></div>
+            <div id="combat-chapter-shade" class="chapter-bg-shade"></div>
             <div class="planet-sphere"></div>
 
             <header class="w-full px-2 pt-2 pb-2 flex flex-col gap-2 bg-slate-950/80 backdrop-blur-md border-b border-slate-800/50 z-20 relative">
@@ -118,8 +156,8 @@
                     </div>
                     <div class="flex items-center justify-end gap-2 bg-slate-900/60 border border-fuchsia-500/50 rounded-lg px-2 py-1 w-[40%] shadow-[0_0_10px_rgba(217,70,239,0.2)]">
                         <div class="flex flex-col text-right">
-                            <span class="text-[10px] font-bold text-white leading-none">Caos</span>
-                            <span class="text-[8px] text-fuchsia-300 font-bold leading-none mt-0.5">TELAR <i class="fa-solid fa-eye"></i></span>
+                            <span id="rival-name" class="text-[10px] font-bold text-white leading-none">Caos</span>
+                            <span id="rival-sub" class="text-[8px] text-fuchsia-300 font-bold leading-none mt-0.5">TELAR <i class="fa-solid fa-eye"></i></span>
                         </div>
                         <div class="w-6 h-6 rounded-full bg-fuchsia-900/50 border border-fuchsia-400 flex items-center justify-center text-fuchsia-300">
                             <i class="fa-solid fa-user-ninja text-[10px]"></i>
@@ -235,12 +273,16 @@
         <div id="gameover-modal" class="absolute inset-0 bg-black/90 z-50 flex flex-col items-center justify-center p-6 hidden-view backdrop-blur-sm">
             <div class="text-center w-full max-w-xs">
                 <h2 id="gameover-title" class="text-3xl font-orbitron font-black text-amber-400 mb-2 glow-text-blue">¡VICTORIA!</h2>
-                <div class="bg-slate-900 border border-slate-700 rounded-xl p-4 mb-6">
+                <div class="bg-slate-900 border border-slate-700 rounded-xl p-4 mb-3">
                     <p class="text-slate-400 text-sm mb-2">Puntuación Final</p>
                     <div class="flex justify-between text-xl font-bold font-orbitron">
                         <span class="text-cyan-400">Tú: <span id="final-p1">0</span></span>
                         <span class="text-fuchsia-400">Rival: <span id="final-p2">0</span></span>
                     </div>
+                </div>
+                <div id="gameover-epilogue" class="hidden bg-slate-900/70 border border-amber-500/40 rounded-xl p-3 mb-6">
+                    <p class="text-[9px] text-amber-300 font-orbitron font-bold tracking-widest mb-1 text-center">AVANCE DE LA HISTORIA</p>
+                    <p id="gameover-epilogue-text" class="text-[11px] text-amber-100/90 italic leading-snug text-center"></p>
                 </div>
                 <button onclick="closeGameOverAndRestart()" class="w-full bg-blue-600 py-3 rounded-xl font-bold text-white mb-3 shadow-lg active:scale-95 transition">Jugar de nuevo</button>
                 <button onclick="switchView('view-home'); closeGameOverModal();" class="w-full bg-slate-800 py-3 rounded-xl font-bold text-slate-300 active:scale-95 transition">Volver al menú</button>
@@ -272,6 +314,7 @@
     <script src="js/cards.js"></script>
     <script src="js/state.js"></script>
     <script src="js/deck.js"></script>
+    <script src="js/chapters.js"></script>
     <script src="js/ui.js"></script>
     <script src="js/game.js"></script>
     <script src="js/main.js"></script>

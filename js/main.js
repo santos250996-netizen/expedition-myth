@@ -11,6 +11,7 @@
             document.querySelectorAll('.view-section').forEach(el => el.classList.add('hidden-view'));
             document.getElementById(viewId).classList.remove('hidden-view');
             if (viewId === 'view-game') resetMatch();
+            if (viewId === 'view-chapters') renderChapterSelect();
             if (viewId === 'view-deckbuilder') { renderDeckEditor(); renderCollection(); }
             if (viewId === 'view-decks') document.getElementById('deck-count-label').innerText = playerDeck.length;
         }

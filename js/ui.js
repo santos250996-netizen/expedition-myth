@@ -117,15 +117,119 @@
             let p1Score = gameState.p1.score;
             let p2Score = gameState.p2.score;
             let title = document.getElementById('gameover-title');
-            
+
             if (p1Score > p2Score) { title.innerText = "¡VICTORIA!"; title.className = "text-3xl font-orbitron font-black text-amber-400 mb-2 glow-text-blue"; }
             else if (p1Score < p2Score) { title.innerText = "DERROTA"; title.className = "text-3xl font-orbitron font-black text-red-500 mb-2"; }
             else { title.innerText = "EMPATE"; title.className = "text-3xl font-orbitron font-black text-slate-300 mb-2"; }
-            
+
             document.getElementById('final-p1').innerText = p1Score;
             document.getElementById('final-p2').innerText = p2Score;
+
+            // Avance de la historia: al vencer en un capítulo se marca como
+            // completado y se muestra su epílogo en el modal.
+            let epilogueBox = document.getElementById('gameover-epilogue');
+            if (p1Score > p2Score && currentChapter) {
+                markChapterCompleted(currentChapter.id);
+                document.getElementById('gameover-epilogue-text').innerText = currentChapter.epilogue;
+                epilogueBox.classList.remove('hidden');
+            } else {
+                epilogueBox.classList.add('hidden');
+            }
+
             document.getElementById('gameover-modal').classList.remove('hidden-view');
         }
 
         function closeGameOverModal() { document.getElementById('gameover-modal').classList.add('hidden-view'); }
         function closeGameOverAndRestart() { closeGameOverModal(); resetMatch(); startGame(); }
+
+        // --- CAPÍTULOS ---
+        // Selección de capítulos, intro narrativa y lanzamiento del combate
+        // con el arte y el mazo del bot del capítulo activo.
+        function openChapters() {
+            switchView('view-chapters');
+        }
+
+        function renderChapterSelect() {
+            let container = document.getElementById('chapters-list');
+            container.innerHTML = '';
+
+            CHAPTERS.forEach((ch) => {
+                let done = isChapterCompleted(ch.id);
+                let item = document.createElement('div');
+                item.className = "active:scale-[0.98] transition-transform cursor-pointer";
+                item.onclick = () => openChapterIntro(ch.id);
+                item.innerHTML = `
+                    <div class="relative rounded-xl overflow-hidden border-2 ${done ? 'border-amber-400/70 shadow-[0_0_15px_rgba(251,191,36,0.25)]' : 'border-blue-500/70 shadow-[0_0_15px_rgba(59,130,246,0.25)]'}">
+                        <div class="aspect-[16/10] bg-cover bg-center" style="background-image:url('${ch.art}')"></div>
+                        <div class="absolute inset-0 bg-gradient-to-t from-black/90 via-black/25 to-black/45"></div>
+                        <div class="absolute top-2 left-3 right-3 flex items-center justify-between">
+                            <span class="text-[9px] font-orbitron tracking-[0.25em] text-amber-300 font-bold">CAPÍTULO ${ch.number}</span>
+                            ${done
+                                ? '<span class="text-[8px] bg-green-600/90 text-white px-1.5 py-0.5 rounded font-bold">✓ COMPLETADO</span>'
+                                : '<span class="text-[8px] bg-blue-600/90 text-white px-1.5 py-0.5 rounded font-bold">DISPONIBLE</span>'}
+                        </div>
+                        <div class="absolute bottom-2 left-3 right-3">
+                            <div class="text-white font-orbitron font-black text-base leading-tight">${ch.title}</div>
+                            <div class="text-[10px] text-slate-300 font-bold mt-0.5">
+                                <i class="fa-solid fa-user-ninja text-fuchsia-300"></i> Rival: ${ch.rival.name} · ${ch.botDeck.length} cartas
+                            </div>
+                        </div>
+                    </div>
+                `;
+                container.appendChild(item);
+            });
+
+            // Hueco para capítulos futuros: la campaña crecerá.
+            let locked = document.createElement('div');
+            locked.className = "relative rounded-xl border-2 border-dashed border-slate-800 bg-slate-900/60 overflow-hidden aspect-[16/10] flex flex-col items-center justify-center gap-2 opacity-70";
+            locked.innerHTML = `
+                <i class="fa-solid fa-lock text-2xl text-slate-600"></i>
+                <span class="text-slate-400 font-orbitron font-bold text-xs tracking-widest">PRÓXIMAMENTE</span>
+                <span class="text-[10px] text-slate-500">Nuevos capítulos, mazos y lore en camino...</span>
+            `;
+            container.appendChild(locked);
+        }
+
+        function openChapterIntro(chapterId) {
+            let ch = CHAPTERS.find(c => c.id === chapterId);
+            if (!ch) return;
+            currentChapter = ch;
+
+            document.getElementById('intro-chapter-number').innerText = ch.number;
+            document.getElementById('intro-chapter-title').innerText = ch.title;
+            document.getElementById('intro-chapter-subtitle').innerText = ch.subtitle;
+            document.getElementById('chapter-intro-bg').style.backgroundImage = `url('${ch.art}')`;
+
+            let beats = document.getElementById('intro-beats');
+            beats.innerHTML = ch.beats.map(b => `
+                <div class="flex gap-3 bg-slate-900/80 border border-slate-700 rounded-xl p-3">
+                    <div class="w-8 h-8 rounded-full bg-blue-950/80 border border-amber-400/60 flex items-center justify-center text-amber-300 shrink-0">
+                        <i class="fa-solid ${b.icon} text-xs"></i>
+                    </div>
+                    <div>
+                        <div class="text-amber-300 font-orbitron font-bold text-xs">${b.title}</div>
+                        <p class="text-slate-300 text-[11px] leading-snug mt-0.5">${b.text}</p>
+                    </div>
+                </div>
+            `).join('');
+
+            switchView('view-chapter-intro');
+        }
+
+        function launchChapterCombat() {
+            if (!currentChapter) { openChapters(); return; }
+            if (playerDeck.length === 0) { alert("¡Tu mazo está vacío!"); return; }
+
+            rivalDeck = getChapterBotDeck();
+            document.getElementById('rival-name').innerText = currentChapter.rival.name;
+            document.getElementById('rival-sub').innerHTML = `${currentChapter.rival.sub} <i class="fa-solid fa-eye"></i>`;
+
+            let bg = document.getElementById('combat-chapter-bg');
+            bg.style.backgroundImage = `url('${currentChapter.art}')`;
+            bg.classList.add('active');
+            document.getElementById('combat-chapter-shade').classList.add('active');
+            document.querySelector('#view-game .planet-sphere').style.display = 'none';
+
+            closeGameOverModal();
+            startGame();
+        }
