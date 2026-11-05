@@ -168,6 +168,7 @@
                             if (fx.overlay === 'fog') fxOverlayOnCard(fx.uid, 'fx-fog-ov');
                             if (fx.overlay === 'tears') fxOverlayOnCard(fx.uid, 'fx-tears-ov');
                             if (fx.overlay === 'leaf') fxOverlayOnCard(fx.uid, 'fx-leaf-ov');
+                            if (fx.overlay === 'hit') fxOverlayOnCard(fx.uid, 'fx-hit-ov');
                             fxFloatOver(fx.side, fx.uid, fx.text, fx.cls || 'fx-red', fx.icon);
                             break;
                         case 'clash':

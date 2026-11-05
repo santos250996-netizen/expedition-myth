@@ -23,7 +23,7 @@ const CHAPTERS = [
         id: 2,
         number: '1.1',
         title: 'Las Grietas de la Discordia',
-        subtitle: 'La frágil paz que las tribus y los espíritus intentaban mantener en los valles arcaicos comienza a romperse. La Niebla del Caos y los primeros rituales oscuros no han pasado desapercibidos: han alterado el equilibrio natural.',
+        subtitle: 'La frágil paz que las tribus y los espíritus intentaban mantener en los valles arcaicos comienza a romperse. La presencia de la Niebla del Caos y los primeros rituales oscuros no han pasado desapercibidos; han alterado el equilibrio natural. Las bestias que antes merodeaban los límites del bosque ahora se sienten atraídas por el olor de la sangre de los altares, mientras que los propios mortales, consumidos por el miedo y la desconfianza, empiezan a dividirse entre quienes buscan la protección de los dioses y quienes prefieren pactar con las sombras de la tierra. Este choque de intereses genera los primeros conflictos directos en la Hélade.',
         beats: [
             { icon: 'fa-fire', title: 'El Olor de la Sangre', text: 'Las bestias que antes merodeaban los límites del bosque ahora se sienten atraídas por el olor de la sangre de los altares, y acechan cada vez más cerca de los asentamientos.' },
             { icon: 'fa-handshake-slash', title: 'Mortales Divididos', text: 'Consumidos por el miedo y la desconfianza, los mortales empiezan a dividirse: quienes buscan la protección de los dioses frente a quienes prefieren pactar con las sombras de la tierra.' },
@@ -32,7 +32,9 @@ const CHAPTERS = [
         epilogue: 'El choque se apaga y las grietas de la discordia se calman por ahora, pero la Hélade ha quedado marcada: los que pactaron con las sombras siguen entre los valles y la Niebla del Caos no se ha retirado del todo. Desde las alturas, los primeros ecos del Olimpo comienzan a resonar sobre los mortales...',
         art: 'assets/capitulos/capitulo-1-1-las-grietas-de-la-discordia.webp',
         rival: { name: 'Discordia', sub: 'GRIETAS' },
-        botDeck: ['c1', 'c2', 'c3', 'c4', 'c5', 'c6', 'c7', 'c8', 'c9', 'c10']
+        // Orden fijo del bot con curva de energía limpia: 1 carta por tick
+        // (e1→Saqueo(1), e2→Acechador(2), ... e10→Titán Menor(8)).
+        botDeck: ['c17', 'c11', 'c14', 'c13', 'c16', 'c19', 'c15', 'c18', 'c20', 'c12']
     }
 ];
 

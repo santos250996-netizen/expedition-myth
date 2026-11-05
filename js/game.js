@@ -9,6 +9,23 @@ function oracleDiscountFor(player, card) {
     return player.activeBoard.some(c => c.id === 'c8' && !c.dying) ? 1 : 0;
 }
 
+// Daño canónico: aplica HP, marca moribunda y, si sobrevive, dispara la
+// reacción al daño (Titán Menor c12: +1 ATK permanente). Toda fuente de
+// daño (choques de Embestida y eventos) pasa por aquí para que la reacción
+// no dependa de quién golpea.
+function dealDamage(target, amount) {
+    if (!target || target.dying) return;
+    target.hp -= amount;
+    if (target.hp <= 0) { target.hp = 0; target.dying = true; return; }
+    if (target.damageReact) target.damageReact(target);
+}
+
+// Lado del jugador dueño de una carta en tablero (para FX de reacciones que
+// se disparan sin contexto de jugador, como el buff del Titán).
+function ownerSideOf(card) {
+    return gameState.p1.activeBoard.includes(card) ? 'p1' : 'p2';
+}
+
 function gameTick() {
             gameState.turn++;
             // Las cartas que murieron el turno anterior ya se vieron
@@ -26,12 +43,11 @@ function gameTick() {
             gameState.p1.activeBoard.slice().forEach(card => { if(card.startTurn) card.startTurn(card, gameState.p1, gameState.p2); });
             gameState.p2.activeBoard.slice().forEach(card => { if(card.startTurn) card.startTurn(card, gameState.p2, gameState.p1); });
             gameState.clashQueue.forEach(h => {
-                h.target.hp -= 1;
-                if (h.target.hp <= 0) { h.target.hp = 0; h.target.dying = true; }
+                dealDamage(h.target, 1);
             });
 
-            gameState.p1.activeBoard.forEach(c => c.tempAtkMod = 0);
-            gameState.p2.activeBoard.forEach(c => c.tempAtkMod = 0);
+            gameState.p1.activeBoard.forEach(c => { c.tempAtkMod = 0; c.stunned = false; });
+            gameState.p2.activeBoard.forEach(c => { c.tempAtkMod = 0; c.stunned = false; });
 
             // Turno COMPARTIDO: no hay "primero" ni "segundo". Fase 1: ambos
             // eligen y pagan su carta contra el mismo estado; los Seres entran
@@ -45,8 +61,9 @@ function gameTick() {
             if (play1) resolvePlay(gameState.p1, gameState.p2, play1);
             if (play2) resolvePlay(gameState.p2, gameState.p1, play2);
 
-            // Las cartas muriendo este turno ya no suman gloria.
-            let boardPoints = (board) => board.reduce((sum, card) => sum + (card.dying ? 0 : Math.max(0, card.atk + (card.tempAtkMod || 0))), 0);
+            // Las cartas muriendo o aturdidas este turno (Canto Embrujado c14)
+            // ya no suman gloria: aturdir = no atacar = no puntuar un tick.
+            let boardPoints = (board) => board.reduce((sum, card) => sum + (card.dying || card.stunned ? 0 : Math.max(0, card.atk + (card.tempAtkMod || 0))), 0);
             let p1TurnPoints = boardPoints(gameState.p1.activeBoard) + gameState.p1.extraPoints;
             let p2TurnPoints = boardPoints(gameState.p2.activeBoard) + gameState.p2.extraPoints;
             
@@ -94,7 +111,7 @@ function gameTick() {
             player.deckPointer++;
             return {
                 card: nextCard,
-                inst: { ...nextCard, uid: Math.random().toString(36).slice(2, 9), tempAtkMod: 0 },
+                inst: { ...nextCard, uid: Math.random().toString(36).slice(2, 9), tempAtkMod: 0, stunned: false },
                 discount: oracleDiscount
             };
         }
