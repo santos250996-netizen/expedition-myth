@@ -216,7 +216,7 @@ function safeStorageSet(key, value) {
                 
                 el.innerHTML = `
                     <div class="absolute inset-0 bg-cover bg-center" style="background-image: url('${card.art}');"></div>
-                    <div class="absolute inset-0 bg-black/40"></div>
+                    <div class="absolute inset-0 bg-black/15"></div>
                     <div class="absolute top-1 left-1 w-5 h-5 rounded-full bg-slate-800/90 border border-slate-500 text-[9px] font-bold flex items-center justify-center text-white z-10">${card.cost}</div>
                     <button class="add-btn absolute top-0.5 right-0.5 w-6 h-6 rounded-full bg-cyan-500 text-slate-900 font-black text-sm flex items-center justify-center shadow-lg z-10 active:scale-90 transition-transform" aria-label="Añadir al mazo">+</button>
                     <div class="absolute bottom-0 left-0 right-0 p-1 bg-gradient-to-t from-black/90 to-transparent">

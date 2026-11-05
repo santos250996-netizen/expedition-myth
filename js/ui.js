@@ -103,8 +103,8 @@
 
             cardDiv.innerHTML = `
                 <div class="absolute inset-0 bg-cover bg-center" style="background-image: url('${card.art}');"></div>
-                <div class="absolute inset-0 bg-black/50"></div>
-                <div class="absolute top-0.5 left-1 w-full text-[7px] text-white/70 font-bold truncate pointer-events-none px-1 drop-shadow-md">${card.name}</div>
+                <div class="absolute inset-x-0 top-0 h-5 bg-gradient-to-b from-black/75 to-transparent pointer-events-none"></div>
+                <div class="absolute top-0.5 left-1 w-full text-[7px] text-white/90 font-bold truncate pointer-events-none px-1 drop-shadow-md">${card.name}</div>
                 <div class="absolute bottom-1 right-1 flex gap-1 z-10 pointer-events-none">
                     <div class="w-5 h-5 rounded-full bg-blue-950/90 border border-cyan-400 flex items-center justify-center text-white font-bold text-[9px] shadow-lg">${displayAtk}</div>
                     <div class="w-5 h-5 rounded-full bg-red-950/90 border border-red-400 flex items-center justify-center text-white font-bold text-[9px] shadow-lg">${card.hp}</div>

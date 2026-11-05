@@ -1,0 +1,122 @@
+/*
+ * Expedition Myth: El Nexo del Tejido
+ * Hoja de estilos del juego (tema cósmico + panel néon)
+ */
+
+@import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@500;700;900&family=Rajdhani:wght@500;600;700&display=swap');
+
+body {
+    font-family: 'Rajdhani', sans-serif;
+    background-color: #020617;
+    color: #e2e8f0;
+    touch-action: manipulation;
+    user-select: none;
+    overflow: hidden;
+}
+
+.font-orbitron { font-family: 'Orbitron', sans-serif; }
+::-webkit-scrollbar { width: 3px; }
+::-webkit-scrollbar-track { background: rgba(15, 23, 42, 0.6); }
+::-webkit-scrollbar-thumb { background: #3b82f6; border-radius: 4px; }
+
+.neon-border-blue { box-shadow: 0 0 10px rgba(59, 130, 246, 0.5), inset 0 0 10px rgba(59, 130, 246, 0.2); border: 1px solid rgba(59, 130, 246, 0.8); }
+.glow-text-blue { text-shadow: 0 0 8px rgba(59, 130, 246, 0.8); }
+.glow-text-purple { text-shadow: 0 0 8px rgba(217, 70, 239, 0.8); }
+
+@keyframes deployCard { 0% { transform: scale(0.8) translateY(-15px); opacity: 0; } 100% { transform: scale(1) translateY(0); opacity: 1; } }
+.animate-deploy { animation: deployCard 0.35s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards; }
+
+.bg-space-pattern {
+    background-image: 
+        radial-gradient(circle at 20% 20%, rgba(29, 78, 216, 0.15) 0%, transparent 40%),
+        radial-gradient(circle at 80% 80%, rgba(126, 34, 206, 0.15) 0%, transparent 40%),
+        radial-gradient(circle at 50% 50%, rgba(15, 23, 42, 0.8) 0%, rgba(5, 5, 15, 1) 100%);
+}
+
+.bg-combat-planet {
+    background: radial-gradient(circle at 50% 50%, rgba(16, 185, 129, 0.15) 0%, transparent 60%), radial-gradient(circle at 50% 50%, rgba(5, 5, 15, 1) 30%, #020617 100%);
+}
+.planet-sphere {
+    position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
+    width: 90vw; height: 90vw; max-width: 500px; max-height: 500px;
+    border-radius: 50%;
+    background: radial-gradient(circle at 30% 30%, rgba(52, 211, 153, 0.2), rgba(6, 78, 59, 0.4), transparent 70%);
+    box-shadow: 0 0 80px rgba(16, 185, 129, 0.2), inset -20px -20px 60px rgba(0,0,0,0.9);
+    pointer-events: none; z-index: 0;
+}
+
+.view-section { transition: opacity 0.3s ease, transform 0.3s ease; position: absolute; top: 0; left: 0; width: 100%; height: 100%; display: flex; flex-direction: column; }
+.hidden-view { opacity: 0; pointer-events: none; transform: scale(0.98); z-index: -1; }
+
+#app-container { width: 100vw; height: 100vh; max-width: 480px; margin: 0 auto; position: relative; overflow: hidden; }
+
+/* --- MODAL DE CARTA (Idéntico a la captura) --- */
+.card-modal-frame {
+    position: relative;
+    width: 100%;
+    max-width: 340px;
+    aspect-ratio: 1.5 / 1; /* Formato apaisado */
+    background: #0f172a;
+    border-radius: 1rem;
+    overflow: hidden;
+    border: 3px solid transparent;
+    background-clip: padding-box;
+    border-image: linear-gradient(135deg, #fbbf24, #3b82f6, #a855f7) 1;
+    box-shadow: 0 0 30px rgba(59, 130, 246, 0.3);
+}
+
+.card-art-bg {
+    position: absolute;
+    inset: 0;
+    background-size: cover;
+    background-position: center;
+    background-color: #1e293b;
+}
+
+.card-gradient-top {
+    position: absolute; top: 0; left: 0; width: 100%; height: 22%;
+    background: linear-gradient(to bottom, rgba(0,0,0,0.6) 0%, rgba(0,0,0,0) 100%);
+    pointer-events: none;
+}
+
+.card-cost-badge {
+    position: absolute; top: 8px; left: 8px;
+    width: 32px; height: 32px; border-radius: 50%;
+    background: #e0f2fe; color: #0c4a6e;
+    display: flex; align-items: center; justify-content: center;
+    font-weight: 900; font-size: 1.1rem;
+    border: 2px solid #fff; box-shadow: 0 2px 8px rgba(0,0,0,0.6);
+    z-index: 20;
+}
+
+.card-name-badge {
+    position: absolute; top: 10px; left: 48px; right: 12px;
+    z-index: 20; display: flex; justify-content: space-between; align-items: center;
+}
+
+/* Recuadro de Efecto (Abajo Izquierda) */
+.card-effect-box {
+    position: absolute; bottom: 8px; left: 8px; width: 65%;
+    background: rgba(15, 23, 42, 0.95);
+    border: 1px solid rgba(255,255,255,0.3);
+    padding: 6px; border-radius: 6px;
+    z-index: 20;
+}
+
+/* Stats (Abajo Derecha, encima del efecto) */
+.card-stats-box {
+    position: absolute; bottom: 8px; right: 8px;
+    display: flex; gap: 4px; z-index: 20;
+}
+
+/* Drag & Drop visual */
+.dragging { opacity: 0.5; transform: scale(0.95); }
+.drag-over { border: 2px dashed #38bdf8 !important; background-color: rgba(56, 189, 248, 0.2) !important; }
+
+/* Zonas de drop invisibles para arreglar el bug de caída */
+.drop-zone-min-height { min-height: 40px; }
+
+.pause-overlay {
+    position: absolute; inset: 0; background: rgba(0,0,0,0.7); z-index: 30;
+    display: flex; justify-content: center; align-items: center; backdrop-filter: blur(2px);
+}
