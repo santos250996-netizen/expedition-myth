@@ -69,12 +69,33 @@
             document.getElementById('p2-energy-badge').innerText = gameState.p2.energy;
 
             let p1Next = playerDeck[gameState.p1.deckPointer];
-            document.getElementById('p1-next-card-name').innerText = p1Next ? p1Next.name : "No quedan cartas";
-            document.getElementById('p1-next-icon').className = p1Next ? `fa-solid ${p1Next.icon} text-xs` : "fa-solid fa-ban text-xs opacity-50";
-
             let p2Next = rivalDeck[gameState.p2.deckPointer];
-            document.getElementById('p2-next-card-name').innerText = p2Next ? p2Next.name : "No quedan cartas";
-            document.getElementById('p2-next-icon').className = p2Next ? `fa-solid ${p2Next.icon} text-xs` : "fa-solid fa-ban text-xs opacity-50";
+            renderNextBox('p1', p1Next, gameState.p1);
+            renderNextBox('p2', p2Next, gameState.p2);
+        }
+
+        // Panel SIGUIENTE: miniatura del arte de la próxima carta del mazo y
+        // su coste de energía EFECTIVO (el Oráculo c8 abarata los Eventos).
+        // Imagen pequeña + coste al lado: menos espacio que icono + nombre.
+        function renderNextBox(prefix, nextCard, player) {
+            let box = document.getElementById(prefix + '-next-box');
+            if (!box) return;
+
+            if (!nextCard) {
+                box.innerHTML = '<span class="text-[9px] text-slate-500 font-bold px-1">Sin cartas</span>';
+                return;
+            }
+
+            let discount = player.activeBoard.some(c => c.id === 'c8' && !c.dying) && nextCard.kind === 'Evento' ? 1 : 0;
+            let effCost = Math.max(0, nextCard.cost - discount);
+            let isP1 = prefix === 'p1';
+            let artBorder = discount ? 'border-green-400 shadow-[0_0_8px_rgba(74,222,128,0.7)]' : (isP1 ? 'border-blue-400/60' : 'border-fuchsia-400/60');
+            let costBorder = discount ? 'border-green-400 text-green-300' : (isP1 ? 'border-cyan-400 text-cyan-300' : 'border-fuchsia-400 text-fuchsia-300');
+
+            box.innerHTML = `
+                <div class="w-12 h-8 rounded overflow-hidden border ${artBorder} bg-slate-800 bg-cover bg-center shrink-0" style="background-image:url('${nextCard.art}')" title="${nextCard.name}"></div>
+                <div class="w-5 h-5 rounded-full bg-slate-950 border ${costBorder} flex items-center justify-center font-orbitron font-bold text-[10px] shrink-0">${effCost}</div>
+            `;
         }
 
         function renderBoards() {
@@ -95,8 +116,12 @@
             let cardDiv = document.createElement('div');
             let isBlue = theme === 'blue';
             let borderColor = isBlue ? 'border-blue-400 shadow-[0_0_10px_rgba(59,130,246,0.5)]' : 'border-fuchsia-400 shadow-[0_0_10px_rgba(217,70,239,0.5)]';
-            
-            cardDiv.className = `w-full max-w-[160px] h-[60px] border-2 ${borderColor} rounded-lg relative overflow-hidden flex flex-col justify-between ${animate ? 'animate-deploy' : ''} cursor-pointer hover:scale-105 transition-transform`;
+
+            // data-uid: ancla para los FX (pulsos, overlays, textos flotantes).
+            // oracle-aura: el Balbuceo del Oráculo c8 respira mientras esté en
+            // tablero. animate-dissolve: cartas muriendo este tick.
+            cardDiv.className = `w-full max-w-[160px] h-[60px] border-2 ${borderColor} rounded-lg relative overflow-hidden flex flex-col justify-between ${animate ? 'animate-deploy' : ''} ${card.id === 'c8' ? 'oracle-aura' : ''} ${card.dying ? 'animate-dissolve' : ''} cursor-pointer hover:scale-105 transition-transform`;
+            cardDiv.dataset.uid = card.uid || '';
             cardDiv.onclick = () => openCardModal(card.id);
             
             let displayAtk = Math.max(0, card.atk + (card.tempAtkMod || 0));

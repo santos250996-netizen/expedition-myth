@@ -3,6 +3,10 @@
         // --- LÓGICA DE COMBATE ---
         function gameTick() {
             gameState.turn++;
+            // Las cartas que murieron el turno anterior ya se vieron
+            // disolverse durante ese tick: ahora se retiran del tablero.
+            gameState.p1.activeBoard = gameState.p1.activeBoard.filter(c => !c.dying);
+            gameState.p2.activeBoard = gameState.p2.activeBoard.filter(c => !c.dying);
             gameState.p1.energy += 1;
             gameState.p2.energy += 1;
 
@@ -15,8 +19,10 @@
             playPhase(gameState.p1, gameState.p2, playerDeck);
             playPhase(gameState.p2, gameState.p1, rivalDeck);
 
-            let p1TurnPoints = gameState.p1.activeBoard.reduce((sum, card) => sum + Math.max(0, card.atk + (card.tempAtkMod || 0)), 0) + gameState.p1.extraPoints;
-            let p2TurnPoints = gameState.p2.activeBoard.reduce((sum, card) => sum + Math.max(0, card.atk + (card.tempAtkMod || 0)), 0) + gameState.p2.extraPoints;
+            // Las cartas muriendo este turno ya no suman gloria.
+            let boardPoints = (board) => board.reduce((sum, card) => sum + (card.dying ? 0 : Math.max(0, card.atk + (card.tempAtkMod || 0))), 0);
+            let p1TurnPoints = boardPoints(gameState.p1.activeBoard) + gameState.p1.extraPoints;
+            let p2TurnPoints = boardPoints(gameState.p2.activeBoard) + gameState.p2.extraPoints;
             
             gameState.p1.score += p1TurnPoints;
             gameState.p2.score += p2TurnPoints;
@@ -34,6 +40,8 @@
 
             updateHUD();
             renderBoards();
+            // Los FX se materializan tras el render (el render borra el DOM).
+            playQueuedFx();
 
             let scoreDiff = Math.abs(gameState.p1.score - gameState.p2.score);
             let p1Finished = gameState.p1.deckPointer >= playerDeck.length;
@@ -61,6 +69,12 @@
                 
                 if(nextCard.effect) nextCard.effect(player, opponent, player.lastPlayed);
 
+                // Los eventos no entran en tablero: se proyectan como hechizo
+                // para que su activación se vea. El descuento del Oráculo
+                // también avisa junto al contador de energía.
+                if (nextCard.kind === 'Evento') queueFx({ t: 'cast', side: sideOf(player), card: nextCard });
+                if (oracleDiscount > 0) queueFx({ t: 'discount', side: sideOf(player), text: '−' + oracleDiscount });
+
                 if (cardInstance.kind === 'Ser') {
                     player.activeBoard.unshift(cardInstance); 
                 } 
@@ -85,6 +99,7 @@
 
             document.getElementById('pause-overlay').classList.add('hidden-view');
             gameState.isPlaying = true;
+            applyFxSpeed();
             syncControls();
             
             clearInterval(gameState.timer);
@@ -132,6 +147,7 @@
             else gameState.speed = 1;
 
             document.getElementById('btn-speed').innerText = `${gameState.speed}x`;
+            applyFxSpeed();
             if (gameState.isPlaying) {
                 clearInterval(gameState.timer);
                 gameState.timer = setInterval(gameTick, 1500 / gameState.speed);
@@ -145,6 +161,7 @@
             rivalDeck = getChapterBotDeck();
             gameState.turn = 0; // el primer tick pasa a mostrar TURNO 1 (antes mostraba 2)
             gameState.justDeployed = [];
+            gameState.fxQueue = [];
             gameState.p1 = { score: 0, energy: 1, deckPointer: 0, activeBoard: [], lastPlayed: null, costDiscount: 0, extraPoints: 0, extraDraws: 0 };
             gameState.p2 = { score: 0, energy: 1, deckPointer: 0, activeBoard: [], lastPlayed: null, costDiscount: 0, extraPoints: 0, extraDraws: 0 };
             document.getElementById('pause-overlay').classList.add('hidden-view');

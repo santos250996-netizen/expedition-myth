@@ -10,6 +10,7 @@
             speed: 1,
             timer: null,
             justDeployed: [],
+            fxQueue: [],
             p1: { score: 0, energy: 1, deckPointer: 0, activeBoard: [], lastPlayed: null, costDiscount: 0, extraPoints: 0, extraDraws: 0 },
             p2: { score: 0, energy: 1, deckPointer: 0, activeBoard: [], lastPlayed: null, costDiscount: 0, extraPoints: 0, extraDraws: 0 }
         };
