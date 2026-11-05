@@ -1,0 +1,64 @@
+name: Build APK Android
+
+# Genera el APK instalable (debug) de Ecos del Olimpo con Capacitor.
+# Se dispara en cada push a main y manualmente desde la pestaña Actions
+# (Run workflow). El APK aparece como artefacto "EcosDelOlimpo-apk" del run.
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+
+jobs:
+  apk:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Node 20
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Java 17 (Temurin)
+        uses: actions/setup-java@v4
+        with:
+          distribution: 'temurin'
+          java-version: '17'
+
+      - name: Instalar dependencias
+        run: npm ci
+
+      - name: Copiar web a www/
+        run: npm run build
+
+      - name: Generar plataforma Android (Capacitor)
+        run: |
+          npx cap add android
+          npx cap sync android
+
+      - name: Iconos y splash de la app
+        run: >-
+          npx @capacitor/assets generate --android --assetPath assets/app
+          --iconBackgroundColor '#0b1120' --splashBackgroundColor '#020617'
+          --splashBackgroundColorDark '#020617'
+        continue-on-error: true
+
+      - name: Compilar APK debug
+        run: |
+          chmod +x android/gradlew
+          cd android
+          ./gradlew assembleDebug --no-daemon --stacktrace
+
+      - name: Empaquetar artefacto
+        run: |
+          mkdir -p output
+          cp android/app/build/outputs/apk/debug/app-debug.apk output/EcosDelOlimpo-debug.apk
+          ls -la output
+
+      - name: Subir APK como artefacto
+        uses: actions/upload-artifact@v4
+        with:
+          name: EcosDelOlimpo-apk
+          path: output/EcosDelOlimpo-debug.apk
+          retention-days: 90

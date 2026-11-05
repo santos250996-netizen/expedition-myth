@@ -1,0 +1,8 @@
+{
+  "appId": "com.ecosdelolimpo.app",
+  "appName": "Ecos del Olimpo",
+  "webDir": "www",
+  "server": {
+    "androidScheme": "https"
+  }
+}
