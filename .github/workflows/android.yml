@@ -44,6 +44,13 @@ jobs:
           --splashBackgroundColorDark '#020617'
         continue-on-error: true
 
+      # El adaptive icon de la plantilla (anydpi-v26) apunta a un vector por
+      # defecto y tapa nuestros PNG en Android 8+; al quitarlo todos los
+      # launchers usan los ic_launcher.png generados con el arte del juego.
+      - name: Forzar icono con arte del juego
+        run: rm -f android/app/src/main/res/mipmap-anydpi-v26/ic_launcher.xml
+                  android/app/src/main/res/mipmap-anydpi-v26/ic_launcher_round.xml
+
       - name: Compilar APK debug
         run: |
           chmod +x android/gradlew
