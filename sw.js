@@ -7,7 +7,7 @@
 //    revalidate: respuesta instantánea desde caché y refresco en segundo
 //    plano. Reabrir el juego no vuelve a descargar ninguna imagen.
 // Para publicar cambios: subir la versión de CACHE (y los ?v= del HTML).
-const CACHE = 'nexo-v20261106f';
+const CACHE = 'nexo-v20261106g';
 
 const PRECACHE = [
     './', './index.html', './manifest.json', './icon.svg',

@@ -35,6 +35,25 @@ const CHAPTERS = [
         // Orden fijo del bot con curva de energía limpia: 1 carta por tick
         // (e1→Saqueo(1), e2→Acechador(2), ... e10→Titán Menor(8)).
         botDeck: ['c17', 'c11', 'c14', 'c13', 'c16', 'c19', 'c15', 'c18', 'c20', 'c12']
+    },
+    {
+        id: 3,
+        number: '1.2',
+        title: 'El Veredicto de la Sangre y el Bronce',
+        subtitle: 'El conflicto latente en los valles de Arcadia ha cruzado un punto de no retorno. La tierra misma, sacudida por la tensión entre las tribus humanas, las bestias primigenias y los susurros de los titanes subterráneos, comienza a desgarrarse. Ya no se trata solo de sobrevivir a la noche o de disputar un territorio de caza: las alianzas se rompen, los primeros héroes locales levantan armas de bronce rudimentario y las fuerzas invisibles del cosmos griego empiezan a manifestarse con una brutalidad inusitada sobre el mundo mortal.',
+        beats: [
+            { icon: 'fa-shield-halved', title: 'El Juramento de Bronce', text: 'Ante la masacre total, los jefes de las aldeas rivales sellan un pacto de sangre sobre un escudo oxidado: nace la primera línea de defensa organizada de la Hélade.' },
+            { icon: 'fa-fire-flame-curved', title: 'El Fuego de la Forja', text: 'En las entrañas de una caverna humeante, el Forjador del Yunque Oculto extrae los primeros minerales verdaderos y da forma a las primeras armas y armaduras de bronce.' },
+            { icon: 'fa-bolt-lightning', title: 'El Cielo Responde', text: 'El humo de la Hecatombe cruza las barreras celestiales: un trueno ensordecedor cae sobre el campo de batalla y los supervivientes ven la destrucción como el veredicto de los dioses.' }
+        ],
+        epilogue: 'El bronce habló y la sangre pagó el veredicto: las tribus que juraron sobre el escudo oxidado ya no son bandas dispersas, sino el embrión de las futuras ciudades-estado. Pero bajo las grietas siguen susurrando los titanes, el Coloso avanza sin obedecer a nadie... y el humo de la próxima ofrenda ya empieza a ascender hacia el Olimpo.',
+        art: 'assets/capitulos/capitulo-1-2-el-veredicto-de-la-sangre-y-el-bronce.webp',
+        rival: { name: 'Bronce', sub: 'VEREDICTO' },
+        // Orden fijo del bot con curva de energía limpia: c26(2), c28(2),
+        // c29(2), c22(3), c21(3), c30(5), c23(4), c25(4), c27(2), c24(8).
+        // El Héroe de Bronce (c30) llega como jugada fuerte de mitad de
+        // partida y el Coloso (c24) cierra el mazo como amenaza tardía.
+        botDeck: ['c26', 'c28', 'c29', 'c22', 'c21', 'c30', 'c23', 'c25', 'c27', 'c24']
     }
 ];
 
