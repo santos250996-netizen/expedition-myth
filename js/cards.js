@@ -179,7 +179,7 @@ const ALL_CARDS = [
                 effect: (p) => { p.score += 3; queueFx({ t: 'gloria', side: sideOf(p), text: '+3 GLORIA', icon: 'fa-bag-shopping', num: 3 }); } 
             },
             { 
-                id: 'c18', name: 'El Centinela del Barranco', kind: 'Ser', cost: 4, atk: 3, hp: 5, 
+                id: 'c18', name: 'El Centinela del Barranco', kind: 'Ser', cost: 4, atk: 3, hp: 4,
                 icon: 'fa-crosshairs', 
                 desc: 'Mientras esté en la Fila 1, gana +1 ATK al inicio de tu turno.', 
                 lore: 'Un veterano cazador de las tribus, marcado por las cicatrices de los primeros ataques de las bestias, toma posición en los desfiladeros más estrechos. Armado únicamente con un arco de madera reforzada y una determinación férrea, bloquea el avance de cualquier intruso que intente flanquear los asentamientos.',
