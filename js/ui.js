@@ -142,6 +142,46 @@
         function closeGameOverModal() { document.getElementById('gameover-modal').classList.add('hidden-view'); }
         function closeGameOverAndRestart() { closeGameOverModal(); resetMatch(); startGame(); }
 
+        // --- FONDO GLOBAL POR CAPÍTULO ---
+        // Regla: el combate muestra siempre el capítulo en juego; el resto de
+        // pantallas muestran el capítulo más avanzado del jugador (el primero
+        // sin completar, o el último si todo está completado). Dos capas se
+        // alternan para lograr un crossfade suave entre artes.
+        function getProgressChapter() {
+            if (!CHAPTERS.length) return null;
+            return CHAPTERS.find(c => !isChapterCompleted(c.id)) || CHAPTERS[CHAPTERS.length - 1];
+        }
+
+        let _bgActiveLayer = 'a';
+        let _bgCurrentUrl = null;
+
+        function setGlobalChapterBg(url) {
+            if (!url || url === _bgCurrentUrl) return;
+            let showLayer = document.getElementById(`chapter-bg-layer-${_bgActiveLayer === 'a' ? 'b' : 'a'}`);
+            let hideLayer = document.getElementById(`chapter-bg-layer-${_bgActiveLayer}`);
+            showLayer.style.backgroundImage = `url('${url}')`;
+            showLayer.classList.add('active');
+            hideLayer.classList.remove('active');
+            _bgActiveLayer = (_bgActiveLayer === 'a' ? 'b' : 'a');
+            _bgCurrentUrl = url;
+        }
+
+        function updateGlobalBackground(viewId) {
+            let art;
+            if (viewId === 'view-chapter-intro' || viewId === 'view-game') {
+                art = currentChapter ? currentChapter.art : (getProgressChapter() || {}).art;
+            } else {
+                let ch = getProgressChapter();
+                art = ch ? ch.art : null;
+            }
+            if (art) setGlobalChapterBg(art);
+        }
+
+        function updateHomeChapterLabel() {
+            let ch = getProgressChapter();
+            if (ch) document.getElementById('home-chapter-label').innerText = `Capítulo ${ch.number}: ${ch.title}`;
+        }
+
         // --- CAPÍTULOS ---
         // Selección de capítulos, intro narrativa y lanzamiento del combate
         // con el arte y el mazo del bot del capítulo activo.
@@ -151,43 +191,53 @@
 
         function renderChapterSelect() {
             let container = document.getElementById('chapters-list');
-            container.innerHTML = '';
+            // A prueba de fallos: si algo rompe (p. ej. un JS viejo en caché)
+            // se muestra un aviso visible en lugar de una lista vacía.
+            try {
+                let frag = document.createDocumentFragment();
 
-            CHAPTERS.forEach((ch) => {
-                let done = isChapterCompleted(ch.id);
-                let item = document.createElement('div');
-                item.className = "active:scale-[0.98] transition-transform cursor-pointer";
-                item.onclick = () => openChapterIntro(ch.id);
-                item.innerHTML = `
-                    <div class="relative rounded-xl overflow-hidden border-2 ${done ? 'border-amber-400/70 shadow-[0_0_15px_rgba(251,191,36,0.25)]' : 'border-blue-500/70 shadow-[0_0_15px_rgba(59,130,246,0.25)]'}">
-                        <div class="aspect-[16/10] bg-cover bg-center" style="background-image:url('${ch.art}')"></div>
-                        <div class="absolute inset-0 bg-gradient-to-t from-black/90 via-black/25 to-black/45"></div>
-                        <div class="absolute top-2 left-3 right-3 flex items-center justify-between">
-                            <span class="text-[9px] font-orbitron tracking-[0.25em] text-amber-300 font-bold">CAPÍTULO ${ch.number}</span>
-                            ${done
-                                ? '<span class="text-[8px] bg-green-600/90 text-white px-1.5 py-0.5 rounded font-bold">✓ COMPLETADO</span>'
-                                : '<span class="text-[8px] bg-blue-600/90 text-white px-1.5 py-0.5 rounded font-bold">DISPONIBLE</span>'}
-                        </div>
-                        <div class="absolute bottom-2 left-3 right-3">
-                            <div class="text-white font-orbitron font-black text-base leading-tight">${ch.title}</div>
-                            <div class="text-[10px] text-slate-300 font-bold mt-0.5">
-                                <i class="fa-solid fa-user-ninja text-fuchsia-300"></i> Rival: ${ch.rival.name} · ${ch.botDeck.length} cartas
+                CHAPTERS.forEach((ch) => {
+                    let done = isChapterCompleted(ch.id);
+                    let item = document.createElement('div');
+                    item.className = "active:scale-[0.98] transition-transform cursor-pointer";
+                    item.onclick = () => openChapterIntro(ch.id);
+                    item.innerHTML = `
+                        <div class="relative rounded-xl overflow-hidden border-2 ${done ? 'border-amber-400/70 shadow-[0_0_15px_rgba(251,191,36,0.25)]' : 'border-blue-500/70 shadow-[0_0_15px_rgba(59,130,246,0.25)]'}">
+                            <div class="aspect-[16/10] bg-cover bg-center" style="background-image:url('${ch.art}')"></div>
+                            <div class="absolute inset-0 bg-gradient-to-t from-black/90 via-black/25 to-black/45"></div>
+                            <div class="absolute top-2 left-3 right-3 flex items-center justify-between">
+                                <span class="text-[9px] font-orbitron tracking-[0.25em] text-amber-300 font-bold">CAPÍTULO ${ch.number}</span>
+                                ${done
+                                    ? '<span class="text-[8px] bg-green-600/90 text-white px-1.5 py-0.5 rounded font-bold">✓ COMPLETADO</span>'
+                                    : '<span class="text-[8px] bg-blue-600/90 text-white px-1.5 py-0.5 rounded font-bold">DISPONIBLE</span>'}
+                            </div>
+                            <div class="absolute bottom-2 left-3 right-3">
+                                <div class="text-white font-orbitron font-black text-base leading-tight">${ch.title}</div>
+                                <div class="text-[10px] text-slate-300 font-bold mt-0.5">
+                                    <i class="fa-solid fa-user-ninja text-fuchsia-300"></i> Rival: ${ch.rival.name} · ${ch.botDeck.length} cartas
+                                </div>
                             </div>
                         </div>
-                    </div>
-                `;
-                container.appendChild(item);
-            });
+                    `;
+                    frag.appendChild(item);
+                });
 
-            // Hueco para capítulos futuros: la campaña crecerá.
-            let locked = document.createElement('div');
-            locked.className = "relative rounded-xl border-2 border-dashed border-slate-800 bg-slate-900/60 overflow-hidden aspect-[16/10] flex flex-col items-center justify-center gap-2 opacity-70";
-            locked.innerHTML = `
-                <i class="fa-solid fa-lock text-2xl text-slate-600"></i>
-                <span class="text-slate-400 font-orbitron font-bold text-xs tracking-widest">PRÓXIMAMENTE</span>
-                <span class="text-[10px] text-slate-500">Nuevos capítulos, mazos y lore en camino...</span>
-            `;
-            container.appendChild(locked);
+                // Hueco para capítulos futuros: la campaña crecerá.
+                let locked = document.createElement('div');
+                locked.className = "relative rounded-xl border-2 border-dashed border-slate-800 bg-slate-900/60 overflow-hidden aspect-[16/10] flex flex-col items-center justify-center gap-2 opacity-70";
+                locked.innerHTML = `
+                    <i class="fa-solid fa-lock text-2xl text-slate-600"></i>
+                    <span class="text-slate-400 font-orbitron font-bold text-xs tracking-widest">PRÓXIMAMENTE</span>
+                    <span class="text-[10px] text-slate-500">Nuevos capítulos, mazos y lore en camino...</span>
+                `;
+                frag.appendChild(locked);
+
+                container.innerHTML = '';
+                container.appendChild(frag);
+            } catch (e) {
+                console.error('renderChapterSelect:', e);
+                container.innerHTML = '<div class="bg-slate-900 border border-red-500/60 rounded-xl p-4 text-center"><div class="text-red-400 font-orbitron font-bold text-sm">No se pudieron cargar los capítulos</div><p class="text-slate-400 text-xs mt-1">Fuerza la recarga de la página (Ctrl+Shift+R) e inténtalo de nuevo.</p></div>';
+            }
         }
 
         function openChapterIntro(chapterId) {
@@ -198,7 +248,6 @@
             document.getElementById('intro-chapter-number').innerText = ch.number;
             document.getElementById('intro-chapter-title').innerText = ch.title;
             document.getElementById('intro-chapter-subtitle').innerText = ch.subtitle;
-            document.getElementById('chapter-intro-bg').style.backgroundImage = `url('${ch.art}')`;
 
             let beats = document.getElementById('intro-beats');
             beats.innerHTML = ch.beats.map(b => `
@@ -224,12 +273,8 @@
             document.getElementById('rival-name').innerText = currentChapter.rival.name;
             document.getElementById('rival-sub').innerHTML = `${currentChapter.rival.sub} <i class="fa-solid fa-eye"></i>`;
 
-            let bg = document.getElementById('combat-chapter-bg');
-            bg.style.backgroundImage = `url('${currentChapter.art}')`;
-            bg.classList.add('active');
-            document.getElementById('combat-chapter-shade').classList.add('active');
-            document.querySelector('#view-game .planet-sphere').style.display = 'none';
-
+            // El fondo de combate lo fija updateGlobalBackground() con el
+            // capítulo en juego al entrar en view-game.
             closeGameOverModal();
             startGame();
         }

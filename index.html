@@ -11,6 +11,12 @@
 <body class="bg-black flex justify-center items-center">
 
     <div id="app-container" class="bg-space-pattern">
+
+        <!-- FONDO GLOBAL POR CAPÍTULO: arte del capítulo por donde va el
+             jugador. El combate fija su propio capítulo al lanzarse. -->
+        <div id="chapter-bg-layer-a" class="chapter-bg"></div>
+        <div id="chapter-bg-layer-b" class="chapter-bg"></div>
+        <div id="chapter-bg-shade" class="chapter-bg-shade active"></div>
         
         <!-- MENÚ PRINCIPAL -->
         <div id="view-home" class="view-section z-10">
@@ -18,8 +24,7 @@
                 <h1 class="text-white font-orbitron font-black text-3xl tracking-widest glow-text-blue z-20 text-center leading-tight">
                     EL NEXO DEL<br>TEJIDO PRIMORDIAL
                 </h1>
-                <p class="text-amber-400 font-orbitron text-sm mt-2 z-20">Capítulo 1: La Hélade</p>
-                <div class="mt-8 w-64 h-64 rounded-full bg-blue-900 shadow-[0_0_40px_rgba(59,130,246,0.4)] border border-blue-500/30"></div>
+                <p id="home-chapter-label" class="text-amber-400 font-orbitron text-sm mt-2 z-20">Capítulo 1: La Hélade</p>
             </div>
             <div class="px-4 pb-20 z-20">
                 <button onclick="openChapters()" class="w-full bg-gradient-to-r from-blue-600 to-indigo-600 border border-blue-400 py-3 rounded-full text-white font-orbitron font-black text-xl tracking-wider flex items-center justify-center gap-2 shadow-[0_0_15px_rgba(59,130,246,0.5)] active:scale-95 transition-transform">
@@ -29,7 +34,7 @@
         </div>
 
         <!-- SELECCIÓN DE CAPÍTULOS -->
-        <div id="view-chapters" class="view-section hidden-view bg-slate-950 z-10">
+        <div id="view-chapters" class="view-section hidden-view z-10">
             <div class="flex items-center justify-between px-4 pt-6 pb-2 border-b border-slate-800">
                 <span class="text-blue-400 font-bold border-b-2 border-blue-400 pb-1 font-orbitron">CAPÍTULOS</span>
                 <span class="text-[10px] text-slate-500 font-bold">La campaña se narra capítulo a capítulo</span>
@@ -43,8 +48,6 @@
 
         <!-- INTRO NARRATIVA DEL CAPÍTULO -->
         <div id="view-chapter-intro" class="view-section hidden-view z-10">
-            <div id="chapter-intro-bg" class="chapter-bg active"></div>
-            <div class="chapter-bg-shade active"></div>
             <div class="flex-1 overflow-y-auto relative z-10 px-5 pt-8 pb-44">
                 <span class="text-amber-400 font-orbitron text-[11px] tracking-[0.3em] font-bold">CAPÍTULO <span id="intro-chapter-number">1</span></span>
                 <h2 id="intro-chapter-title" class="text-white font-orbitron font-black text-2xl mt-1 leading-tight glow-text-blue"></h2>
@@ -65,7 +68,7 @@
         </div>
 
         <!-- LISTA DE MAZOS -->
-        <div id="view-decks" class="view-section hidden-view bg-slate-950 z-10">
+        <div id="view-decks" class="view-section hidden-view z-10">
             <div class="flex items-center justify-between px-4 pt-6 pb-2 border-b border-slate-800">
                 <div class="flex gap-4">
                     <span class="text-blue-400 font-bold border-b-2 border-blue-400 pb-1 font-orbitron">MAZOS</span>
@@ -89,7 +92,7 @@
         </div>
 
         <!-- DECKBUILDER -->
-        <div id="view-deckbuilder" class="view-section hidden-view bg-slate-950 z-10">
+        <div id="view-deckbuilder" class="view-section hidden-view z-10">
             <div class="flex items-center justify-between px-3 py-3 border-b border-slate-800">
                 <div class="font-bold text-lg text-white font-orbitron">Mazo Heládico</div>
                 <div class="flex items-center gap-3">
@@ -134,10 +137,7 @@
         </div>
 
         <!-- COMBATE -->
-        <div id="view-game" class="view-section hidden-view z-10 bg-combat-planet">
-            <div id="combat-chapter-bg" class="chapter-bg"></div>
-            <div id="combat-chapter-shade" class="chapter-bg-shade"></div>
-            <div class="planet-sphere"></div>
+        <div id="view-game" class="view-section hidden-view z-10">
 
             <header class="w-full px-2 pt-2 pb-2 flex flex-col gap-2 bg-slate-950/80 backdrop-blur-md border-b border-slate-800/50 z-20 relative">
                 <div class="flex justify-between items-center px-1">
@@ -296,15 +296,6 @@
             </button>
             <button onclick="switchView('view-decks')" class="flex flex-col items-center gap-1 w-1/4 text-slate-500 hover:text-blue-400">
                 <i class="fa-solid fa-layer-group text-xl"></i><span class="text-[9px] font-bold">MAZOS</span>
-            </button>
-            <button onclick="startGame()" class="w-1/4 relative flex justify-center">
-                <div class="absolute -top-6 w-14 h-14 bg-slate-950 rounded-full border-t-2 border-blue-400 flex items-center justify-center shadow-[0_-4px_10px_rgba(59,130,246,0.3)]">
-                    <div class="w-12 h-12 bg-slate-900 rounded-full flex flex-col items-center justify-center"><i class="fa-solid fa-bolt text-blue-400 text-lg"></i></div>
-                </div>
-                <span class="text-[9px] font-bold text-blue-400 mt-8">JUGAR</span>
-            </button>
-            <button class="flex flex-col items-center gap-1 w-1/4 text-slate-500 hover:text-blue-400">
-                <i class="fa-solid fa-flask text-xl"></i><span class="text-[9px] font-bold">ALTAR</span>
             </button>
         </nav>
 
