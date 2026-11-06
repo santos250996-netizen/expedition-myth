@@ -103,7 +103,8 @@ function tweenScore(el, target) {
 }
 
 // Panel SIGUIENTE: miniatura del arte de la próxima carta del mazo y
-// su coste de energía EFECTIVO (el Oráculo c8 abarata los Eventos).
+// su coste de energía EFECTIVO (las auras c20/c32 y el trigger del
+// Oráculo c8 abaratan los Eventos).
 // Imagen pequeña + coste al lado: menos espacio que icono + nombre.
 function renderNextBox(prefix, nextCard, player) {
     let box = document.getElementById(prefix + '-next-box');
@@ -162,10 +163,10 @@ function createCardElement(card, theme, animate) {
     let borderColor = isBlue ? 'border-blue-400 shadow-[0_0_10px_rgba(59,130,246,0.5)]' : 'border-fuchsia-400 shadow-[0_0_10px_rgba(217,70,239,0.5)]';
 
     // data-uid: ancla para los FX y para la reconciliación del tablero.
-    // oracle-aura: los auras de descuento (Oráculo c8, Guardián de Delfos
-    // c32) respiran mientras estén en tablero. animate-dissolve: cartas
-    // muriendo este tick.
-    cardDiv.className = `w-full max-w-[160px] h-[60px] border-2 ${borderColor} rounded-lg relative overflow-hidden flex flex-col justify-between ${animate ? 'animate-deploy' : ''} ${(card.id === 'c8' || card.id === 'c32') ? 'oracle-aura' : ''} ${card.dying ? 'animate-dissolve' : ''} cursor-pointer hover:scale-105 active:scale-95 transition-transform`;
+    // oracle-aura: los auras de descuento (Profecía c20, Guardián de
+// Delfos c32) respiran mientras estén en tablero. animate-dissolve:
+// cartas muriendo este tick.
+    cardDiv.className = `w-full max-w-[160px] h-[60px] border-2 ${borderColor} rounded-lg relative overflow-hidden flex flex-col justify-between ${animate ? 'animate-deploy' : ''} ${(card.id === 'c20' || card.id === 'c32') ? 'oracle-aura' : ''} ${card.dying ? 'animate-dissolve' : ''} cursor-pointer hover:scale-105 active:scale-95 transition-transform`;
     cardDiv.dataset.uid = card.uid || '';
     cardDiv.onclick = () => openCardModal(card.id);
 

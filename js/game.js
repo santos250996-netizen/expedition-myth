@@ -1,13 +1,15 @@
 // --- LÓGICA DE COMBATE ---
 // Reloj de turnos, despliegue por energía, resolución de efectos y fin de partida.
 
-// Descuento de Eventos: cada aura viva en tablero (Oráculo c8, Guardián de
-// Delfos c32) abarata los Eventos en 1 Energía, mínimo 0. Mazos singleton →
-// como mucho dos auras. Única fuente: la usa la partida y el HUD, así el
-// coste mostrado siempre coincide con el cobrado.
+// Descuento de Eventos: cada aura viva en tablero (Profecía c20, Guardián
+// de Delfos c32) abarata los Eventos en 1 Energía, mínimo 0; el Oráculo c8
+// aporta -1 SOLO para el próximo Evento (trigger al entrar, se consume al
+// jugarlo). Mazos singleton → como mucho dos auras. Única fuente: la usa la
+// partida y el HUD, así el coste mostrado siempre coincide con el cobrado.
 function oracleDiscountFor(player, card) {
     if (!card || card.kind !== 'Evento') return 0;
-    return player.activeBoard.filter(c => (c.id === 'c8' || c.id === 'c32') && !c.dying).length;
+    let auras = player.activeBoard.filter(c => (c.id === 'c20' || c.id === 'c32') && !c.dying).length;
+    return auras + (player.pendingEventDiscount || 0);
 }
 
 // Expira el +HP temporal (Bendición de Atenea c37): la bendición se retira al
@@ -50,6 +52,15 @@ function gameTick() {
             // aplica después, para que ni el orden de los tableros ni una
             // muerte temprana den ventaja a ningún lado.
             gameState.clashQueue = [];
+            // Derrumbe de las Rocas Sagradas (c19): el segundo impacto cae al
+            // inicio del turno siguiente sobre el Ser que ocupe la Fila 1.
+            (gameState.pendingStrikes || []).splice(0).forEach(s => {
+                let t = s.opp.activeBoard[0];
+                if (t && !t.dying) {
+                    dealDamage(t, 3);
+                    queueFx({ t: 'debuff', side: sideOf(s.opp), uid: t.uid, text: '-3 HP', icon: 'fa-house-crack', overlay: 'hit', pulse: 'fx-shake' });
+                }
+            });
             gameState.p1.activeBoard.slice().forEach(card => { if(card.startTurn) card.startTurn(card, gameState.p1, gameState.p2); });
             gameState.p2.activeBoard.slice().forEach(card => { if(card.startTurn) card.startTurn(card, gameState.p2, gameState.p1); });
             gameState.clashQueue.forEach(h => {
@@ -73,8 +84,8 @@ function gameTick() {
             if (play1) resolvePlay(gameState.p1, gameState.p2, play1);
             if (play2) resolvePlay(gameState.p2, gameState.p1, play2);
 
-            // Las cartas muriendo o aturdidas este turno (Canto Embrujado c14)
-            // ya no suman gloria: aturdir = no atacar = no puntuar un tick.
+            // Las cartas muriendo o aturdidas este turno ya no suman gloria:
+// aturdir = no atacar = no puntuar un tick.
             let boardPoints = (board) => board.reduce((sum, card) => sum + (card.dying || card.stunned ? 0 : Math.max(0, card.atk + (card.tempAtkMod || 0))), 0);
             let p1TurnPoints = boardPoints(gameState.p1.activeBoard) + gameState.p1.extraPoints;
             let p2TurnPoints = boardPoints(gameState.p2.activeBoard) + gameState.p2.extraPoints;
@@ -142,7 +153,12 @@ function gameTick() {
             // Los eventos no entran en tablero: se proyectan como hechizo
             // para que su activación se vea. El descuento del Oráculo
             // también avisa junto al contador de energía.
-            if (play.card.kind === 'Evento') queueFx({ t: 'cast', side: sideOf(player), card: play.card });
+            if (play.card.kind === 'Evento') {
+                // El trigger del Oráculo (c8: "tu siguiente Evento cuesta -1")
+                // se consume al jugar ese Evento, sea cual sea su coste final.
+                player.pendingEventDiscount = 0;
+                queueFx({ t: 'cast', side: sideOf(player), card: play.card });
+            }
             if (play.discount > 0) queueFx({ t: 'discount', side: sideOf(player), text: '−' + play.discount });
 
             player.lastPlayed = play.inst;
@@ -226,8 +242,9 @@ function gameTick() {
             gameState.justDeployed = [];
             gameState.fxQueue = [];
             gameState.clashQueue = [];
-            gameState.p1 = { score: 0, energy: 1, deckPointer: 0, activeBoard: [], lastPlayed: null, extraPoints: 0 };
-            gameState.p2 = { score: 0, energy: 1, deckPointer: 0, activeBoard: [], lastPlayed: null, extraPoints: 0 };
+            gameState.p1 = { score: 0, energy: 1, deckPointer: 0, activeBoard: [], lastPlayed: null, extraPoints: 0, pendingEventDiscount: 0 };
+            gameState.p2 = { score: 0, energy: 1, deckPointer: 0, activeBoard: [], lastPlayed: null, extraPoints: 0, pendingEventDiscount: 0 };
+            gameState.pendingStrikes = [];
             // Copias de mazo por partida (DESPUÉS de re-crear p1/p2): el robo
             // de Hermes (c40) y cualquier mutación juegan sobre la copia, no
             // sobre el mazo guardado del jugador.

@@ -33,14 +33,16 @@ expedition-myth/
 ├── netlify.toml        # Config de despliegue estático
 ├── docs/
 │   ├── guia-de-balance.md      # Guía oficial de balance: reglas matemáticas de diseño
-│   └── capitulo-1.0-cartas.md  # Spec original del cap. 1.0 + reconciliación con el juego
+│   ├── capitulo-1.0-cartas.md  # Spec original del cap. 1.0 + reconciliación con el juego
+│   └── capitulo-1.1-cartas.md  # Spec del cap. 1.1 (canon aplicado) + auditoría por carta
 └── README.md
 ```
 
 ## Documentación de diseño
 
 * **[docs/guia-de-balance.md](docs/guia-de-balance.md)** — la guía oficial de balance: fórmulas de presupuesto (`Coste × 2`), tabla de valores de efectos, multiplicadores de alcance y reglas de drawbacks. Es la referencia normativa para crear y auditar cartas.
-* **[docs/capitulo-1.0-cartas.md](docs/capitulo-1.0-cartas.md)** — lore y especificación original de las 10 cartas del capítulo 1.0, con la reconciliación auditada frente al estado actual del juego.
+* **[docs/capitulo-1.0-cartas.md](docs/capitulo-1.0-cartas.md)** — lore y especificación original de las 10 cartas del capítulo 1.0. Canon **aplicado al juego** desde `v20261106j`, con el historial de la realineación.
+* **[docs/capitulo-1.1-cartas.md](docs/capitulo-1.1-cartas.md)** — lore y especificación del capítulo 1.1 (canon aplicado), auditoría por carta y la regla de valoración de energía del diseñador (ahorrar 1 Energía = 2 de presupuesto).
 
 ## Caché y rendimiento
 

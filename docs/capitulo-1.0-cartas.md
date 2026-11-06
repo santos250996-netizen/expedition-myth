@@ -115,38 +115,34 @@ prohibidos que paralizan la voluntad y confunden las mentes de los enemigos.
 
 ---
 
-## Reconciliación: especificación original vs. estado actual del juego
+## Aplicación al juego: canon vigente desde `v20261106j`
 
-Las cartas del 1.0 se ajustaron en iteraciones de balance previas a este documento
-(reparto de stats, alcance de efectos y valores de gloria). Esta sección registra
-ambas versiones para que no haya contradicción silenciosa. La **Guía de Balance** es
-la referencia normativa para cartas nuevas; realinear las de este capítulo con ella
-es una decisión de diseño pendiente, no aplicada en este commit.
+**El canon de esta página ya está APLICADO al juego.** Las 10 cartas del
+capítulo 1.0 en `js/cards.js` coinciden una a una con la especificación
+original y cumplen la [Guía de Balance](guia-de-balance.md): veredicto exacto
+o bajo presupuesto en las diez. Los ejemplos 2 y 3 de la guía (c11 Acechador,
+c13 Disputa) siguen cuadrando; el ejemplo 4 (c15 Guardián) corresponde al
+capítulo 1.1 y también cuadra tras su realineación
+(ver [capitulo-1.1-cartas.md](capitulo-1.1-cartas.md)).
 
-| Carta | Canon original | Actual en el juego (`v20261106i`) | Veredicto de la guía (actual) |
-| --- | --- | --- | --- |
-| c1 Mortal de Arcadia | 1/1, sin efecto | Igual | ✅ Exacto (2/2) |
-| c2 Sátiro de los Bosques | 0/2, +1 ATK por otro Ser aliado al inicio | Igual; el buff se aplica "hasta el final del turno" (se recalcula cada tick) | ✅ Exacto (2+2=4) |
-| c3 Minotauro Joven | 2/4, sin efecto | **3/4**, sin efecto | ❌ +1 sobre presupuesto (7 vs 6) |
-| c4 Plegaria Arcana | +4 Puntos de Gloria | **+2 Puntos de Gloria** | ✅ Bajo (1 vs 2; el canon cuadraba exacto) |
-| c5 Niebla del Caos | -2 ATK a TODOS los rivales (permanente) | **-2 ATK solo al Ser rival en la posición 1** (permanente) | ✅ Bajo (2 vs 4; el canon cuadraba exacto) |
-| c6 El Lamento de la Fuente Seca | 1/2, al entrar -1 ATK a Fila 1 | **1/3**, mismo efecto | ❌ +1 sobre presupuesto (5 vs 4) |
-| c7 La Embestida de Erimanto | 4/6, inicio: 1 daño a su fila y pierde 1 HP | **4/3**, mismo efecto | ✅ Bajo (7 vs 10; el canon cuadraba exacto) |
-| c8 El Balbuceo del Oráculo Ciego | 0/1, al entrar: siguiente Evento -1 Energía | **0/2**, efecto ampliado a **aura persistente** (todos tus Eventos -1 Energía mientras esté en tablero) | ❌ +2 sobre presupuesto (4 vs 2) |
-| c9 Pacto de Sangre en el Altar de Piedra | Destruir al de menos HP + 4 PG, con drawback (-4 HP a tu Ser con más HP) y condición (requiere Ser aliado) | **Destruir al de menos HP + 6 PG, sin drawback ni condición** | ❌ +5 sobre presupuesto (11 vs 6); el canon cuadraba exacto |
-| c10 Los Ecos del Bosque de Dodona | -1 ATK a TODOS los Seres, rivales y aliados (permanente) | **-1 ATK solo a los rivales, solo durante el turno actual** | ✅ Exacto (2 vs 2) |
+Historial: entre el diseño original y la guía escrita hubo iteraciones de
+balance que desviaron varias cartas del canon. La auditoría previa a
+`v20261106j` detectó sobre presupuesto a c9 Pacto de Sangre (+5: destruir +
+6 PG sin drawback, cuando el canon cuadra 8 + 2 − 4 = 6), c8 Oráculo (+2),
+c3 Minotauro (+1) y c6 Lamento (+1); y por debajo a c4 (−1), c5 (−2) y
+c7 (−3). La realineación aplicada fue:
 
-Notas de la auditoría:
+| Carta | Estado desviado (pre-`j`) | Canon aplicado en `v20261106j` |
+| --- | --- | --- |
+| c3 Minotauro Joven | 3/4 | 2/4 |
+| c4 Plegaria Arcana | +2 PG | +4 PG |
+| c5 Niebla del Caos | -2 ATK solo a la cima rival | -2 ATK a TODOS los rivales |
+| c6 Lamento de la Fuente Seca | 1/3 | 1/2 |
+| c7 Embestida de Erimanto | 4/3 | 4/6 |
+| c8 Oráculo Ciego | 0/2, aura permanente de descuento | 0/1, trigger: siguiente Evento -1 |
+| c9 Pacto de Sangre | +6 PG, sin drawback ni condición | +4 PG, drawback -4 HP al propio más fuerte, requiere Ser aliado |
+| c10 Ecos de Dodona | -1 ATK solo rivales, 1 turno | -1 ATK a TODOS los Seres, permanente |
 
-- El ejemplo 2 de la guía (Acechador de los Matorrales, c11: coste 2, 1/2, 1 de daño
-  al rival de la posición 1) y el ejemplo 3 (Disputa del Territorio, c13: coste 2,
-  2 de daño a todos) **siguen cuadrando exactamente** con el juego actual.
-- El ejemplo 4 de la guía cita al Guardián del Fuego Sagrado (c15) con su diseño
-  original (coste 4, 0/4, +8 Gloria al inicio). En el juego actual es **2/4 con
-  +1 Gloria al inicio** (presupuesto 8: stats 6 + efecto 0.5 = 6.5, bajo presupuesto).
-- Las desviaciones sobre presupuesto detectadas son: **c9 (+5)**, **c8 (+2)**,
-  **c3 (+1)** y **c6 (+1)**. Ninguna supera la Regla de Oro por margen roto salvo
-  c9, que es la carta más fuerte del capítulo frente a la especificación original.
-- Los cambios de alcance (c5, c10) y de duración (c8, c10) fueron decisiones de
-  diseño de iteraciones anteriores, documentadas aquí; el capítulo se juega así
-  desde antes de que existiera la guía escrita.
+Verificación: 41 aserciones automáticas sobre stats y efectos
+(`scripts/test_canon_20261106j.js` del workspace) más partida completa de
+humo en navegador sin errores de consola.
