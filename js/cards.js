@@ -73,7 +73,7 @@ const ALL_CARDS = [
                 }
             },
             { 
-                id: 'c8', name: 'El Balbuceo del Oráculo Ciego', kind: 'Ser', cost: 1, atk: 0, hp: 1, 
+                id: 'c8', name: 'El Balbuceo del Oráculo Ciego', kind: 'Ser', cost: 2, atk: 1, hp: 1,
                 icon: 'fa-eye-slash', 
                 desc: 'Al entrar: Tu siguiente Evento cuesta -1 Energía (mínimo 0).', 
                 lore: 'En una cueva donde los vapores de la tierra escapan por las grietas, un anciano inhala los efluvios telúricos. Entra en un profundo trance y comienza a escupir profecías indescifrables sobre un destino escrito con sangre y bronce.',
@@ -178,12 +178,12 @@ const ALL_CARDS = [
                 effect: (p, opp) => { let target = opp.activeBoard[0]; if (target && !target.dying && !target.noAtkRed) { target.atk = Math.max(0, target.atk - 2); queueFx({ t: 'debuff', side: sideOf(opp), uid: target.uid, text: '-2 ATK', icon: 'fa-moon', overlay: 'fog', pulse: 'fx-pulse-gray' }); } }, startTurn: null 
             },
             { 
-                id: 'c17', name: 'Saqueo a la Luz de la Antorcha', kind: 'Evento', cost: 1, atk: 0, hp: 0, 
-                icon: 'fa-bag-shopping', 
-                desc: 'Otorga +2 Puntos de Gloria y +1 Energía extra.', 
+                id: 'c17', name: 'Saqueo a la Luz de la Antorcha', kind: 'Evento', cost: 2, atk: 0, hp: 0,
+                icon: 'fa-bag-shopping',
+                desc: 'Otorga +4 Puntos de Gloria y +1 Energía extra.',
                 lore: 'Aprovechando el desconcierto y el miedo generalizado por las criaturas que acechan en los matorrales, facciones rivales dentro de las propias tribus humanas se traicionan entre sí, asaltando los precarios campamentos vecinos para robar las pocas provisiones y reservas de bronce que quedan.',
                 art: 'assets/cartas/carta-17-saqueo-antorcha.webp',
-                effect: (p) => { p.score += 2; p.energy += 1; queueFx({ t: 'gloria', side: sideOf(p), text: '+2 GLORIA', icon: 'fa-bag-shopping', num: 2 }); queueFx({ t: 'discount', side: sideOf(p), text: '+1' }); } 
+                effect: (p) => { p.score += 4; p.energy += 1; queueFx({ t: 'gloria', side: sideOf(p), text: '+4 GLORIA', icon: 'fa-bag-shopping', num: 4 }); queueFx({ t: 'discount', side: sideOf(p), text: '+1' }); }
             },
             { 
                 id: 'c18', name: 'El Centinela del Barranco', kind: 'Ser', cost: 4, atk: 3, hp: 3,
@@ -203,7 +203,7 @@ const ALL_CARDS = [
                 effect: (p, opp) => { let target = opp.activeBoard[0]; if (target && !target.dying) { dealDamage(target, 3); queueFx({ t: 'debuff', side: sideOf(opp), uid: target.uid, text: '-3 HP', icon: 'fa-house-crack', overlay: 'hit', pulse: 'fx-shake' }); } (gameState.pendingStrikes = gameState.pendingStrikes || []).push({ opp: opp }); } 
             },
             { 
-                id: 'c20', name: 'La Profecía de la Sangre Derramada', kind: 'Ser', cost: 5, atk: 3, hp: 3, 
+                id: 'c20', name: 'La Profecía de la Sangre Derramada', kind: 'Ser', cost: 5, atk: 4, hp: 4,
                 icon: 'fa-book-skull', 
                 desc: 'Mientras esté en el tablero, TODOS tus Eventos cuestan -1 Energía (mínimo 0).', 
                 lore: 'Un devoto enloquecido por las visiones del oráculo emerge de las cuevas oscuras con la piel cubierta de runas pintadas con barro y sangre. Se desplaza de campamento en campamento anunciando que el conflicto actual es solo el preludio de una guerra mucho mayor que obligará a los dioses a descender de los cielos.',

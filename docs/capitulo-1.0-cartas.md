@@ -2,7 +2,7 @@
 
 > Lore y diseño original de las 10 cartas del capítulo, tal como lo definió el
 > diseñador. Al final se incluye la reconciliación con el estado actual del juego
-> (`js/cards.js`, versión `v20261106i`), auditada con la
+> (`js/cards.js`, versión `v20261106k`), auditada con la
 > [Guía de Balance](guia-de-balance.md).
 
 ## Lore del capítulo
@@ -90,7 +90,7 @@ el pánico absoluto en las laderas de Arcadia.
 anciano inhala los efluvios telúricos. Entra en un profundo trance y comienza a escupir
 profecías indescifrables sobre un destino escrito con sangre y bronce.
 
-- Coste: 1 — ATK: 0 — HP: 1
+- Coste: 2 — ATK: 1 — HP: 1
 - Efecto: Trigger (al entrar): Tu siguiente Evento cuesta -1 Energía (mínimo 0).
 
 ### 9. Pacto de Sangre en el Altar de Piedra (Evento)
@@ -115,7 +115,7 @@ prohibidos que paralizan la voluntad y confunden las mentes de los enemigos.
 
 ---
 
-## Aplicación al juego: canon vigente desde `v20261106j`
+## Aplicación al juego: canon vigente desde `v20261106k`
 
 **El canon de esta página ya está APLICADO al juego.** Las 10 cartas del
 capítulo 1.0 en `js/cards.js` coinciden una a una con la especificación
@@ -132,16 +132,20 @@ balance que desviaron varias cartas del canon. La auditoría previa a
 c3 Minotauro (+1) y c6 Lamento (+1); y por debajo a c4 (−1), c5 (−2) y
 c7 (−3). La realineación aplicada fue:
 
-| Carta | Estado desviado (pre-`j`) | Canon aplicado en `v20261106j` |
+| Carta | Estado desviado (pre-`j`) | Canon aplicado en `v20261106k` |
 | --- | --- | --- |
 | c3 Minotauro Joven | 3/4 | 2/4 |
 | c4 Plegaria Arcana | +2 PG | +4 PG |
 | c5 Niebla del Caos | -2 ATK solo a la cima rival | -2 ATK a TODOS los rivales |
 | c6 Lamento de la Fuente Seca | 1/3 | 1/2 |
 | c7 Embestida de Erimanto | 4/3 | 4/6 |
-| c8 Oráculo Ciego | 0/2, aura permanente de descuento | 0/1, trigger: siguiente Evento -1 |
+| c8 Oráculo Ciego | 0/2, aura permanente de descuento | 1/1 a coste 2, trigger: siguiente Evento -1 |
 | c9 Pacto de Sangre | +6 PG, sin drawback ni condición | +4 PG, drawback -4 HP al propio más fuerte, requiere Ser aliado |
 | c10 Ecos de Dodona | -1 ATK solo rivales, 1 turno | -1 ATK a TODOS los Seres, permanente |
+
+Refinamiento `v20261106k`: la revisión final del diseñador fijó el Oráculo
+Ciego (c8) en **coste 2 con cuerpo 1/1** (antes 1/0/1); el resto del capítulo
+queda como en `v20261106j`.
 
 Verificación: 41 aserciones automáticas sobre stats y efectos
 (`scripts/test_canon_20261106j.js` del workspace) más partida completa de
