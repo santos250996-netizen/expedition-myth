@@ -21,14 +21,33 @@ function expireTempHp(card) {
     if (card.hp <= 0) { card.hp = 0; card.dying = true; }
 }
 
-// Daño canónico: aplica HP, marca moribunda y, si sobrevive, dispara la
-// reacción al daño (Titán Menor c12: +1 ATK permanente). Toda fuente de
-// daño (choques de Embestida y eventos) pasa por aquí para que la reacción
-// no dependa de quién golpea.
-function dealDamage(target, amount) {
+// --- SISTEMA DE MUERTE INMEDIATA ---
+// Cuando una carta llega a 0 HP, se marca como dying, se mueve a deathQueue
+// (para que se vea su animación) y se RETIRA del tablero inmediatamente.
+// Así no ocupa fila y los efectos posteriores ya no la ven.
+function killCard(card, side) {
+    if (!card || card.dying) return;
+    card.dying = true;
+    if (!gameState.deathQueue) gameState.deathQueue = [];
+    gameState.deathQueue.push({ card: { ...card }, side: side });
+    let board = side === 'p1' ? gameState.p1.activeBoard : gameState.p2.activeBoard;
+    let idx = board.indexOf(card);
+    if (idx > -1) board.splice(idx, 1);
+}
+
+// Daño canónico: aplica HP y, si la carta muere, killCard la retira del
+// tablero en el acto (con copia en deathQueue para su disolución). Toda
+// fuente de daño (choques de Embestida y eventos) pasa por aquí para que
+// la reacción al daño (Titán Menor c12: +1 ATK permanente) no dependa de
+// quién golpea; la reacción solo dispara si el golpeado sobrevive.
+function dealDamage(target, amount, side) {
     if (!target || target.dying) return;
     target.hp -= amount;
-    if (target.hp <= 0) { target.hp = 0; target.dying = true; return; }
+    if (target.hp <= 0) {
+        target.hp = 0;
+        killCard(target, side || ownerSideOf(target));
+        return;
+    }
     if (target.damageReact) target.damageReact(target);
 }
 
@@ -63,7 +82,10 @@ function applyHpReduction(owner, target, amount, fxIcon) {
     if (left <= 0) return;
     target.hp -= left;
     queueFx({ t: 'debuff', side: sideOf(owner), uid: target.uid, text: '-' + left + ' HP', icon: fxIcon || 'fa-heart-crack', cls: 'fx-gray' });
-    if (target.hp <= 0) { target.hp = 0; target.dying = true; }
+    if (target.hp <= 0) {
+        target.hp = 0;
+        killCard(target, sideOf(owner));
+    }
 }
 
 // ¿Todavía puede este lado sumar gloria en algún turno futuro? Es fuente de
@@ -101,8 +123,13 @@ function gameTick() {
                     showTutorialMessage("Has jugado un Evento", "Los Eventos hacen su efecto y desaparecen. ¡Úsalos para debilitar al rival o ganar Gloria!");
                 }
             }
-            // Las cartas que murieron el turno anterior ya se vieron
-            // disolverse durante ese tick: ahora se retiran del tablero.
+            // --- LIMPIEZA DE LA COLA DE MUERTE (del turno anterior) ---
+            gameState.deathQueue = [];
+
+            // Red de seguridad: las muertes que NO pasan por killCard
+            // (expiración de la Bendición c37, sacrificio de la Ofrenda)
+            // marcan dying a mano y se retiran aquí; las de killCard ya
+            // salieron del tablero en el mismo tick en que murieron.
             gameState.p1.activeBoard = gameState.p1.activeBoard.filter(c => !c.dying);
             gameState.p2.activeBoard = gameState.p2.activeBoard.filter(c => !c.dying);
             gameState.p1.energy += 1;
@@ -118,14 +145,14 @@ function gameTick() {
             (gameState.pendingStrikes || []).splice(0).forEach(s => {
                 let t = s.opp.activeBoard[0];
                 if (t && !t.dying) {
-                    dealDamage(t, 3);
+                    dealDamage(t, 3, sideOf(s.opp));
                     queueFx({ t: 'debuff', side: sideOf(s.opp), uid: t.uid, text: '-3 HP', icon: 'fa-house-crack', overlay: 'hit', pulse: 'fx-shake' });
                 }
             });
             gameState.p1.activeBoard.slice().forEach(card => { if(card.startTurn) card.startTurn(card, gameState.p1, gameState.p2); });
             gameState.p2.activeBoard.slice().forEach(card => { if(card.startTurn) card.startTurn(card, gameState.p2, gameState.p1); });
             gameState.clashQueue.forEach(h => {
-                dealDamage(h.target, 1);
+                dealDamage(h.target, 1, h.side || ownerSideOf(h.target));
             });
 
             gameState.p1.activeBoard.forEach(c => { c.tempAtkMod = 0; c.stunned = false; expireTempHp(c); });
@@ -324,6 +351,7 @@ function gameTick() {
             gameState.justDeployed = [];
             gameState.fxQueue = [];
             gameState.clashQueue = [];
+            gameState.deathQueue = [];
             gameState.p1 = { score: 0, energy: 0, deckPointer: 0, activeBoard: [], lastPlayed: null, extraPoints: 0, pendingEventDiscount: 0 };
             gameState.p2 = { score: 0, energy: 0, deckPointer: 0, activeBoard: [], lastPlayed: null, extraPoints: 0, pendingEventDiscount: 0 };
             gameState.pendingStrikes = [];

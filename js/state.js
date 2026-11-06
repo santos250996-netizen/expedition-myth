@@ -10,6 +10,7 @@ let gameState = {
     timer: null,
     justDeployed: [],
     fxQueue: [],
+    deathQueue: [],
     p1: { score: 0, energy: 1, deckPointer: 0, activeBoard: [], lastPlayed: null, extraPoints: 0 },
     p2: { score: 0, energy: 1, deckPointer: 0, activeBoard: [], lastPlayed: null, extraPoints: 0 }
 };

@@ -130,6 +130,22 @@ function renderNextBox(prefix, nextCard, player) {
 function renderBoards() {
     syncBoard('p1', gameState.p1.activeBoard, 'blue');
     syncBoard('p2', gameState.p2.activeBoard, 'purple');
+
+    // Pintar las cartas en plena animación de muerte: killCard las retiró
+    // del tablero en el mismo tick en que murieron, así que aquí solo
+    // queda proyectar su copia moribunda (la clase animate-dissolve sobre
+    // el envoltorio apaga también su badge de gloria) hasta el próximo
+    // tick, cuando la limpieza de deathQueue y syncBoard la retiran.
+    if (gameState.deathQueue && gameState.deathQueue.length > 0) {
+        gameState.deathQueue.forEach(({ card, side }) => {
+            let board = document.getElementById((side === 'p1' ? 'p1' : 'p2') + '-board');
+            if (!board) return;
+            let el = createCardElement(card, side === 'p1' ? 'blue' : 'purple', false);
+            el.classList.add('animate-dissolve');
+            el.style.pointerEvents = 'none';
+            board.appendChild(el);
+        });
+    }
 }
 
 // Reconciliación por uid: en lugar de reconstruir los tableros cada tick
@@ -195,7 +211,7 @@ function createCardElement(card, theme, animate) {
     // efectivo). Los Eventos no puntúan por turno → sin badge.
     if (card.kind === 'Ser') {
         let badge = document.createElement('div');
-        badge.className = 'glory-badge ' + (isBlue ? 'side-left' : 'side-right');
+        badge.className = 'glory-badge ' + (isBlue ? 'side-left' : 'side-right') + (card.dying ? ' glory-dim' : '');
         badge.innerHTML = `<i class="fa-solid fa-bolt"></i><span class="glory-badge-val">+${displayAtk}</span>`;
         wrap.appendChild(badge);
     }

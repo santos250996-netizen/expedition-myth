@@ -61,15 +61,20 @@ const ALL_CARDS = [
                 startTurn: (self, player, opp) => {
                     let myIndex = player.activeBoard.indexOf(self);
                     let target = opp.activeBoard[myIndex];
+                    // Solo se activa si hay un rival VIVO en su misma fila:
+                    // sin objetivo no hay embestida ni desgaste propio.
                     if (target && !target.dying) {
                         // El daño del choque se ENCOLA: gameTick lo aplica
                         // después de leer ambos tableros (turno compartido —
                         // ninguna Embestida golpea antes que otra).
-                        gameState.clashQueue.push({ target: target });
+                        gameState.clashQueue.push({ target: target, side: sideOf(opp) });
                         queueFx({ t: 'clash', side: sideOf(player), uidA: self.uid, uidB: target.uid });
+                        // El autodaño SOLO ocurre si hubo embestida; si el
+                        // desgaste remata al jabalí, killCard lo retira en
+                        // el acto (muerte inmediata con disolución).
+                        self.hp -= 1;
+                        if (self.hp <= 0) { self.hp = 0; killCard(self, sideOf(player)); }
                     }
-                    self.hp -= 1;
-                    if (self.hp <= 0) { self.hp = 0; self.dying = true; }
                 }
             },
             { 
