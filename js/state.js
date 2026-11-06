@@ -24,3 +24,25 @@ function initOwnedCards() {
         ownedCardIds = ['c1', 'c2', 'c3', 'c4', 'c5', 'c6', 'c7', 'c8', 'c9', 'c10'];
     }
 }
+
+// --- PERFIL DEL JUGADOR ---
+let playerProfile = {
+    name: 'Invocador',
+    avatarId: 'c1' // ID de la carta que se usa como avatar
+};
+
+// Cargar perfil guardado. "null" (tras Reiniciar Progreso) o un JSON
+// roto dejan el perfil por defecto en pie.
+function loadProfile() {
+    let saved = safeStorageGet('nexo_profile_v1');
+    if (saved) {
+        try {
+            let parsed = JSON.parse(saved);
+            if (parsed) playerProfile = parsed;
+        } catch(e) {}
+    }
+}
+
+function saveProfile() {
+    safeStorageSet('nexo_profile_v1', JSON.stringify(playerProfile));
+}

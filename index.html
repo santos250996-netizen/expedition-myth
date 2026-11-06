@@ -9,9 +9,9 @@
     <link rel="icon" type="image/svg+xml" href="icon.svg">
     <!-- Dependencias vendorizadas (Tailwind, Font Awesome, Google Fonts):
          sin CDN, la PWA y el APK funcionan 100% offline. -->
-    <script src="js/vendor/tailwindcdn.js?v=20261106t"></script>
+    <script src="js/vendor/tailwindcdn.js?v=20261106u"></script>
     <link href="css/vendor/all.min.css" rel="stylesheet">
-    <link rel="stylesheet" href="css/styles.css?v=20261106t">
+    <link rel="stylesheet" href="css/styles.css?v=20261106u">
 </head>
 <body class="bg-black flex justify-center items-center">
 
@@ -25,10 +25,10 @@
         
         <!-- BOTONES GLOBALES -->
         <div id="global-top-buttons" class="absolute top-3 left-0 right-0 z-50 flex justify-between px-3 pointer-events-none">
-            <button id="btn-profile" class="pointer-events-auto w-10 h-10 rounded-full bg-slate-900/80 border border-slate-700 flex items-center justify-center text-slate-300 hover:text-white hover:border-slate-500 transition">
+            <button id="btn-profile" onclick="switchView('view-profile'); renderProfile();" class="pointer-events-auto w-10 h-10 rounded-full bg-slate-900/80 border border-slate-700 flex items-center justify-center text-slate-300 hover:text-white hover:border-slate-500 transition">
                 <i class="fa-solid fa-user text-lg"></i>
             </button>
-            <button id="btn-settings" class="pointer-events-auto w-10 h-10 rounded-full bg-slate-900/80 border border-slate-700 flex items-center justify-center text-slate-300 hover:text-white hover:border-slate-500 transition">
+            <button id="btn-settings" onclick="switchView('view-settings');" class="pointer-events-auto w-10 h-10 rounded-full bg-slate-900/80 border border-slate-700 flex items-center justify-center text-slate-300 hover:text-white hover:border-slate-500 transition">
                 <i class="fa-solid fa-gear text-lg"></i>
             </button>
         </div>
@@ -146,6 +146,78 @@
                         <!-- Renderizado JS -->
                     </div>
                 </div>
+            </div>
+        </div>
+
+        <!-- VISTA: PERFIL -->
+        <div id="view-profile" class="view-section hidden-view bg-slate-950 z-10">
+            <div class="flex items-center justify-between px-4 pt-6 pb-2 border-b border-slate-800">
+                <div class="flex gap-4">
+                    <span class="text-blue-400 font-bold border-b-2 border-blue-400 pb-1 font-orbitron">PERFIL</span>
+                </div>
+                <button onclick="switchView('view-home')" class="text-slate-400 hover:text-white">
+                    <i class="fa-solid fa-xmark text-xl"></i>
+                </button>
+            </div>
+            <div class="flex-1 p-4 overflow-y-auto pb-24">
+                <!-- Avatar actual -->
+                <div class="flex flex-col items-center mb-6">
+                    <div id="profile-avatar-display" class="w-24 h-24 rounded-full border-4 border-blue-500 bg-slate-800 bg-cover bg-center shadow-[0_0_20px_rgba(59,130,246,0.5)]"></div>
+                    <button onclick="openAvatarGallery()" class="mt-2 text-[10px] text-blue-400 font-bold uppercase tracking-wider">Cambiar Avatar</button>
+                </div>
+                <!-- Nombre -->
+                <div class="mb-6">
+                    <label class="text-[10px] text-slate-400 font-bold uppercase tracking-wider">Nombre</label>
+                    <div class="flex gap-2 mt-1">
+                        <input id="profile-name-input" type="text" maxlength="16" class="flex-1 bg-slate-900 border border-slate-700 rounded-lg px-3 py-2 text-white text-sm font-bold focus:outline-none focus:border-blue-500">
+                        <button onclick="saveProfileName()" class="bg-blue-600 text-white px-3 py-2 rounded-lg text-xs font-bold active:scale-95"><i class="fa-solid fa-check"></i></button>
+                    </div>
+                </div>
+                <!-- Galería de avatares (desbloqueados) -->
+                <div>
+                    <label class="text-[10px] text-slate-400 font-bold uppercase tracking-wider">Avatares Desbloqueados</label>
+                    <div id="profile-avatar-gallery" class="grid grid-cols-4 gap-2 mt-2"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- VISTA: OPCIONES -->
+        <div id="view-settings" class="view-section hidden-view bg-slate-950 z-10">
+            <div class="flex items-center justify-between px-4 pt-6 pb-2 border-b border-slate-800">
+                <div class="flex gap-4">
+                    <span class="text-blue-400 font-bold border-b-2 border-blue-400 pb-1 font-orbitron">OPCIONES</span>
+                </div>
+                <button onclick="switchView('view-home')" class="text-slate-400 hover:text-white">
+                    <i class="fa-solid fa-xmark text-xl"></i>
+                </button>
+            </div>
+            <div class="flex-1 p-4 overflow-y-auto pb-24 space-y-4">
+                <!-- Música -->
+                <div class="bg-slate-900 border border-slate-800 rounded-xl p-3 flex items-center justify-between">
+                    <div class="flex items-center gap-3">
+                        <i class="fa-solid fa-music text-blue-400"></i>
+                        <span class="text-sm font-bold text-white">Música</span>
+                    </div>
+                    <input type="range" min="0" max="100" value="50" class="w-24 accent-blue-500" onchange="setMusicVolume(this.value)">
+                </div>
+                <!-- Efectos -->
+                <div class="bg-slate-900 border border-slate-800 rounded-xl p-3 flex items-center justify-between">
+                    <div class="flex items-center gap-3">
+                        <i class="fa-solid fa-volume-high text-blue-400"></i>
+                        <span class="text-sm font-bold text-white">Efectos</span>
+                    </div>
+                    <input type="range" min="0" max="100" value="50" class="w-24 accent-blue-500" onchange="setSfxVolume(this.value)">
+                </div>
+                <!-- Créditos -->
+                <button onclick="showCredits()" class="w-full bg-slate-900 border border-slate-800 rounded-xl p-3 flex items-center gap-3 active:scale-95">
+                    <i class="fa-solid fa-circle-info text-blue-400"></i>
+                    <span class="text-sm font-bold text-white">Créditos</span>
+                </button>
+                <!-- Reiniciar Progreso -->
+                <button onclick="confirmResetProgress()" class="w-full bg-red-950/50 border border-red-500/50 rounded-xl p-3 flex items-center gap-3 active:scale-95">
+                    <i class="fa-solid fa-trash text-red-400"></i>
+                    <span class="text-sm font-bold text-red-300">Reiniciar Progreso</span>
+                </button>
             </div>
         </div>
 
@@ -344,13 +416,13 @@
     </div>
 
 
-    <script src="js/cards.js?v=20261106t"></script>
-    <script src="js/state.js?v=20261106t"></script>
-    <script src="js/fx.js?v=20261106t"></script>
-    <script src="js/deck.js?v=20261106t"></script>
-    <script src="js/chapters.js?v=20261106t"></script>
-    <script src="js/ui.js?v=20261106t"></script>
-    <script src="js/game.js?v=20261106t"></script>
-    <script src="js/main.js?v=20261106t"></script>
+    <script src="js/cards.js?v=20261106u"></script>
+    <script src="js/state.js?v=20261106u"></script>
+    <script src="js/fx.js?v=20261106u"></script>
+    <script src="js/deck.js?v=20261106u"></script>
+    <script src="js/chapters.js?v=20261106u"></script>
+    <script src="js/ui.js?v=20261106u"></script>
+    <script src="js/game.js?v=20261106u"></script>
+    <script src="js/main.js?v=20261106u"></script>
 </body>
 </html>

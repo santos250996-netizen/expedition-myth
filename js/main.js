@@ -58,6 +58,10 @@ if ('serviceWorker' in navigator &&
 }
 
 window.onload = () => {
+    // Cargar perfil y configuración
+    loadProfile();
+    renderProfile();
+
     // --- Cargar estado del tutorial ---
     let savedTutorial = safeStorageGet('nexo_tutorial_v1');
     if (savedTutorial === 'true') {
@@ -88,3 +92,19 @@ window.onload = () => {
         setTimeout(() => startTutorial(), 500);
     }
 };
+
+// --- BOTÓN ATRÁS DE ANDROID (CAPACITOR) ---
+// Solo se ejecuta si la app está empaquetada con Capacitor
+if (window.Capacitor && window.Capacitor.Plugins && window.Capacitor.Plugins.App) {
+    window.Capacitor.Plugins.App.addListener('backButton', () => {
+        // Si NO estamos en el menú principal, volvemos a él
+        let homeView = document.getElementById('view-home');
+        if (homeView && !homeView.classList.contains('hidden-view')) {
+            // Ya estamos en el inicio, salir de la app
+            window.Capacitor.Plugins.App.exitApp();
+        } else {
+            // Estamos en otra vista, volver al inicio
+            switchView('view-home');
+        }
+    });
+}

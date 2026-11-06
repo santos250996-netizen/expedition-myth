@@ -570,3 +570,86 @@ function startTutorial() {
     tutorialEventShown = false;
     setTutorialStep(1);
 }
+
+// --- LÓGICA DE PERFIL ---
+
+function renderProfile() {
+    // Avatar actual
+    let avatarDisplay = document.getElementById('profile-avatar-display');
+    let avatarCard = ALL_CARDS.find(c => c.id === playerProfile.avatarId);
+    if (avatarCard && avatarDisplay) {
+        avatarDisplay.style.backgroundImage = `url('${avatarCard.art}')`;
+    }
+
+    // Nombre
+    let nameInput = document.getElementById('profile-name-input');
+    if (nameInput) nameInput.value = playerProfile.name;
+
+    // Galería de avatares
+    let gallery = document.getElementById('profile-avatar-gallery');
+    if (!gallery) return;
+    gallery.innerHTML = '';
+
+    // Solo se muestran los avatares de las cartas que el jugador posee.
+    // Sin inventario (no debería pasar) se ofrece el Mortal como base;
+    // Set: el inventario no guarda duplicados de avatar.
+    let unlockedIds = [...new Set(ownedCardIds.length > 0 ? ownedCardIds : ['c1'])];
+    unlockedIds.forEach(id => {
+        let card = ALL_CARDS.find(c => c.id === id);
+        if (!card) return;
+        let el = document.createElement('div');
+        el.className = `avatar-option ${playerProfile.avatarId === id ? 'selected' : ''}`;
+        el.style.backgroundImage = `url('${card.art}')`;
+        el.onclick = () => {
+            playerProfile.avatarId = id;
+            saveProfile();
+            renderProfile();
+        };
+        gallery.appendChild(el);
+    });
+}
+
+function saveProfileName() {
+    let nameInput = document.getElementById('profile-name-input');
+    if (nameInput && nameInput.value.trim() !== '') {
+        playerProfile.name = nameInput.value.trim();
+        saveProfile();
+        showTutorialMessage("Perfil guardado", "Tu nombre ha sido actualizado.");
+    }
+}
+
+function openAvatarGallery() {
+    // Simplemente hace scroll a la galería o muestra un mensaje
+    let gallery = document.getElementById('profile-avatar-gallery');
+    if (gallery) gallery.scrollIntoView({ behavior: 'smooth' });
+}
+
+// --- LÓGICA DE OPCIONES ---
+
+function setMusicVolume(value) {
+    // Guardar en localStorage
+    safeStorageSet('nexo_music_vol', value);
+    // Aquí podrías ajustar el volumen de un objeto Audio si tienes música
+}
+
+function setSfxVolume(value) {
+    safeStorageSet('nexo_sfx_vol', value);
+}
+
+function showCredits() {
+    alert("Ecos del Olimpo\n\nUn juego de cartas mitológico.\nCreado por [Tu Nombre].\n\n¡Gracias por jugar!");
+}
+
+function confirmResetProgress() {
+    if (confirm("¿Estás seguro de que quieres reiniciar todo tu progreso? Perderás todas las cartas, mazos y capítulos completados.")) {
+        safeStorageSet('nexo_owned_cards', '[]');
+        safeStorageSet('nexo_tutorial_v1', 'false');
+        safeStorageSet('nexo_chapters_v1', '[]');
+        safeStorageSet('nexo_profile_v1', 'null');
+        // El mazo guardado también se borra: al recargar se reconstruye el
+        // starter con las cartas del Capítulo 1.0 (el aviso promete perder
+        // "mazos" también, no solo cartas).
+        safeStorageSet('nexo_deck_v1', '');
+        location.reload(); // Recargar la app para reiniciar todo
+    }
+}

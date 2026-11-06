@@ -527,3 +527,28 @@ nav.absolute.bottom-0 {
 #tutorial-toast-tap { display: none; }
 #tutorial-toast.wait-tap { cursor: pointer; }
 #tutorial-toast.wait-tap #tutorial-toast-tap { display: block; }
+
+/* --- PERFIL Y OPCIONES --- */
+#profile-avatar-display {
+    background-size: cover;
+    background-position: center;
+}
+#profile-avatar-gallery .avatar-option {
+    aspect-ratio: 1/1;
+    border-radius: 50%;
+    background-size: cover;
+    background-position: center;
+    border: 2px solid transparent;
+    cursor: pointer;
+    transition: transform 0.2s, border-color 0.2s;
+}
+#profile-avatar-gallery .avatar-option.selected {
+    border-color: #3b82f6;
+    box-shadow: 0 0 10px rgba(59,130,246,0.6);
+    transform: scale(1.05);
+}
+#profile-avatar-gallery .avatar-option.locked {
+    filter: grayscale(100%) brightness(0.4);
+    cursor: not-allowed;
+    pointer-events: none;
+}
