@@ -87,6 +87,20 @@ function canStillScore(player) {
 
 function gameTick() {
             gameState.turn++;
+            // --- MENSAJES DEL TUTORIAL (solo Capítulo 1.0) ---
+            if (tutorialActive && currentChapter && currentChapter.id === 1) {
+                if (gameState.turn === 1) {
+                    showTutorialMessage("Bienvenido al combate", "Tú no controlas las cartas directamente. Tu única decisión es el ORDEN de tu mazo.");
+                }
+                if (gameState.p1.lastPlayed && gameState.p1.lastPlayed.kind === 'Ser' && !tutorialSerShown) {
+                    tutorialSerShown = true;
+                    showTutorialMessage("Has jugado un Ser", "Los Seres se quedan en el tablero y suman su ATK a tu Gloria al final de cada turno.");
+                }
+                if (gameState.p1.lastPlayed && gameState.p1.lastPlayed.kind === 'Evento' && !tutorialEventShown) {
+                    tutorialEventShown = true;
+                    showTutorialMessage("Has jugado un Evento", "Los Eventos hacen su efecto y desaparecen. ¡Úsalos para debilitar al rival o ganar Gloria!");
+                }
+            }
             // Las cartas que murieron el turno anterior ya se vieron
             // disolverse durante ese tick: ahora se retiran del tablero.
             gameState.p1.activeBoard = gameState.p1.activeBoard.filter(c => !c.dying);

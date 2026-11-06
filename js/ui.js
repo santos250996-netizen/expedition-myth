@@ -253,6 +253,15 @@ function showGameOver() {
     // Aviso háptico suave al cerrar la partida (móvil).
     if (navigator.vibrate) navigator.vibrate(p1Score >= p2Score ? [30, 40, 60] : 50);
 
+    // --- TUTORIAL: AVANZAR AL GANAR O PERDER ---
+    if (tutorialActive && currentChapter && currentChapter.id === 1) {
+        if (gameState.p1.score > gameState.p2.score) {
+            setTimeout(() => setTutorialStep(5), 1000);
+        } else {
+            setTimeout(() => showTutorialMessage("Has perdido", "Ve al Deckbuilder (Mazos) y prueba a ordenar tus cartas de otra manera."), 1000);
+        }
+    }
+
     document.getElementById('gameover-modal').classList.remove('hidden-view');
 }
 
@@ -303,6 +312,8 @@ function updateHomeChapterLabel() {
 // Selección de capítulos, intro narrativa y lanzamiento del combate
 // con el arte y el mazo del bot del capítulo activo.
 function openChapters() {
+    // Tutorial: abrir la pantalla de capítulos avanza al paso 2.
+    if (tutorialActive && tutorialStep === 1) setTutorialStep(2);
     switchView('view-chapters');
 }
 
@@ -375,6 +386,8 @@ function openChapterIntro(chapterId) {
     let ch = CHAPTERS.find(c => c.id === chapterId);
     if (!ch) return;
     currentChapter = ch;
+    // Tutorial: al abrir la intro del capítulo avanza al paso 3.
+    if (tutorialActive && tutorialStep === 2) setTutorialStep(3);
 
     document.getElementById('intro-chapter-number').innerText = ch.number;
     document.getElementById('intro-chapter-title').innerText = ch.title;
@@ -400,6 +413,9 @@ function launchChapterCombat() {
     if (!currentChapter) { openChapters(); return; }
     if (playerDeck.length === 0) { alert("¡Tu mazo está vacío!"); return; }
 
+    // Tutorial: el combate es el paso 4 (los mensajes los da gameTick).
+    if (tutorialActive && tutorialStep === 3) setTutorialStep(4);
+
     rivalDeck = getChapterBotDeck();
     document.getElementById('rival-name').innerText = currentChapter.rival.name;
     document.getElementById('rival-sub').innerHTML = `${currentChapter.rival.sub} <i class="fa-solid fa-eye"></i>`;
@@ -408,4 +424,84 @@ function launchChapterCombat() {
     // capítulo en juego al entrar en view-game.
     closeGameOverModal();
     startGame();
+}
+
+// --- SISTEMA DE TUTORIAL ---
+let tutorialActive = false;
+let tutorialStep = 0;
+let tutorialTimeout = null;
+let tutorialSerShown = false;
+let tutorialEventShown = false;
+
+function showTutorialMessage(title, text) {
+    let toast = document.getElementById('tutorial-toast');
+    let toastTitle = document.getElementById('tutorial-toast-title');
+    let toastText = document.getElementById('tutorial-toast-text');
+    if (!toast || !toastTitle || !toastText) return;
+    toastTitle.innerText = title;
+    toastText.innerText = text;
+    toast.classList.remove('hidden-view');
+    setTimeout(() => toast.classList.add('active'), 10);
+    clearTimeout(tutorialTimeout);
+    tutorialTimeout = setTimeout(() => {
+        toast.classList.remove('active');
+        setTimeout(() => toast.classList.add('hidden-view'), 400);
+    }, 6000);
+}
+
+function setTutorialStep(step) {
+    tutorialStep = step;
+    document.querySelectorAll('.tutorial-glow').forEach(el => el.classList.remove('tutorial-glow'));
+    document.querySelectorAll('.tutorial-blocked').forEach(el => el.classList.remove('tutorial-blocked'));
+
+    let btnCampaign = document.getElementById('btn-campaign');
+    let btnDecks = document.getElementById('btn-decks');
+    let btnMainPlay = document.getElementById('btn-main-play');
+    let btnEvents = document.getElementById('btn-events');
+    let btnPvp = document.getElementById('btn-pvp');
+    let btnComingSoon = document.getElementById('btn-coming-soon');
+
+    // Bloquear siempre los futuros
+    if (btnEvents) btnEvents.classList.add('tutorial-blocked');
+    if (btnPvp) btnPvp.classList.add('tutorial-blocked');
+    if (btnComingSoon) btnComingSoon.classList.add('tutorial-blocked');
+
+    if (step === 1) {
+        if (btnDecks) btnDecks.classList.add('tutorial-blocked');
+        if (btnMainPlay) btnMainPlay.classList.add('tutorial-blocked');
+        if (btnCampaign) btnCampaign.classList.add('tutorial-glow');
+        showTutorialMessage("¡Bienvenido a Ecos del Olimpo!", "Toca 'Campaña' en la barra inferior para empezar el tutorial.");
+    } else if (step === 2) {
+        if (btnDecks) btnDecks.classList.add('tutorial-blocked');
+        if (btnMainPlay) btnMainPlay.classList.add('tutorial-blocked');
+        if (btnCampaign) btnCampaign.classList.add('tutorial-blocked');
+        showTutorialMessage("Capítulo 1.0: El Despertar en la Hélade", "Este es el tutorial. Tócalo para empezar.");
+    } else if (step === 3) {
+        if (btnDecks) btnDecks.classList.add('tutorial-blocked');
+        if (btnMainPlay) btnMainPlay.classList.add('tutorial-blocked');
+        if (btnCampaign) btnCampaign.classList.add('tutorial-blocked');
+        let btnContinue = document.querySelector('#view-chapter-intro button');
+        if (btnContinue) btnContinue.classList.add('tutorial-glow');
+        showTutorialMessage("Lee la historia", "Toca 'Comenzar combate' cuando estés listo.");
+    } else if (step === 4) {
+        if (btnDecks) btnDecks.classList.add('tutorial-blocked');
+        if (btnMainPlay) btnMainPlay.classList.add('tutorial-blocked');
+        if (btnCampaign) btnCampaign.classList.add('tutorial-blocked');
+    } else if (step === 5) {
+        if (btnDecks) btnDecks.classList.add('tutorial-glow');
+        if (btnMainPlay) btnMainPlay.classList.add('tutorial-blocked');
+        if (btnCampaign) btnCampaign.classList.add('tutorial-blocked');
+        showTutorialMessage("¡Deckbuilder desbloqueado!", "Toca 'Mazos' para ver tus cartas y armar tu mazo.");
+    } else if (step === 6) {
+        tutorialActive = false;
+        safeStorageSet('nexo_tutorial_v1', 'true');
+        showTutorialMessage("¡Tutorial completado!", "Ya puedes jugar la campaña y obtener nuevas cartas. ¡El Olimpo te espera!");
+    }
+}
+
+function startTutorial() {
+    tutorialActive = true;
+    tutorialSerShown = false;
+    tutorialEventShown = false;
+    setTutorialStep(1);
 }

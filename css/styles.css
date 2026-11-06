@@ -450,7 +450,7 @@ body {
     .fx-float, .fx-float-wrap, .fx-overlay, .fx-event-cast, .fx-event-shine,
     .fx-gloria-beam, .fx-leaf, .animate-deploy, .animate-dissolve,
     .fx-pulse-green, .fx-pulse-gray, .fx-clash-r, .fx-clash-l, .fx-shake,
-    .oracle-aura, .stat-up, .stat-down, .turn-pulse { animation: none !important; }
+    .oracle-aura, .stat-up, .stat-down, .turn-pulse, .tutorial-glow { animation: none !important; }
     .fx-float, .fx-overlay, .fx-event-cast, .fx-gloria-beam, .fx-leaf { opacity: 0 !important; }
 }
 
@@ -460,3 +460,25 @@ body {
 nav.absolute.bottom-0 {
     padding-bottom: calc(0.75rem + env(safe-area-inset-bottom)) !important;
 }
+
+/* Botones globales */
+#global-top-buttons { transition: opacity 0.3s ease; }
+#global-top-buttons.hidden { opacity: 0; pointer-events: none; }
+
+/* Tutorial toast */
+#tutorial-toast { transition: opacity 0.4s ease, transform 0.4s ease; transform: translateY(20px); opacity: 0; }
+#tutorial-toast.active { opacity: 1; transform: translateY(0); }
+
+/* Brillo dorado */
+.tutorial-glow {
+    animation: tutorialGlow 1.5s ease-in-out infinite;
+    box-shadow: 0 0 15px rgba(251,191,36,0.8), 0 0 30px rgba(251,191,36,0.4) !important;
+    border-color: #fbbf24 !important;
+}
+@keyframes tutorialGlow {
+    0%, 100% { box-shadow: 0 0 15px rgba(251,191,36,0.6), 0 0 30px rgba(251,191,36,0.3); }
+    50% { box-shadow: 0 0 25px rgba(251,191,36,1), 0 0 50px rgba(251,191,36,0.6); }
+}
+
+/* Bloqueo durante tutorial */
+.tutorial-blocked { opacity: 0.3; pointer-events: none; filter: grayscale(100%); }

@@ -9,9 +9,9 @@
     <link rel="icon" type="image/svg+xml" href="icon.svg">
     <!-- Dependencias vendorizadas (Tailwind, Font Awesome, Google Fonts):
          sin CDN, la PWA y el APK funcionan 100% offline. -->
-    <script src="js/vendor/tailwindcdn.js?v=20261106p"></script>
+    <script src="js/vendor/tailwindcdn.js?v=20261106r"></script>
     <link href="css/vendor/all.min.css" rel="stylesheet">
-    <link rel="stylesheet" href="css/styles.css?v=20261106p">
+    <link rel="stylesheet" href="css/styles.css?v=20261106r">
 </head>
 <body class="bg-black flex justify-center items-center">
 
@@ -23,6 +23,16 @@
         <div id="chapter-bg-layer-b" class="chapter-bg"></div>
         <div id="chapter-bg-shade" class="chapter-bg-shade active"></div>
         
+        <!-- BOTONES GLOBALES -->
+        <div id="global-top-buttons" class="absolute top-3 left-0 right-0 z-50 flex justify-between px-3 pointer-events-none">
+            <button id="btn-profile" class="pointer-events-auto w-10 h-10 rounded-full bg-slate-900/80 border border-slate-700 flex items-center justify-center text-slate-300 hover:text-white hover:border-slate-500 transition">
+                <i class="fa-solid fa-user text-lg"></i>
+            </button>
+            <button id="btn-settings" class="pointer-events-auto w-10 h-10 rounded-full bg-slate-900/80 border border-slate-700 flex items-center justify-center text-slate-300 hover:text-white hover:border-slate-500 transition">
+                <i class="fa-solid fa-gear text-lg"></i>
+            </button>
+        </div>
+
         <!-- MENÚ PRINCIPAL -->
         <div id="view-home" class="view-section z-10">
             <div class="flex-1 flex flex-col items-center justify-center relative">
@@ -32,7 +42,7 @@
                 <p id="home-chapter-label" class="text-amber-400 font-orbitron text-sm mt-2 z-20">Capítulo 1.0: El Despertar en la Hélade</p>
             </div>
             <div class="px-4 pb-20 z-20">
-                <button onclick="openChapters()" class="w-full bg-gradient-to-r from-blue-600 to-indigo-600 border border-blue-400 py-3 rounded-full text-white font-orbitron font-black text-xl tracking-wider flex items-center justify-center gap-2 shadow-[0_0_15px_rgba(59,130,246,0.5)] active:scale-95 transition-transform">
+                <button id="btn-main-play" onclick="openChapters()" class="w-full bg-gradient-to-r from-blue-600 to-indigo-600 border border-blue-400 py-3 rounded-full text-white font-orbitron font-black text-xl tracking-wider flex items-center justify-center gap-2 shadow-[0_0_15px_rgba(59,130,246,0.5)] active:scale-95 transition-transform">
                     JUGAR <i class="fa-solid fa-bolt text-amber-300"></i>
                 </button>
             </div>
@@ -289,25 +299,63 @@
         </div>
 
         <!-- NAVEGACIÓN -->
-        <nav class="absolute bottom-0 w-full bg-slate-950 border-t border-slate-800 flex justify-around items-end pb-2 pt-1 z-40 h-16">
-            <button onclick="switchView('view-home')" class="flex flex-col items-center gap-1 w-1/4 text-slate-500 hover:text-blue-400">
-                <i class="fa-solid fa-house text-xl"></i><span class="text-[9px] font-bold">INICIO</span>
+        <!-- TUTORIAL TOAST -->
+        <div id="tutorial-toast" class="absolute bottom-20 left-4 right-4 bg-slate-900/95 border-2 border-amber-500 rounded-xl p-3 z-[60] hidden-view shadow-[0_0_20px_rgba(251,191,36,0.3)]">
+            <div class="flex items-start gap-3">
+                <i class="fa-solid fa-graduation-cap text-amber-400 mt-0.5 text-lg"></i>
+                <div>
+                    <h4 id="tutorial-toast-title" class="text-amber-300 font-orbitron font-bold text-xs uppercase tracking-wider mb-1">Tutorial</h4>
+                    <p id="tutorial-toast-text" class="text-slate-200 text-xs leading-snug"></p>
+                </div>
+            </div>
+        </div>
+
+        <nav id="bottom-nav" class="absolute bottom-0 w-full bg-slate-950 border-t border-slate-800 flex justify-around items-end pb-2 pt-1 z-40 h-16">
+            <!-- Botón 1: Eventos (futuro) -->
+            <button id="btn-events" class="flex flex-col items-center gap-1 w-1/5 text-slate-600 cursor-not-allowed">
+                <i class="fa-solid fa-calendar-days text-xl"></i>
+                <span class="text-[9px] font-bold">EVENTOS</span>
             </button>
-            <button onclick="switchView('view-decks')" class="flex flex-col items-center gap-1 w-1/4 text-slate-500 hover:text-blue-400">
-                <i class="fa-solid fa-layer-group text-xl"></i><span class="text-[9px] font-bold">MAZOS</span>
+            
+            <!-- Botón 2: Mazos -->
+            <button id="btn-decks" onclick="switchView('view-decks')" class="flex flex-col items-center gap-1 w-1/5 text-slate-400 hover:text-blue-400">
+                <i class="fa-solid fa-layer-group text-xl"></i>
+                <span class="text-[9px] font-bold">MAZOS</span>
+            </button>
+            
+            <!-- Botón 3: Campaña (CENTRO) -->
+            <button id="btn-campaign" onclick="openChapters()" class="w-1/5 relative flex justify-center">
+                <div class="absolute -top-6 w-14 h-14 bg-slate-950 rounded-full border-t-2 border-blue-400 flex items-center justify-center shadow-[0_-4px_10px_rgba(59,130,246,0.3)]">
+                    <div class="w-12 h-12 bg-slate-900 rounded-full flex flex-col items-center justify-center">
+                        <i class="fa-solid fa-bolt text-blue-400 text-lg"></i>
+                    </div>
+                </div>
+                <span class="text-[9px] font-bold text-blue-400 mt-8">CAMPAÑA</span>
+            </button>
+            
+            <!-- Botón 4: PvP (futuro) -->
+            <button id="btn-pvp" class="flex flex-col items-center gap-1 w-1/5 text-slate-600 cursor-not-allowed">
+                <i class="fa-solid fa-users text-xl"></i>
+                <span class="text-[9px] font-bold">PVP</span>
+            </button>
+            
+            <!-- Botón 5: Próximamente (futuro) -->
+            <button id="btn-coming-soon" class="flex flex-col items-center gap-1 w-1/5 text-slate-600 cursor-not-allowed">
+                <i class="fa-solid fa-flask text-xl"></i>
+                <span class="text-[9px] font-bold">PRÓXIMAMENTE</span>
             </button>
         </nav>
 
     </div>
 
 
-    <script src="js/cards.js?v=20261106p"></script>
-    <script src="js/state.js?v=20261106p"></script>
-    <script src="js/fx.js?v=20261106p"></script>
-    <script src="js/deck.js?v=20261106p"></script>
-    <script src="js/chapters.js?v=20261106p"></script>
-    <script src="js/ui.js?v=20261106p"></script>
-    <script src="js/game.js?v=20261106p"></script>
-    <script src="js/main.js?v=20261106p"></script>
+    <script src="js/cards.js?v=20261106r"></script>
+    <script src="js/state.js?v=20261106r"></script>
+    <script src="js/fx.js?v=20261106r"></script>
+    <script src="js/deck.js?v=20261106r"></script>
+    <script src="js/chapters.js?v=20261106r"></script>
+    <script src="js/ui.js?v=20261106r"></script>
+    <script src="js/game.js?v=20261106r"></script>
+    <script src="js/main.js?v=20261106r"></script>
 </body>
 </html>

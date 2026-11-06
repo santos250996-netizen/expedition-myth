@@ -19,6 +19,24 @@ function switchView(viewId) {
     if (viewId === 'view-chapters') renderChapterSelect();
     if (viewId === 'view-deckbuilder') { renderDeckEditor(); renderCollection(); }
     if (viewId === 'view-decks') document.getElementById('deck-count-label').innerText = playerDeck.length;
+
+    // --- Ocultar botones globales ---
+    let topButtons = document.getElementById('global-top-buttons');
+    if (topButtons) {
+        topButtons.style.display = (viewId === 'view-home' || viewId === 'view-chapters') ? 'flex' : 'none';
+    }
+
+    // El nav inferior deja paso al footer de controles del combate
+    // (pausa / velocidad / saltar): lo tapaba al compartir bottom-0 y z-40.
+    let bottomNav = document.getElementById('bottom-nav');
+    if (bottomNav) {
+        bottomNav.style.display = viewId === 'view-game' ? 'none' : 'flex';
+    }
+
+    // --- Avanzar tutorial al entrar al deckbuilder ---
+    if (viewId === 'view-deckbuilder' && tutorialActive && tutorialStep === 5) {
+        setTutorialStep(6);
+    }
 }
 
 // --- CONTROLES DE REPRODUCCIÓN (estado centralizado) ---
@@ -38,6 +56,15 @@ if ('serviceWorker' in navigator &&
 }
 
 window.onload = () => {
+    // --- Cargar estado del tutorial ---
+    let savedTutorial = safeStorageGet('nexo_tutorial_v1');
+    if (savedTutorial === 'true') {
+        tutorialActive = false;
+    } else {
+        tutorialActive = true;
+        tutorialStep = 0;
+    }
+
     // Cargar inventario de cartas guardado (si existe).
     let savedOwned = safeStorageGet('nexo_owned_cards');
     if (savedOwned) {
@@ -53,4 +80,9 @@ window.onload = () => {
     renderBoards();
     updateGlobalBackground('view-home');
     updateHomeChapterLabel();
+
+    // Iniciar tutorial si es la primera vez
+    if (tutorialActive) {
+        setTimeout(() => startTutorial(), 500);
+    }
 };
