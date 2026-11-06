@@ -108,6 +108,11 @@ jobs:
                   buildTypes {
                       release { signingConfig signingConfigs.ciRelease }
                   }
+                  // Solo recursos en español: recorta locales sin usar de
+                  // las librerías androidx dentro del APK.
+                  defaultConfig {
+                      resConfigs "es"
+                  }
               }
           }
           EOF

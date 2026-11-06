@@ -70,12 +70,19 @@ body {
     height: 100dvh;
     width: 100vw;
     margin: 0;
+    overscroll-behavior: none; /* sin pull-to-refresh ni bounce del WebView */
     padding-top: env(safe-area-inset-top);
     padding-bottom: env(safe-area-inset-bottom);
     padding-left: env(safe-area-inset-left);
     padding-right: env(safe-area-inset-right);
     box-sizing: border-box;
 }
+
+/* --- RENDIMIENTO (fluidez) --- */
+/* Cada tick reescribe cartas dentro de los tableros: contain:layout acota
+   el reflow al tablero en vez de recalcular la página entera. Los fx flotan
+   por encima (z-index) y no se recortan: no usamos paint containment. */
+#p1-board, #p2-board { contain: layout; }
 
 .font-orbitron { font-family: 'Orbitron', sans-serif; }
 ::-webkit-scrollbar { width: 3px; }

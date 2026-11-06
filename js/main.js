@@ -57,6 +57,27 @@ if ('serviceWorker' in navigator &&
     });
 }
 
+// --- PRECARGA DE ARTE EN TIEMPO MUERTO (fluidez) ---
+// Las artes van como background-image: el WebView no las decodifica hasta
+// la primera pintura de cada carta, y eso mete un tirón justo al desplegar
+// en pleno combate. Tras el primer render decodificamos todo el arte en
+// segundo plano, en tandas pequeñas para no competir con la UI.
+function preloadGameArt() {
+    let urls = [];
+    if (typeof ALL_CARDS !== 'undefined') ALL_CARDS.forEach(c => { if (c.art) urls.push(c.art); });
+    if (typeof CHAPTERS !== 'undefined') CHAPTERS.forEach(ch => { if (ch.art) urls.push(ch.art); });
+    let i = 0;
+    let lote = () => {
+        let fin = Math.min(i + 4, urls.length);
+        for (; i < fin; i++) { new Image().src = urls[i]; }
+        if (i < urls.length) {
+            if (window.requestIdleCallback) requestIdleCallback(lote, { timeout: 2000 });
+            else setTimeout(lote, 150);
+        }
+    };
+    if (urls.length) lote();
+}
+
 window.onload = () => {
     // Cargar perfil y configuración
     loadProfile();
@@ -91,6 +112,9 @@ window.onload = () => {
     if (tutorialActive) {
         setTimeout(() => startTutorial(), 500);
     }
+
+    // Precarga del arte una vez pintada la home (no compite con el primer render)
+    setTimeout(preloadGameArt, 250);
 };
 
 // --- BOTÓN ATRÁS DE ANDROID (CAPACITOR) ---

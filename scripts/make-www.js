@@ -13,4 +13,8 @@ for (const item of ['index.html', 'sw.js', 'manifest.json', 'icon.svg', 'css', '
     fs.cpSync(path.join(root, item), path.join(dest, item), { recursive: true });
 }
 
+// assets/app (fuente de iconos y splash para el build de Android en CI)
+// no se usa en la web: fuera del APK (~580 KB).
+fs.rmSync(path.join(dest, 'assets', 'app'), { recursive: true, force: true });
+
 console.log('www/ listo:', fs.readdirSync(dest).join(', '));

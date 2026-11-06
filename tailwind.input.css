@@ -1,0 +1,4 @@
+/* Entrada del build estático de Tailwind (mismas capas que inyectaba el Play CDN). */
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
