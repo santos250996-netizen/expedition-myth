@@ -1,8 +1,16 @@
 name: Build APK Android
 
-# Genera el APK instalable (debug) de Ecos del Olimpo con Capacitor.
+# Genera el APK instalable de Ecos del Olimpo con Capacitor.
 # Se dispara en cada push a main y manualmente desde la pestaña Actions
 # (Run workflow). El APK aparece como artefacto "EcosDelOlimpo-apk" del run.
+#
+# FIRMADO (actualizaciones sin perder progreso): si el repositorio tiene los
+# secrets ANDROID_KEYSTORE_BASE64 / ANDROID_KEYSTORE_PASSWORD /
+# ANDROID_KEY_ALIAS / ANDROID_KEY_PASSWORD, el APK se compila en release y
+# firmado con esa keystore — misma firma que la instalación anterior, Android
+# permite actualizar encima conservando datos. Sin secrets (o sin keystore)
+# sigue compilando el APK debug de siempre. En ambos casos el versionCode es
+# el número del run, así cada compilación es instalable sobre la previa.
 on:
   workflow_dispatch:
   push:
@@ -32,10 +40,77 @@ jobs:
       - name: Copiar web a www/
         run: npm run build
 
+      # Cada build es una versión nueva: Android trata esto como una
+      # actualización (instala encima) y no exige desinstalar la previa.
+      - name: Versión autoincremental (versionCode = nº de run)
+        run: |
+          node -e "
+            const fs = require('fs');
+            const cfg = JSON.parse(fs.readFileSync('capacitor.config.json', 'utf8'));
+            cfg.android = Object.assign({}, cfg.android, {
+              versionCode: Number(process.env.GITHUB_RUN_NUMBER),
+              versionName: '1.0.' + process.env.GITHUB_RUN_NUMBER
+            });
+            fs.writeFileSync('capacitor.config.json', JSON.stringify(cfg, null, 2) + '\n');
+            console.log('versionCode =', cfg.android.versionCode, '· versionName =', cfg.android.versionName);
+          "
+
       - name: Generar plataforma Android (Capacitor)
         run: |
           npx cap add android
           npx cap sync android
+
+      # Firma de release SOLO si el repositorio tiene los secrets; en otro
+      # caso el flujo sigue igual que siempre (APK debug).
+      - name: Preparar firma de release (si hay secrets)
+        env:
+          ANDROID_KEYSTORE_BASE64: ${{ secrets.ANDROID_KEYSTORE_BASE64 }}
+          ANDROID_KEYSTORE_PASSWORD: ${{ secrets.ANDROID_KEYSTORE_PASSWORD }}
+          ANDROID_KEY_ALIAS: ${{ secrets.ANDROID_KEY_ALIAS }}
+          ANDROID_KEY_PASSWORD: ${{ secrets.ANDROID_KEY_PASSWORD }}
+        run: |
+          if [ -n "$ANDROID_KEYSTORE_BASE64" ] && [ -n "$ANDROID_KEYSTORE_PASSWORD" ] && [ -n "$ANDROID_KEY_ALIAS" ] && [ -n "$ANDROID_KEY_PASSWORD" ]; then
+            echo "$ANDROID_KEYSTORE_BASE64" | base64 -d > android/keystore.jks
+            cat > android/keystore.properties <<EOF
+          storeFile=keystore.jks
+          storePassword=${ANDROID_KEYSTORE_PASSWORD}
+          keyAlias=${ANDROID_KEY_ALIAS}
+          keyPassword=${ANDROID_KEY_PASSWORD}
+          EOF
+            echo "SIGNING_PREPARED=true" >> "$GITHUB_ENV"
+            echo "Secrets de firma presentes: se compilará APK release firmado."
+          else
+            echo "SIGNING_PREPARED=false" >> "$GITHUB_ENV"
+            echo "Sin secrets de firma: se compilará APK debug."
+          fi
+
+      # La plantilla de Capacitor no lee keystore.properties: se añade un
+      # bloque android{} que crea la signingConfig y la asigna a release.
+      - name: Inyectar firma en build.gradle
+        if: env.SIGNING_PREPARED == 'true'
+        run: |
+          cat >> android/app/build.gradle <<'EOF'
+
+          // --- FIRMADO DE RELEASE (CI) ---
+          def keystorePropertiesFile = rootProject.file("keystore.properties")
+          if (keystorePropertiesFile.exists()) {
+              def keystoreProperties = new Properties()
+              keystorePropertiesFile.withInputStream { keystoreProperties.load(it) }
+              android {
+                  signingConfigs {
+                      ciRelease {
+                          storeFile rootProject.file(keystoreProperties['storeFile'])
+                          storePassword keystoreProperties['storePassword']
+                          keyAlias keystoreProperties['keyAlias']
+                          keyPassword keystoreProperties['keyPassword']
+                      }
+                  }
+                  buildTypes {
+                      release { signingConfig signingConfigs.ciRelease }
+                  }
+              }
+          }
+          EOF
 
       - name: Iconos y splash de la app
         run: >-
@@ -51,21 +126,29 @@ jobs:
         run: rm -f android/app/src/main/res/mipmap-anydpi-v26/ic_launcher.xml
                   android/app/src/main/res/mipmap-anydpi-v26/ic_launcher_round.xml
 
-      - name: Compilar APK debug
+      - name: Compilar APK (release firmado si hay firma, si no debug)
         run: |
           chmod +x android/gradlew
           cd android
-          ./gradlew assembleDebug --no-daemon --stacktrace
+          if [ "$SIGNING_PREPARED" = "true" ]; then
+            ./gradlew assembleRelease --no-daemon --stacktrace
+          else
+            ./gradlew assembleDebug --no-daemon --stacktrace
+          fi
 
       - name: Empaquetar artefacto
         run: |
           mkdir -p output
-          cp android/app/build/outputs/apk/debug/app-debug.apk output/EcosDelOlimpo-debug.apk
+          APK=android/app/build/outputs/apk/debug/app-debug.apk
+          if [ -f android/app/build/outputs/apk/release/app-release.apk ]; then
+            APK=android/app/build/outputs/apk/release/app-release.apk
+          fi
+          cp "$APK" output/EcosDelOlimpo.apk
           ls -la output
 
       - name: Subir APK como artefacto
         uses: actions/upload-artifact@v4
         with:
           name: EcosDelOlimpo-apk
-          path: output/EcosDelOlimpo-debug.apk
+          path: output/EcosDelOlimpo.apk
           retention-days: 90
