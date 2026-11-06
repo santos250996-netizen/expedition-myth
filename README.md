@@ -31,8 +31,16 @@ expedition-myth/
 │   ├── game.js         # Motor: reloj de turnos, despliegue, efectos y victoria
 │   └── main.js         # Navegación entre vistas, service worker e inicialización
 ├── netlify.toml        # Config de despliegue estático
+├── docs/
+│   ├── guia-de-balance.md      # Guía oficial de balance: reglas matemáticas de diseño
+│   └── capitulo-1.0-cartas.md  # Spec original del cap. 1.0 + reconciliación con el juego
 └── README.md
 ```
+
+## Documentación de diseño
+
+* **[docs/guia-de-balance.md](docs/guia-de-balance.md)** — la guía oficial de balance: fórmulas de presupuesto (`Coste × 2`), tabla de valores de efectos, multiplicadores de alcance y reglas de drawbacks. Es la referencia normativa para crear y auditar cartas.
+* **[docs/capitulo-1.0-cartas.md](docs/capitulo-1.0-cartas.md)** — lore y especificación original de las 10 cartas del capítulo 1.0, con la reconciliación auditada frente al estado actual del juego.
 
 ## Caché y rendimiento
 
@@ -58,4 +66,4 @@ npx serve .
 
 ## Stack
 
-HTML5 + CSS3 + JavaScript vanilla, con Tailwind CSS y Font Awesome vía CDN. Sin frameworks, sin build, sin backend: el mazo se guarda en `localStorage`.
+HTML5 + CSS3 + JavaScript vanilla, con Tailwind CSS, Font Awesome y las tipografías vendorizadas en el repo (sin CDN: funciona offline y en el APK). Sin frameworks, sin build, sin backend: el mazo se guarda en `localStorage`.
