@@ -3,6 +3,29 @@
 Registro de veredictos y mediciones del skill `tcg-balance-architect`.
 Formato: fecha — carta — veredicto, con números y decisión.
 
+### 2026-11-06 — Fin de partida por estancamiento (v20261106n)
+- Petición: si ambos jugadores se quedan sin nada que aporte Puntos de Gloria
+  (mazos vacíos y tableros sin fuentes), la partida termina ahí mismo y gana
+  el que más gloria tenga. Antes los ticks corrían indefinidamente con el
+  marcador congelado.
+- Motor (game.js): nueva `canStillScore(player)` — es fuente de gloria el
+  mazo por jugar, un Ser vivo con ATK permanente y los generadores
+  periódicos: Guardián c15 (+8 PG, cualquier fila), Sátiro c2 (+1 ATK por
+  cada otro Ser vivo, cualquier fila) y Centinela c18 / Vidente c33 (solo
+  desde la Fila 1). El ATK temporal (Bendición c37) NO cuenta: se resetea
+  antes de puntuar el próximo tick. El Vigía c28 (solo energía) y el Coloso
+  de Bronce c34 (solo desgaste) NO sostienen la partida. gameTick: tras el
+  chequeo de ±50, si no hay impactos del Derrumbe (c19) pendientes y ningún
+  lado puede puntuar → pauseGame + showGameOver, que ya resolvía victoria,
+  derrota y EMPATE por comparación de marcador.
+- Verificación: harness de canon a **82 aserciones** en verde (16 nuevas:
+  unidades de canStillScore —incluida la regresión del Vigía a 0 ATK— y
+  cableado de gameTick con marcador congelado, Derrumbe alimentando a un
+  Titán a 0 ATK, prioridad del ±50 y partida normal intacta). Smoke en
+  navegador: estancamiento forzado cierra con VICTORIA / DERROTA / EMPATE
+  correctos, y una partida completa del capítulo 1.2 siguió hasta cerrar por
+  diferencia de 50 (turno 16) sin cierres prematuros ni errores de consola.
+
 ### 2026-11-06 — Canon 1.2 "El Veredicto de la Sangre y el Bronce" + hotfix de Energía (v20261106l/m)
 - Petición: spec oficial de las 10 cartas del capítulo 1.2 y recreación del
   arte de 4 cartas (c21, c22, c27, c30); después, dos correcciones del

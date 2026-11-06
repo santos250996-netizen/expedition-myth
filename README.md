@@ -12,7 +12,7 @@ Juego de cartas coleccionables **auto-batalla** inspirado en los mitos del mundo
 1. **MAZOS:** arma tu mazo (máx. 10 copias de las 10 cartas). En móvil toca el botón **+** de la colección para añadir cartas, y usa **▲ ▼ ✕** sobre cada carta del mazo para reordenarla o quitarla. En escritorio también puedes arrastrarlas.
 2. **JUGAR:** la partida corre sola — cada jugador despliega una carta por turno si tiene Energía suficiente.
 3. Cada turno, el **ATK** total de tu tablero se suma a tu marcador; el rival hace lo propio.
-4. La partida se decide por **diferencia de 50 Puntos de Gloria** (o al agotarse ambos mazos, por quien domine el marcador). Guarda detalles de cada carta tocándola (con su lore).
+4. La partida se decide por **diferencia de 50 Puntos de Gloria**. Y ojo al estancamiento: si ambos mazos se agotan y en los tableros ya no queda nada que pueda sumar gloria (sin ATK ni generadores periódicos), termina ahí mismo y gana quien tenga más Puntos de Gloria — con igualdad, empate. Guarda detalles de cada carta tocándola (con su lore).
 
 ## Estructura del proyecto
 

@@ -66,6 +66,25 @@ function applyHpReduction(owner, target, amount, fxIcon) {
     if (target.hp <= 0) { target.hp = 0; target.dying = true; }
 }
 
+// ¿Todavía puede este lado sumar gloria en algún turno futuro? Es fuente de
+// gloria: tener mazo por jugar, o un Ser vivo con ATK permanente que puntúe
+// el tick. Los generadores periódicos también: Guardián c15 (+8 PG en
+// cualquier fila), Sátiro c2 (+1 ATK por cada otro Ser aliado vivo, cualquier
+// fila) y Centinela c18 / Vidente c33 (solo se re-crecen desde la Fila 1).
+// El ATK temporal (Bendición c37) NO cuenta: se resetea antes de puntuar el
+// próximo tick. El Vigía c28 solo da energía y el Coloso de Bronce c34 solo
+// se desgasta: con mazo vacío y ATK 0 no sostienen la partida.
+function canStillScore(player) {
+    if (player.deckPointer < player.deck.length) return true;
+    let alive = player.activeBoard.filter(c => !c.dying);
+    return alive.some(c => {
+        if (c.atk > 0) return true;
+        if (c.id === 'c15') return true;
+        if (c.id === 'c2' && alive.some(o => o !== c && o.kind === 'Ser')) return true;
+        return alive[0] === c && (c.id === 'c18' || c.id === 'c33');
+    });
+}
+
 function gameTick() {
             gameState.turn++;
             // Las cartas que murieron el turno anterior ya se vieron
@@ -138,10 +157,21 @@ function gameTick() {
             // Los FX se materializan tras el render (el render borra el DOM).
             playQueuedFx();
 
-            // La partida SOLO termina por diferencia de 50: aunque ambos mazos
-            // se agoten, los tableros siguen puntuando turno a turno hasta que
-            // alguien abra esa ventaja.
+            // La partida termina por diferencia de 50. Y además por
+            // estancamiento: si ambos mazos se agotaron y en los tableros
+            // no queda NINGUNA fuente de gloria (sin ATK, sin generadores
+            // periódicos y sin impactos del Derrumbe pendientes, que el
+            // turno siguiente pueden matar cartas o alimentar al Titán
+            // c12), nada puede volver a mover el marcador: termina ahí
+            // mismo y gana quien tenga más Puntos de Gloria (showGameOver
+            // resuelve victoria, derrota o empate).
             if (Math.abs(gameState.p1.score - gameState.p2.score) >= 50) {
+                pauseGame();
+                showGameOver();
+                return;
+            }
+            if (!(gameState.pendingStrikes || []).length &&
+                !canStillScore(gameState.p1) && !canStillScore(gameState.p2)) {
                 pauseGame();
                 showGameOver();
             }
