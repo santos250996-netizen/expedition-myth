@@ -38,6 +38,34 @@ function ownerSideOf(card) {
     return gameState.p1.activeBoard.includes(card) ? 'p1' : 'p2';
 }
 
+// Escudo del Coloso de la Grieta Profunda (c24): aura global que amortigua
+// hasta 4 puntos acumulados de reducción de stat (ATK o HP) sobre TODAS tus
+// cartas en tablero; al agotarse los 4 puntos, el efecto se desactiva. NO
+// absorbe daño (Ira, Disputa, choques, Derrumbe) ni costes propios (Pacto,
+// Embestida, Ofrenda, desgaste c34): solo reducciones de stat.
+function colossusShieldFor(owner, amount) {
+    if (amount <= 0) return 0;
+    let shield = owner.activeBoard.find(c => c.id === 'c24' && !c.dying);
+    if (!shield) return amount;
+    if (shield.shieldCharges === undefined) shield.shieldCharges = 4;
+    if (shield.shieldCharges <= 0) return amount;
+    let absorbed = Math.min(amount, shield.shieldCharges);
+    shield.shieldCharges -= absorbed;
+    queueFx({ t: 'debuff', side: sideOf(owner), uid: shield.uid, text: '⛨ -' + absorbed, icon: 'fa-gears', cls: 'fx-gray', pulse: 'fx-pulse-gray' });
+    return amount - absorbed;
+}
+
+// Reducción de HP canónica (los 4 disparos del Temblor c29): NO es daño, no
+// pasa por dealDamage ni dispara reacciones al daño (Titán c12); el escudo
+// del Coloso (c24) la amortigua si está activa.
+function applyHpReduction(owner, target, amount, fxIcon) {
+    let left = colossusShieldFor(owner, amount);
+    if (left <= 0) return;
+    target.hp -= left;
+    queueFx({ t: 'debuff', side: sideOf(owner), uid: target.uid, text: '-' + left + ' HP', icon: fxIcon || 'fa-heart-crack', cls: 'fx-gray' });
+    if (target.hp <= 0) { target.hp = 0; target.dying = true; }
+}
+
 function gameTick() {
             gameState.turn++;
             // Las cartas que murieron el turno anterior ya se vieron
@@ -242,8 +270,8 @@ function gameTick() {
             gameState.justDeployed = [];
             gameState.fxQueue = [];
             gameState.clashQueue = [];
-            gameState.p1 = { score: 0, energy: 1, deckPointer: 0, activeBoard: [], lastPlayed: null, extraPoints: 0, pendingEventDiscount: 0 };
-            gameState.p2 = { score: 0, energy: 1, deckPointer: 0, activeBoard: [], lastPlayed: null, extraPoints: 0, pendingEventDiscount: 0 };
+            gameState.p1 = { score: 0, energy: 0, deckPointer: 0, activeBoard: [], lastPlayed: null, extraPoints: 0, pendingEventDiscount: 0 };
+            gameState.p2 = { score: 0, energy: 0, deckPointer: 0, activeBoard: [], lastPlayed: null, extraPoints: 0, pendingEventDiscount: 0 };
             gameState.pendingStrikes = [];
             // Copias de mazo por partida (DESPUÉS de re-crear p1/p2): el robo
             // de Hermes (c40) y cualquier mutación juegan sobre la copia, no

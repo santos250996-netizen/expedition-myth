@@ -55,7 +55,7 @@ Si el valor del efecto es mayor que `Coste * 2`, el evento es demasiado poderoso
 | Buff de ATK (2+ objetivos) | +1 ATK = Valor 2 |
 | Buff de HP (1 objetivo) | +1 HP = Valor 0.5 |
 | Buff de HP (2+ objetivos) | +1 HP a todos = Valor 1 |
-| Generación de Energía | +1 Energía = Valor 1 |
+| Generación de Energía | +1 Energía = Valor 2 (también para -1 Energía, en cualquiera de sus formas) |
 | Generación de Puntos de Gloria | 2 Puntos = Valor 1 (1 Punto de presupuesto = 2 Puntos de Gloria) |
 | Destrucción directa (1 Ser rival) | Valor 8 (fijo) |
 | Ver o manipular el mazo rival | Valor 2-3 |
@@ -143,6 +143,13 @@ Presupuesto: 3 * 2 = 6.
 Valor del efecto: +2 HP (valor base 1) * 2 (alcance) = 2.
 Stats: 6 - 2 = 4. Pero es un evento, así que no tiene stats. El valor 2 es menor que 6,
 así que es un evento justo. ✅ Cumple.
+
+**EJEMPLO 6 — Efecto pasivo de Energía (regla del diseñador)**
+
+Carta: La Profecía de la Sangre (Coste 5, aura: tus Eventos cuestan -1 Energía).
+Presupuesto: 5 * 2 = 10.
+Valor del efecto: -1 Energía = 2; al ser un efecto pasivo/recurrente se aplica x2 = 4.
+Stats: 10 - 4 = 6 puntos (3/3). ✅ Cumple.
 
 ## 10. Regla de oro
 

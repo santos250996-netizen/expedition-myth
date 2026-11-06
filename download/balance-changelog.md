@@ -3,6 +3,34 @@
 Registro de veredictos y mediciones del skill `tcg-balance-architect`.
 Formato: fecha — carta — veredicto, con números y decisión.
 
+### 2026-11-06 — Canon 1.2 "El Veredicto de la Sangre y el Bronce" + hotfix de Energía (v20261106l/m)
+- Petición: spec oficial de las 10 cartas del capítulo 1.2 y recreación del
+  arte de 4 cartas (c21, c22, c27, c30); después, dos correcciones del
+  diseñador: bug de energía (+2/turno) y valuación definitiva de la Energía
+  (2 de presupuesto, pasivo ×2 → Profecía 3/3).
+- Realineación `l` (9 cartas; c25 Ira del Cielo ya coincidía): c21 +3HP/+4PG →
+  **+1 ATK/+2 HP a todos**; c22 2/4 con +1 a Fila 1 (a sí mismo) → **1/3 con
+  +2 ATK a Fila 2**; c23 3×n sin coste → **sacrificar 1 HP por propio, daño
+  2×n**; c24 7/10 inmune → **3/5 con aura de escudo de 4 cargas**
+  (`colossusShieldFor` + `applyHpReduction` en game.js; envueltos c5, c6, c10,
+  c14, c16 y los disparos de c29; el Coloso ya NO es inmune a Pacto/Hades);
+  c26 2/1 → **1/1**; c27 coste 2 +2 PG tope 8 → **coste 3, +3 PG sin tope**;
+  c28 coste 2 1/4 → **coste 3, 0/2**; c29 -1 ATK temporal → **4 disparos de
+  -1 HP a Ser aleatorio** (fuego amigo; reducción no canónica, no alimenta
+  al Titán); c30 4/6 excluyéndose → **4/4 incluyéndose** (5 ATK efectivos).
+- Hotfix `m`: energía inicial 1 → **0** (el tick del turno 1 otorga el primer
+  +1; antes el +1 inicial de regalo hacía +2 fantasma desde el turno 2);
+  c20 Profecía **4/4 → 3/3** (Energía = 2 de presupuesto, pasivo ×2 = 4,
+  10 - 4 = 6 stats); guía: fila de Energía = 2 y ejemplo 6 nuevo. Con la
+  regla, c17 y c8 cierran exactos sin cambiar stats.
+- Verificación: harness de canon **63 aserciones verdes** (stats exactas,
+  ciclo completo del escudo con agotamiento en pleno efecto, Temblor
+  determinista, 4 mazos bot); smoke en Caddy :3000 — energía real = simulación
+  durante 19 turnos, capítulo 1.2 con c24 3/5 escudo:4 y c30 autobuff (5 ATK)
+  en tablero, arte nuevo visible, cero errores de consola.
+- Arte: c21/c22/c27/c30 recreadas de cero (1344×768 → webp 86–136 KB) con
+  composiciones nuevas sobre el estilo del capítulo.
+
 ### 2026-11-06 — Capítulo 1.3 "El Eclipse del Olimpo" (c31–c40) — set nuevo al pool
 - Petición: 10 cartas nuevas del diseñador con lore del capítulo; mecánicas
   nuevas: aura de descuento de Eventos ampliada (c32), aceleración

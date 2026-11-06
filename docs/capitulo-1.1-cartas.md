@@ -1,8 +1,10 @@
 # Capítulo 1.1 — Las Grietas de la Discordia (Especificación oficial)
 
 > Lore y diseño original de las 10 cartas del capítulo, tal como lo definió el
-> diseñador. Este canon está **aplicado al juego desde `v20261106k`**: las 10
-> cartas de `js/cards.js` coinciden una a una con esta especificación.
+> diseñador. Este canon está **aplicado al juego desde `v20261106k`** y
+> **enmendado en `v20261106m`** (Profecía c20 pasa de 4/4 a 3/3 por la regla
+> definitiva de valor de Energía): las 10 cartas de `js/cards.js` coinciden
+> una a una con esta especificación.
 > Reglas de auditoría: [Guía de Balance](guia-de-balance.md).
 
 ## Lore del capítulo
@@ -122,13 +124,13 @@ oscuras con la piel cubierta de runas pintadas con barro y sangre. Se desplaza d
 campamento en campamento anunciando que el conflicto actual es solo el preludio
 de una guerra mucho mayor que obligará a los dioses a descender de los cielos.
 
-- Coste: 5 — ATK: 4 — HP: 4
+- Coste: 5 — ATK: 3 — HP: 3
 - Efecto: Mientras esté en el tablero, TODOS los Eventos cuestan -1 Energía
   (mínimo 0).
 
 ---
 
-## Auditoría según la Guía de Balance (canon = juego en `v20261106k`)
+## Auditoría según la Guía de Balance (canon = juego en `v20261106m`)
 
 | Carta | Presupuesto (Coste×2) | Stats | Efecto valorado | Total | Veredicto |
 | --- | --- | --- | --- | --- | --- |
@@ -138,26 +140,24 @@ de una guerra mucho mayor que obligará a los dioses a descender de los cielos.
 | c14 Canto Embrujado | 4 | — | -2 ATK × 2 objetivos = 4 | 4 | ✅ Exacto |
 | c15 Guardián del Fuego Sagrado | 8 | 4 (0/4) | +8 Gloria = 4 | 8 | ✅ Exacto (ejemplo 4 de la guía) |
 | c16 Sombra en el Pozo | 6 | 4 (2/2) | -2 ATK a 1 objetivo = 2 | 6 | ✅ Exacto |
-| c17 Saqueo a la Luz de la Antorcha | 4 | — | +4 PG (2) + 1 Energía (1) = 3 | 3 | ✅ Bajo presupuesto (canon `k`) |
+| c17 Saqueo a la Luz de la Antorcha | 4 | — | +4 PG (2) + 1 Energía (2) = 4 | 4 | ✅ Exacto (regla de Energía, `m`) |
 | c18 Centinela del Barranco | 8 | 6 (3/3) | +1 ATK condicionado a Fila 1 = 2 | 8 | ✅ Exacto |
 | c19 Derrumbe de las Rocas Sagradas | 6 | — | 3 daño hoy (3) + 3 daño al turno siguiente (3) = 6 | 6 | ✅ Exacto |
-| c20 Profecía de la Sangre Derramada | 10 | 8 (4/4) | aura de descuento de Eventos = 4 | 12 | ⚖️ Canon del diseñador manda (ver nota) |
+| c20 Profecía de la Sangre Derramada | 10 | 6 (3/3) | -1 Energía = 2, pasivo ×2 = 4 | 10 | ✅ Exacto (regla de Energía, `m`) |
 
-### Nota del diseñador sobre la Profecía (c20)
+### Nota del diseñador sobre la Energía (c20 y derivadas)
 
-Valoración oficial del descuento de energía, que refina la tabla de efectos de
-la guía. Razonamiento del diseñador: el aura de la Profecía no vale 2 sino
-**4 de presupuesto**, porque se trata de energía — al quitarle 1 de coste a un
-Evento le estás reduciendo 2 de presupuesto — y además el efecto es permanente
-mientras la carta siga en el tablero.
+Regla definitiva (`v20261106m`), que sustituye la valuación provisional de
+`v20261106k` (cuerpo 4/4 sobre presupuesto): **cualquier efecto de Energía,
+positivo o negativo, vale 2 de presupuesto por punto** — quitar o poner 1 de
+coste mueve 2 de presupuesto — **y si el efecto es pasivo/recurrente se aplica
+el multiplicador ×2**. Para la Profecía: -1 Energía = 2, pasivo ×2 = 4;
+presupuesto 10 - 4 = **6 stats = 3/3**. ✅ Exacto.
 
-Regla resultante: **ahorrar 1 Energía = 2 de presupuesto** (el doble del
-"+1 Energía = Valor 1" de la tabla genérica, porque la energía ahorrada se
-reinvierte en despliegues). En `v20261106k` el diseñador fijó además el cuerpo
-final en **4/4**: stats 8 + efecto 4 = 12 sobre un presupuesto estricto de 10,
-un margen deliberado a favor de la carta cuya decisión manda sobre la fórmula.
-Esta valoración se aplicará en adelante a cualquier efecto de descuento de
-energía (Oráculo c8, Guardián de Delfos c32).
+Esta valuación se aplica en adelante a cualquier efecto de energía o descuento
+(Oráculo c8, Guardián de Delfos c32, Vigía c28, Saqueo c17). En `k`, c17 y c8
+quedaban "bajo presupuesto" valorando la energía a 1; con la regla `m` ambos
+cierran exactos sin cambiar stats.
 
 ### Desviaciones previas corregidas (`v20261106j` + ajustes `v20261106k`)
 
@@ -165,5 +165,7 @@ Antes de la realineación, el juego tenía: c12 5/**6**, c14 aturdía al rival
 con menos ATK un turno, c15 2/4 con **+1 PG**, c16 2/**3**, c17 **+3 PG**,
 c18 3/**4**, c19 sin segundo impacto y c20 **6/4** con ramp de energía
 condicionada a 3+ Seres. La realineación `v20261106j` las sustituyó por el
-canon de esta página, y la revisión final del diseñador (`v20261106k`) pulió
-las dos últimas piezas: c17 a **coste 2 con +4 PG** y c20 con cuerpo **4/4**.
+canon de esta página, la revisión final del diseñador (`v20261106k`) pulió
+las dos últimas piezas: c17 a **coste 2 con +4 PG** y c20 con cuerpo **4/4**,
+y la regla definitiva de Energía (`v20261106m`) dejó la Profecía en su cierre
+exacto de **3/3**.

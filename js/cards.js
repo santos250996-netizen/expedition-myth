@@ -41,7 +41,7 @@ const ALL_CARDS = [
                 desc: 'Reduce en -2 el ATK de TODOS los Seres rivales (permanente).', 
                 lore: 'Una densa penumbra inexplorada desciende de los cielos y cubre los valles arcaicos de Grecia. Esta neblina antinatural nubla el juicio de las tribus y debilita los primeros asentamientos humanos, obligándolos a dar sus primeros pasos a ciegas en la oscuridad.',
                 art: 'assets/cartas/carta-05-niebla-del-caos.webp',
-                effect: (p, opp) => { queueFx({ t: 'wave', side: sideOf(opp) }); opp.activeBoard.forEach(c => { if (!c.dying && !c.noAtkRed) { c.atk = Math.max(0, c.atk - 2); queueFx({ t: 'debuff', side: sideOf(opp), uid: c.uid, text: '-2 ATK', icon: 'fa-cloud', overlay: 'fog', pulse: 'fx-pulse-gray', cls: 'fx-gray' }); } }); } 
+                effect: (p, opp) => { queueFx({ t: 'wave', side: sideOf(opp) }); opp.activeBoard.forEach(c => { if (!c.dying && !c.noAtkRed) { let d = colossusShieldFor(opp, 2); if (d > 0) { c.atk = Math.max(0, c.atk - d); queueFx({ t: 'debuff', side: sideOf(opp), uid: c.uid, text: '-' + d + ' ATK', icon: 'fa-cloud', overlay: 'fog', pulse: 'fx-pulse-gray', cls: 'fx-gray' }); } } }); } 
             },
             { 
                 id: 'c6', name: 'El Lamento de la Fuente Seca', kind: 'Ser', cost: 2, atk: 1, hp: 2, 
@@ -49,7 +49,7 @@ const ALL_CARDS = [
                 desc: 'Al entrar: Reduce en -1 el ATK del Ser rival en la Fila 1 (permanente).', 
                 lore: 'Las protectoras de los manantiales sufren la corrupción de la niebla. Al verse marchitas y sin agua pura, pierden la razón y se convierten en espectros errantes que lloran desconsoladamente, confundiendo con sus cantos a cualquiera que se acerque.',
                 art: 'assets/cartas/carta-06-lamento-fuente-seca.webp',
-                effect: (p, opp) => { let target = opp.activeBoard[0]; if (target && !target.dying && !target.noAtkRed) { target.atk = Math.max(0, target.atk - 1); queueFx({ t: 'debuff', side: sideOf(opp), uid: target.uid, text: '-1 ATK', icon: 'fa-water', overlay: 'tears' }); } }, startTurn: null 
+                effect: (p, opp) => { let target = opp.activeBoard[0]; if (target && !target.dying && !target.noAtkRed) { let d = colossusShieldFor(opp, 1); if (d > 0) { target.atk = Math.max(0, target.atk - d); queueFx({ t: 'debuff', side: sideOf(opp), uid: target.uid, text: '-' + d + ' ATK', icon: 'fa-water', overlay: 'tears' }); } } }, startTurn: null 
             },
             { 
                 id: 'c7', name: 'La Embestida de Erimanto', kind: 'Ser', cost: 5, atk: 4, hp: 6, 
@@ -111,7 +111,7 @@ const ALL_CARDS = [
                 desc: 'Reduce en -1 el ATK de TODOS los Seres (rivales y aliados), permanentemente.',
                 lore: 'Los robles milenarios de los bosques sagrados guardan secretos antiguos. Cuando los intrusos se adentran sin respeto, las hojas y el viento susurran nombres prohibidos que paralizan la voluntad y confunden las mentes de los enemigos.',
                 art: 'assets/cartas/carta-10-ecos-de-dodona.webp',
-                effect: (p, opp) => { [p, opp].forEach(owner => { queueFx({ t: 'wave', side: sideOf(owner) }); owner.activeBoard.forEach(c => { if (!c.dying && !c.noAtkRed) { c.atk = Math.max(0, c.atk - 1); queueFx({ t: 'debuff', side: sideOf(owner), uid: c.uid, text: '-1 ATK', icon: 'fa-leaf', overlay: 'leaf' }); } }); }); }
+                effect: (p, opp) => { [p, opp].forEach(owner => { queueFx({ t: 'wave', side: sideOf(owner) }); owner.activeBoard.forEach(c => { if (!c.dying && !c.noAtkRed) { let d = colossusShieldFor(owner, 1); if (d > 0) { c.atk = Math.max(0, c.atk - d); queueFx({ t: 'debuff', side: sideOf(owner), uid: c.uid, text: '-' + d + ' ATK', icon: 'fa-leaf', overlay: 'leaf' }); } } }); }); }
             },
             {
                 id: 'c11', name: 'El Acechador de los Matorrales', kind: 'Ser', cost: 2, atk: 1, hp: 2,
@@ -154,8 +154,11 @@ const ALL_CARDS = [
                     alive.sort((a, b) => ((a.atk + (a.tempAtkMod || 0)) - (b.atk + (b.tempAtkMod || 0))) || (a.hp - b.hp));
                     alive.slice(0, 2).forEach(c => {
                         if (!c.noAtkRed) {
-                            c.atk = Math.max(0, c.atk - 2);
-                            queueFx({ t: 'debuff', side: sideOf(opp), uid: c.uid, text: '-2 ATK', icon: 'fa-ghost', cls: 'fx-gray', pulse: 'fx-pulse-gray' });
+                            let d = colossusShieldFor(opp, 2);
+                            if (d > 0) {
+                                c.atk = Math.max(0, c.atk - d);
+                                queueFx({ t: 'debuff', side: sideOf(opp), uid: c.uid, text: '-' + d + ' ATK', icon: 'fa-ghost', cls: 'fx-gray', pulse: 'fx-pulse-gray' });
+                            }
                         }
                     });
                 } 
@@ -175,7 +178,7 @@ const ALL_CARDS = [
                 desc: 'Al entrar: Reduce en -2 el ATK del Ser rival en la Fila 1.', 
                 lore: 'En las reservas de agua que aún quedan limpias en los valles, una entidad acuática de formas líquidas y oscuras comienza a manifestarse. No ataca directamente, sino que corrompe el líquido vital, haciendo que cualquier criatura o mortal que beba de él pierda la razón y ataque a los suyos.',
                 art: 'assets/cartas/carta-16-sombra-en-el-pozo.webp',
-                effect: (p, opp) => { let target = opp.activeBoard[0]; if (target && !target.dying && !target.noAtkRed) { target.atk = Math.max(0, target.atk - 2); queueFx({ t: 'debuff', side: sideOf(opp), uid: target.uid, text: '-2 ATK', icon: 'fa-moon', overlay: 'fog', pulse: 'fx-pulse-gray' }); } }, startTurn: null 
+                effect: (p, opp) => { let target = opp.activeBoard[0]; if (target && !target.dying && !target.noAtkRed) { let d = colossusShieldFor(opp, 2); if (d > 0) { target.atk = Math.max(0, target.atk - d); queueFx({ t: 'debuff', side: sideOf(opp), uid: target.uid, text: '-' + d + ' ATK', icon: 'fa-moon', overlay: 'fog', pulse: 'fx-pulse-gray' }); } } }, startTurn: null 
             },
             { 
                 id: 'c17', name: 'Saqueo a la Luz de la Antorcha', kind: 'Evento', cost: 2, atk: 0, hp: 0,
@@ -203,7 +206,7 @@ const ALL_CARDS = [
                 effect: (p, opp) => { let target = opp.activeBoard[0]; if (target && !target.dying) { dealDamage(target, 3); queueFx({ t: 'debuff', side: sideOf(opp), uid: target.uid, text: '-3 HP', icon: 'fa-house-crack', overlay: 'hit', pulse: 'fx-shake' }); } (gameState.pendingStrikes = gameState.pendingStrikes || []).push({ opp: opp }); } 
             },
             { 
-                id: 'c20', name: 'La Profecía de la Sangre Derramada', kind: 'Ser', cost: 5, atk: 4, hp: 4,
+                id: 'c20', name: 'La Profecía de la Sangre Derramada', kind: 'Ser', cost: 5, atk: 3, hp: 3,
                 icon: 'fa-book-skull', 
                 desc: 'Mientras esté en el tablero, TODOS tus Eventos cuestan -1 Energía (mínimo 0).', 
                 lore: 'Un devoto enloquecido por las visiones del oráculo emerge de las cuevas oscuras con la piel cubierta de runas pintadas con barro y sangre. Se desplaza de campamento en campamento anunciando que el conflicto actual es solo el preludio de una guerra mucho mayor que obligará a los dioses a descender de los cielos.',
@@ -214,48 +217,49 @@ const ALL_CARDS = [
             {
                 id: 'c21', name: 'El Juramento de las Lanzas de Bronce', kind: 'Evento', cost: 3, atk: 0, hp: 0,
                 icon: 'fa-shield-halved',
-                desc: 'Otorga +3 HP a todos tus Seres y +4 Puntos de Gloria instantáneos.',
+                desc: 'Otorga +1 ATK y +2 HP a todos tus Seres aliados en el tablero.',
                 lore: 'Ante la inminencia de una masacre total, los jefes de las aldeas rivales se ven obligados a deponer temporalmente sus disputas internas. En un claro del bosque iluminado por hogueras, sellan un pacto de sangre sobre un escudo oxidado, jurando unir sus fuerzas y crear la primera línea de defensa organizada de la Hélade.',
                 art: 'assets/cartas/carta-21-juramento-lanzas-bronce.webp',
                 effect: (p) => {
-                    p.score += 4;
-                    queueFx({ t: 'gloria', side: sideOf(p), text: '+4 GLORIA', icon: 'fa-shield-halved', num: 4 });
-                    p.activeBoard.forEach(c => { if (!c.dying) { c.hp += 3; queueFx({ t: 'buff', side: sideOf(p), uid: c.uid, text: '+3 HP', icon: 'fa-heart' }); } });
+                    p.activeBoard.forEach(c => { if (!c.dying) { c.atk += 1; c.hp += 2; queueFx({ t: 'buff', side: sideOf(p), uid: c.uid, text: '+1 ATK / +2 HP', icon: 'fa-shield-halved' }); } });
                 }, startTurn: null
             },
             {
-                id: 'c22', name: 'El Forjador del Yunque Oculto', kind: 'Ser', cost: 3, atk: 2, hp: 4,
+                id: 'c22', name: 'El Forjador del Yunque Oculto', kind: 'Ser', cost: 3, atk: 1, hp: 3,
                 icon: 'fa-hammer',
-                desc: 'Al entrar: otorga +1 ATK al Ser aliado en la Fila 1.',
+                desc: 'Al entrar: Otorga +2 ATK al Ser aliado en la Fila 2 (el que está justo debajo de él).',
                 lore: 'En las entrañas de una caverna humeante donde el fuego de la tierra brota sin descanso, un mortal solitario e ingenioso logra extraer los primeros minerales verdaderos de la roca. Con un pesado martillo de piedra, golpea el metal incandescente para dar forma a las primeras armas y armaduras de bronce rudimentario, cambiando para siempre el equilibrio de la guerra.',
                 art: 'assets/cartas/carta-22-forjador-yunque-oculto.webp',
-                effect: (p) => { let t = p.activeBoard[0]; if (t && !t.dying) { t.atk += 1; queueFx({ t: 'buff', side: sideOf(p), uid: t.uid, text: '+1 ATK', icon: 'fa-hammer' }); } }, startTurn: null
+                effect: (p) => { let t = p.activeBoard[1]; if (t && !t.dying) { t.atk += 2; queueFx({ t: 'buff', side: sideOf(p), uid: t.uid, text: '+2 ATK', icon: 'fa-hammer' }); } }, startTurn: null
             },
             {
                 id: 'c23', name: 'La Ofrenda de Hecatombe', kind: 'Evento', cost: 4, atk: 0, hp: 0,
                 icon: 'fa-fire-flame-curved',
-                desc: 'Inflige 3 de daño al HP del Ser rival en la Fila 1 por cada Ser aliado que tengas en el tablero.',
+                desc: 'Resta 1 HP a todos tus Seres aliados e inflige el doble de esa cantidad como daño al Ser rival en la Fila 1 (daño = Seres sacrificados × 2).',
                 lore: 'Buscando desesperadamente el favor de los cielos ante la magnitud del conflicto, los sacerdotes de los nuevos asentamientos organizan el primer sacrificio masivo de ganado en un altar de mármol negro. El humo denso y aromático de la ofrenda asciende hacia las nubes, exigiendo una respuesta directa de las deidades olímpicas.',
                 art: 'assets/cartas/carta-23-ofrenda-hecatombe.webp',
                 effect: (p, opp) => {
-                    let n = p.activeBoard.filter(c => !c.dying).length;
-                    if (n > 0) {
-                        let target = opp.activeBoard[0];
-                        if (target && !target.dying) {
-                            dealDamage(target, 3 * n);
-                            queueFx({ t: 'debuff', side: sideOf(opp), uid: target.uid, text: '-' + (3 * n) + ' HP', icon: 'fa-fire-flame-curved', overlay: 'hit', pulse: 'fx-shake' });
-                        }
+                    let sacrificados = p.activeBoard.filter(c => !c.dying);
+                    let target = opp.activeBoard[0];
+                    if (sacrificados.length > 0 && target && !target.dying) {
+                        sacrificados.forEach(c => {
+                            c.hp -= 1;
+                            queueFx({ t: 'debuff', side: sideOf(p), uid: c.uid, text: '-1 HP', icon: 'fa-fire-flame-curved', cls: 'fx-gray' });
+                            if (c.hp <= 0) { c.hp = 0; c.dying = true; }
+                        });
+                        let n = sacrificados.length;
+                        dealDamage(target, 2 * n);
+                        queueFx({ t: 'debuff', side: sideOf(opp), uid: target.uid, text: '-' + (2 * n) + ' HP', icon: 'fa-fire-flame-curved', overlay: 'hit', pulse: 'fx-shake' });
                     }
                 }
             },
             {
-                id: 'c24', name: 'El Coloso de la Grieta Profunda', kind: 'Ser', cost: 8, atk: 7, hp: 10,
+                id: 'c24', name: 'El Coloso de la Grieta Profunda', kind: 'Ser', cost: 8, atk: 3, hp: 5,
                 icon: 'fa-gears',
-                desc: 'Inmune a la reducción de ATK (Niebla, Temblor) y a la destrucción directa (Pacto), pero recibe daño de HP con normalidad.',
+                desc: 'Aura de protección global: amortigua hasta 4 puntos de reducción (ATK o HP) sobre TODAS tus cartas. Al agotarse los 4 puntos, el efecto se desactiva.',
                 lore: 'Un gigantesco autómata de piedra viva y engranajes de bronce antiguo, olvidado desde las eras de la Titanomaquia, emerge de las profundidades de un abismo abierto por los terremotos. No responde a mandatos humanos ni divinos; avanza de manera implacable aplastando todo a su paso, guiado únicamente por el impulso ancestral de destruir la superficie.',
                 art: 'assets/cartas/carta-24-coloso-grieta-profunda.webp',
-                effect: null, startTurn: null,
-                noAtkRed: true, noDestroy: true
+                effect: null, startTurn: null, shieldCharges: 4
             },
             {
                 id: 'c25', name: 'La Ira del Cielo Abierto', kind: 'Evento', cost: 4, atk: 0, hp: 0,
@@ -271,21 +275,21 @@ const ALL_CARDS = [
                 }
             },
             {
-                id: 'c26', name: 'El Cazador de Bestias de las Colinas', kind: 'Ser', cost: 2, atk: 2, hp: 1,
+                id: 'c26', name: 'El Cazador de Bestias de las Colinas', kind: 'Ser', cost: 2, atk: 1, hp: 1,
                 icon: 'fa-binoculars',
-                desc: 'Al entrar: Inflige 2 de daño al HP del Ser rival en la posición 1.',
+                desc: 'Al entrar: Inflige 2 de daño al HP del Ser rival en la Fila 1.',
                 lore: 'Un guerrero curtido en mil batallas solitarias, que ha cambiado las toscas lanzas de madera por una jabaliza con punta de bronce forjado. Se desplaza en silencio por los desfiladeros, especializado en rastrear y dar caza a las criaturas más peligrosas que amenazan los flancos de los nuevos asentamientos.',
                 art: 'assets/cartas/carta-26-cazador-bestias-colinas.webp',
                 effect: (p, opp) => { let target = opp.activeBoard[0]; if (target && !target.dying) { dealDamage(target, 2); queueFx({ t: 'debuff', side: sideOf(opp), uid: target.uid, text: '-2 HP', icon: 'fa-binoculars', overlay: 'hit', pulse: 'fx-shake' }); } }, startTurn: null
             },
             {
-                id: 'c27', name: 'El Juicio del Rayo Caído', kind: 'Evento', cost: 2, atk: 0, hp: 0,
+                id: 'c27', name: 'El Juicio del Rayo Caído', kind: 'Evento', cost: 3, atk: 0, hp: 0,
                 icon: 'fa-cloud-bolt',
-                desc: 'Otorga +2 Puntos de Gloria por cada Ser aliado en el tablero (máximo +8).',
+                desc: 'Otorga +3 Puntos de Gloria por cada Ser aliado en el tablero (sin límite máximo).',
                 lore: 'Tras la tormenta eléctrica desatada en los cielos, los restos humeantes del campo de batalla quedan marcados por la energía divina. Los guerreros que logran sobrevivir al impacto del rayo experimentan un fervor fanático, viendo la destrucción como una señal inequívoca de que los dioses han puesto sus ojos en la Hélade.',
                 art: 'assets/cartas/carta-27-juicio-rayo-caido.webp',
                 effect: (p) => {
-                    let n = Math.min(8, 2 * p.activeBoard.filter(c => !c.dying).length);
+                    let n = 3 * p.activeBoard.filter(c => !c.dying).length;
                     if (n > 0) {
                         p.score += n;
                         queueFx({ t: 'gloria', side: sideOf(p), text: '+' + n + ' GLORIA', icon: 'fa-cloud-bolt', num: n });
@@ -293,7 +297,7 @@ const ALL_CARDS = [
                 }, startTurn: null
             },
             {
-                id: 'c28', name: 'El Vigía de la Muralla Ciclópea', kind: 'Ser', cost: 2, atk: 1, hp: 4,
+                id: 'c28', name: 'El Vigía de la Muralla Ciclópea', kind: 'Ser', cost: 3, atk: 0, hp: 2,
                 icon: 'fa-tower-observation',
                 desc: 'Inicio de turno: Si está en la Fila 1, ganas +1 Energía extra.',
                 lore: 'El primer guerrero en ocupar una posición defensiva elevada sobre los bloques de piedra tosca recién amontonados. Dotado de una pesada protección de bronce, vigila incansablemente el horizonte desde lo alto, dando la voz de alarma ante cualquier incursión de bestias o enemigos.',
@@ -304,28 +308,29 @@ const ALL_CARDS = [
             {
                 id: 'c29', name: 'El Temblor de las Raíces Ocultas', kind: 'Evento', cost: 2, atk: 0, hp: 0,
                 icon: 'fa-hill-rockslide',
-                desc: 'Reduce en -1 el ATK de todos los Seres rivales durante este turno.',
+                desc: 'Dispara 4 veces. Cada disparo reduce 1 HP a un Ser aleatorio en el tablero (puede ser aliado o rival).',
                 lore: 'La tierra de Arcadia vuelve a convulsionarse con violencia. Las profundidades del abismo liberan ondas de choque que agrietan los campos de cultivo y derriban las empalizadas de madera, obligando a ambos bandos a luchar al borde de precipicios humeantes.',
                 art: 'assets/cartas/carta-29-temblor-raices-ocultas.webp',
                 effect: (p, opp) => {
-                    queueFx({ t: 'wave', side: sideOf(opp) });
-                    opp.activeBoard.forEach(c => {
-                        if (!c.noAtkRed) {
-                            c.tempAtkMod = (c.tempAtkMod || 0) - 1;
-                            queueFx({ t: 'debuff', side: sideOf(opp), uid: c.uid, text: '-1', icon: 'fa-hill-rockslide', cls: 'fx-gray', pulse: 'fx-pulse-gray' });
-                        }
-                    });
+                    queueFx({ t: 'wave', side: sideOf(p) });
+                    for (let i = 0; i < 4; i++) {
+                        let pool = p.activeBoard.filter(c => !c.dying).concat(opp.activeBoard.filter(c => !c.dying));
+                        if (!pool.length) break;
+                        let t = pool[Math.floor(Math.random() * pool.length)];
+                        let owner = p.activeBoard.includes(t) ? p : opp;
+                        applyHpReduction(owner, t, 1, 'fa-hill-rockslide');
+                    }
                 }, startTurn: null
             },
             {
-                id: 'c30', name: 'El Despertar del Héroe de Bronce', kind: 'Ser', cost: 5, atk: 4, hp: 6,
+                id: 'c30', name: 'El Despertar del Héroe de Bronce', kind: 'Ser', cost: 5, atk: 4, hp: 4,
                 icon: 'fa-medal',
-                desc: 'Al entrar: otorga +1 ATK permanente a los demás Seres aliados en el tablero.',
+                desc: 'Al entrar: Otorga +1 ATK permanente a todos los Seres aliados en el tablero.',
                 lore: 'Un mortal excepcional, bañado por el fuego de la forja y la gloria de la primera victoria organizada, alza su espada de bronce ante los suyos. Su presencia imponente unifica a las tribus dispersas y marca el fin de la era del miedo primitivo, dando paso directo al nacimiento de las grandes ciudades-estado.',
                 art: 'assets/cartas/carta-30-despertar-heroe-bronce.webp',
                 effect: (p) => {
-                    p.activeBoard.forEach((c, i) => {
-                        if (i > 0 && !c.dying) { c.atk += 1; queueFx({ t: 'buff', side: sideOf(p), uid: c.uid, text: '+1 ATK', icon: 'fa-medal' }); }
+                    p.activeBoard.forEach((c) => {
+                        if (!c.dying) { c.atk += 1; queueFx({ t: 'buff', side: sideOf(p), uid: c.uid, text: '+1 ATK', icon: 'fa-medal' }); }
                     });
                 }, startTurn: null
             },
