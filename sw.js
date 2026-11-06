@@ -7,19 +7,33 @@
 //    revalidate: respuesta instantánea desde caché y refresco en segundo
 //    plano. Reabrir el juego no vuelve a descargar ninguna imagen.
 // Para publicar cambios: subir la versión de CACHE (y los ?v= del HTML).
-const CACHE = 'nexo-v20261106h';
+const CACHE = 'nexo-v20261106i';
 
 const PRECACHE = [
     './', './index.html', './manifest.json', './icon.svg',
-    './css/styles.css?v=20261106h',
-    './js/cards.js?v=20261106h',
-    './js/state.js?v=20261106h',
-    './js/fx.js?v=20261106h',
-    './js/deck.js?v=20261106h',
-    './js/chapters.js?v=20261106h',
-    './js/ui.js?v=20261106h',
-    './js/game.js?v=20261106h',
-    './js/main.js?v=20261106h',
+    './css/styles.css?v=20261106i',
+    './js/cards.js?v=20261106i',
+    './js/state.js?v=20261106i',
+    './js/fx.js?v=20261106i',
+    './js/deck.js?v=20261106i',
+    './js/chapters.js?v=20261106i',
+    './js/ui.js?v=20261106i',
+    './js/game.js?v=20261106i',
+    './js/main.js?v=20261106i',
+    // Dependencias vendorizadas (antes CDN): Tailwind, Font Awesome y
+    // Google Fonts. Sin ellas offline el juego perdería estilos y tipografía.
+    './js/vendor/tailwindcdn.js?v=20261106i',
+    './css/vendor/all.min.css',
+    './css/webfonts/fa-solid-900.woff2',
+    './css/webfonts/fa-regular-400.woff2',
+    './css/webfonts/fa-brands-400.woff2',
+    './css/webfonts/fa-v4compatibility.woff2',
+    './css/fonts/orbitron-500.woff2',
+    './css/fonts/orbitron-700.woff2',
+    './css/fonts/orbitron-900.woff2',
+    './css/fonts/rajdhani-500.woff2',
+    './css/fonts/rajdhani-600.woff2',
+    './css/fonts/rajdhani-700.woff2',
     // Artes de cartas
     './assets/cartas/carta-01-mortal-de-arcadia.webp',
     './assets/cartas/carta-02-satiro-de-los-bosques.webp',
