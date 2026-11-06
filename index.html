@@ -9,9 +9,9 @@
     <link rel="icon" type="image/svg+xml" href="icon.svg">
     <!-- Dependencias vendorizadas (Tailwind, Font Awesome, Google Fonts):
          sin CDN, la PWA y el APK funcionan 100% offline. -->
-    <script src="js/vendor/tailwindcdn.js?v=20261106r"></script>
+    <script src="js/vendor/tailwindcdn.js?v=20261106t"></script>
     <link href="css/vendor/all.min.css" rel="stylesheet">
-    <link rel="stylesheet" href="css/styles.css?v=20261106r">
+    <link rel="stylesheet" href="css/styles.css?v=20261106t">
 </head>
 <body class="bg-black flex justify-center items-center">
 
@@ -41,11 +41,6 @@
                 </h1>
                 <p id="home-chapter-label" class="text-amber-400 font-orbitron text-sm mt-2 z-20">Capítulo 1.0: El Despertar en la Hélade</p>
             </div>
-            <div class="px-4 pb-20 z-20">
-                <button id="btn-main-play" onclick="openChapters()" class="w-full bg-gradient-to-r from-blue-600 to-indigo-600 border border-blue-400 py-3 rounded-full text-white font-orbitron font-black text-xl tracking-wider flex items-center justify-center gap-2 shadow-[0_0_15px_rgba(59,130,246,0.5)] active:scale-95 transition-transform">
-                    JUGAR <i class="fa-solid fa-bolt text-amber-300"></i>
-                </button>
-            </div>
         </div>
 
         <!-- SELECCIÓN DE CAPÍTULOS -->
@@ -63,7 +58,7 @@
 
         <!-- INTRO NARRATIVA DEL CAPÍTULO -->
         <div id="view-chapter-intro" class="view-section hidden-view z-10">
-            <div class="flex-1 overflow-y-auto relative z-10 px-5 pt-8 pb-44">
+            <div id="intro-lore" onclick="revealChapterActions()" class="flex-1 overflow-y-auto relative z-10 px-5 pt-8 pb-44 cursor-pointer">
                 <span class="text-amber-400 font-orbitron text-[11px] tracking-[0.3em] font-bold">CAPÍTULO <span id="intro-chapter-number">1</span></span>
                 <h2 id="intro-chapter-title" class="text-white font-orbitron font-black text-2xl mt-1 leading-tight glow-text-blue"></h2>
                 <p id="intro-chapter-subtitle" class="text-slate-300 text-sm mt-3 leading-snug"></p>
@@ -71,7 +66,10 @@
                     <!-- Renderizado JS -->
                 </div>
             </div>
-            <div class="absolute bottom-0 w-full px-5 pb-24 z-20">
+            <div id="intro-tap-hint" class="absolute bottom-56 inset-x-0 flex justify-center z-20 pointer-events-none">
+                <span class="bg-slate-900/90 border border-amber-500/60 rounded-full px-4 py-1.5 text-amber-300 font-orbitron font-bold text-[10px] tracking-[0.25em] animate-bounce">TOCA PARA CONTINUAR <i class="fa-solid fa-chevron-down"></i></span>
+            </div>
+            <div id="intro-actions" class="absolute bottom-0 w-full px-5 pb-24 z-20">
                 <button onclick="launchChapterCombat()" class="w-full bg-gradient-to-r from-blue-600 to-indigo-600 border border-blue-400 py-3 rounded-full text-white font-orbitron font-black text-lg tracking-wider flex items-center justify-center gap-2 shadow-[0_0_15px_rgba(59,130,246,0.5)] active:scale-95 transition-transform">
                     COMENZAR COMBATE <i class="fa-solid fa-bolt text-amber-300"></i>
                 </button>
@@ -308,6 +306,7 @@
                     <p id="tutorial-toast-text" class="text-slate-200 text-xs leading-snug"></p>
                 </div>
             </div>
+            <div id="tutorial-toast-tap" class="mt-2 pt-2 border-t border-amber-500/40 text-center text-amber-300 font-orbitron font-bold text-[10px] tracking-[0.25em] animate-pulse">TOCA PARA CONTINUAR</div>
         </div>
 
         <nav id="bottom-nav" class="absolute bottom-0 w-full bg-slate-950 border-t border-slate-800 flex justify-around items-end pb-2 pt-1 z-40 h-16">
@@ -323,14 +322,10 @@
                 <span class="text-[9px] font-bold">MAZOS</span>
             </button>
             
-            <!-- Botón 3: Campaña (CENTRO) -->
-            <button id="btn-campaign" onclick="openChapters()" class="w-1/5 relative flex justify-center">
-                <div class="absolute -top-6 w-14 h-14 bg-slate-950 rounded-full border-t-2 border-blue-400 flex items-center justify-center shadow-[0_-4px_10px_rgba(59,130,246,0.3)]">
-                    <div class="w-12 h-12 bg-slate-900 rounded-full flex flex-col items-center justify-center">
-                        <i class="fa-solid fa-bolt text-blue-400 text-lg"></i>
-                    </div>
-                </div>
-                <span class="text-[9px] font-bold text-blue-400 mt-8">CAMPAÑA</span>
+            <!-- Botón 3: Campaña (mismo diseño que el resto) -->
+            <button id="btn-campaign" onclick="openChapters()" class="flex flex-col items-center gap-1 w-1/5 text-slate-400 hover:text-blue-400">
+                <i class="fa-solid fa-bolt text-xl"></i>
+                <span class="text-[9px] font-bold">CAMPAÑA</span>
             </button>
             
             <!-- Botón 4: PvP (futuro) -->
@@ -349,13 +344,13 @@
     </div>
 
 
-    <script src="js/cards.js?v=20261106r"></script>
-    <script src="js/state.js?v=20261106r"></script>
-    <script src="js/fx.js?v=20261106r"></script>
-    <script src="js/deck.js?v=20261106r"></script>
-    <script src="js/chapters.js?v=20261106r"></script>
-    <script src="js/ui.js?v=20261106r"></script>
-    <script src="js/game.js?v=20261106r"></script>
-    <script src="js/main.js?v=20261106r"></script>
+    <script src="js/cards.js?v=20261106t"></script>
+    <script src="js/state.js?v=20261106t"></script>
+    <script src="js/fx.js?v=20261106t"></script>
+    <script src="js/deck.js?v=20261106t"></script>
+    <script src="js/chapters.js?v=20261106t"></script>
+    <script src="js/ui.js?v=20261106t"></script>
+    <script src="js/game.js?v=20261106t"></script>
+    <script src="js/main.js?v=20261106t"></script>
 </body>
 </html>

@@ -21,9 +21,11 @@ function switchView(viewId) {
     if (viewId === 'view-decks') document.getElementById('deck-count-label').innerText = playerDeck.length;
 
     // --- Ocultar botones globales ---
+    // Perfil y Opciones solo en la home: la selección de capítulos y el
+    // resto de pantallas quedan limpias.
     let topButtons = document.getElementById('global-top-buttons');
     if (topButtons) {
-        topButtons.style.display = (viewId === 'view-home' || viewId === 'view-chapters') ? 'flex' : 'none';
+        topButtons.style.display = viewId === 'view-home' ? 'flex' : 'none';
     }
 
     // El nav inferior deja paso al footer de controles del combate

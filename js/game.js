@@ -184,6 +184,16 @@ function gameTick() {
                 showGameOver();
                 return;
             }
+            // Fin de partida garantizado: cuando ambos mazos se han jugado
+            // completo, el combate se resuelve con la gloria acumulada. Los
+            // Seres vivos seguirían sumando turno tras turno y la diferencia
+            // de 50 podía no llegar nunca (partidas infinitas).
+            if (gameState.p1.deckPointer >= (gameState.p1.deck || playerDeck).length &&
+                gameState.p2.deckPointer >= (gameState.p2.deck || rivalDeck).length) {
+                pauseGame();
+                showGameOver();
+                return;
+            }
             if (!(gameState.pendingStrikes || []).length &&
                 !canStillScore(gameState.p1) && !canStillScore(gameState.p2)) {
                 pauseGame();

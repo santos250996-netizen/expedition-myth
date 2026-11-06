@@ -139,7 +139,7 @@ function renderBoards() {
 function syncBoard(prefix, cards, theme) {
     let board = document.getElementById(prefix + '-board');
     let stale = new Map();
-    Array.from(board.children).forEach(el => stale.set(el.dataset.uid, el));
+    Array.from(board.children).forEach(el => stale.set(el.dataset.boardUid, el));
 
     cards.forEach((card, idx) => {
         let el = stale.get(card.uid);
@@ -158,15 +158,22 @@ function syncBoard(prefix, cards, theme) {
 }
 
 function createCardElement(card, theme, animate) {
+    // Envoltorio necesario: el badge de gloria vive FUERA del marco de la
+    // carta (que recorta su contenido con overflow-hidden). El envoltorio
+    // lleva data-board-uid para la reconciliación del tablero; data-uid
+    // queda en la carta como ancla exclusiva de los FX.
+    let wrap = document.createElement('div');
+    wrap.className = 'relative w-full max-w-[160px]';
+    wrap.dataset.boardUid = card.uid || '';
+
     let cardDiv = document.createElement('div');
     let isBlue = theme === 'blue';
     let borderColor = isBlue ? 'border-blue-400 shadow-[0_0_10px_rgba(59,130,246,0.5)]' : 'border-fuchsia-400 shadow-[0_0_10px_rgba(217,70,239,0.5)]';
 
-    // data-uid: ancla para los FX y para la reconciliación del tablero.
     // oracle-aura: los auras de descuento (Profecía c20, Guardián de
-// Delfos c32) respiran mientras estén en tablero. animate-dissolve:
-// cartas muriendo este tick.
-    cardDiv.className = `w-full max-w-[160px] h-[60px] border-2 ${borderColor} rounded-lg relative overflow-hidden flex flex-col justify-between ${animate ? 'animate-deploy' : ''} ${(card.id === 'c20' || card.id === 'c32') ? 'oracle-aura' : ''} ${card.dying ? 'animate-dissolve' : ''} cursor-pointer hover:scale-105 active:scale-95 transition-transform`;
+    // Delfos c32) respiran mientras estén en tablero. animate-dissolve:
+    // cartas muriendo este tick.
+    cardDiv.className = `w-full h-[60px] border-2 ${borderColor} rounded-lg relative overflow-hidden flex flex-col justify-between ${animate ? 'animate-deploy' : ''} ${(card.id === 'c20' || card.id === 'c32') ? 'oracle-aura' : ''} ${card.dying ? 'animate-dissolve' : ''} cursor-pointer hover:scale-105 active:scale-95 transition-transform`;
     cardDiv.dataset.uid = card.uid || '';
     cardDiv.onclick = () => openCardModal(card.id);
 
@@ -181,13 +188,26 @@ function createCardElement(card, theme, animate) {
             <div class="stat-hp w-5 h-5 rounded-full bg-red-950/90 border border-red-400 flex items-center justify-center text-white font-bold text-[9px] shadow-lg">${card.hp}</div>
         </div>
     `;
-    return cardDiv;
+    wrap.appendChild(cardDiv);
+
+    // Indicador permanente de gloria: cada Ser muestra junto a su esquina,
+    // fuera del marco, cuánta gloria suma al final del turno (su ATK
+    // efectivo). Los Eventos no puntúan por turno → sin badge.
+    if (card.kind === 'Ser') {
+        let badge = document.createElement('div');
+        badge.className = 'glory-badge ' + (isBlue ? 'side-left' : 'side-right');
+        badge.innerHTML = `<i class="fa-solid fa-bolt"></i><span class="glory-badge-val">+${displayAtk}</span>`;
+        wrap.appendChild(badge);
+    }
+    return wrap;
 }
 
 // Actualiza en el sitio los datos vivos de una carta ya renderizada y
 // anima los cambios de ATK/HP (verde sube, rojo baja).
 function updateCardElement(el, card) {
-    el.classList.toggle('animate-dissolve', !!card.dying);
+    // el es el envoltorio: las clases de estado viven en la carta interior.
+    let cardEl = el.querySelector('[data-uid]') || el;
+    cardEl.classList.toggle('animate-dissolve', !!card.dying);
     let displayAtk = Math.max(0, card.atk + (card.tempAtkMod || 0));
     let atkEl = el.querySelector('.stat-atk');
     let hpEl = el.querySelector('.stat-hp');
@@ -201,6 +221,12 @@ function updateCardElement(el, card) {
         hpEl.innerText = card.hp;
         flashStat(hpEl, rose);
     }
+    // El badge de gloria refleja el ATK efectivo y se atenúa si el Ser no
+    // puntúa este turno (aturdido o muriendo).
+    let badgeVal = el.querySelector('.glory-badge-val');
+    if (badgeVal && badgeVal.innerText !== '+' + displayAtk) badgeVal.innerText = '+' + displayAtk;
+    let badge = el.querySelector('.glory-badge');
+    if (badge) badge.classList.toggle('glory-dim', !!card.stunned || !!card.dying);
 }
 
 function flashStat(badge, rose) {
@@ -406,15 +432,22 @@ function openChapterIntro(chapterId) {
         </div>
     `).join('');
 
+    // El lore se muestra primero: las acciones aparecen tras el primer tap.
+    document.getElementById('view-chapter-intro').classList.remove('lore-revealed');
+
     switchView('view-chapter-intro');
+}
+
+// Acciones del capítulo tras el primer tap (regla permanente, no solo del
+// tutorial): los botones se muestran y el lore se desenfoca para no estorbar.
+function revealChapterActions() {
+    let view = document.getElementById('view-chapter-intro');
+    if (view && !view.classList.contains('lore-revealed')) view.classList.add('lore-revealed');
 }
 
 function launchChapterCombat() {
     if (!currentChapter) { openChapters(); return; }
     if (playerDeck.length === 0) { alert("¡Tu mazo está vacío!"); return; }
-
-    // Tutorial: el combate es el paso 4 (los mensajes los da gameTick).
-    if (tutorialActive && tutorialStep === 3) setTutorialStep(4);
 
     rivalDeck = getChapterBotDeck();
     document.getElementById('rival-name').innerText = currentChapter.rival.name;
@@ -424,6 +457,9 @@ function launchChapterCombat() {
     // capítulo en juego al entrar en view-game.
     closeGameOverModal();
     startGame();
+    // Tutorial: el paso 4 se activa DESPUÉS de arrancar el combate, para que
+    // el toast didáctico encuentre el juego en marcha y pueda pausarlo.
+    if (tutorialActive && tutorialStep === 3) setTutorialStep(4);
 }
 
 // --- SISTEMA DE TUTORIAL ---
@@ -433,20 +469,55 @@ let tutorialTimeout = null;
 let tutorialSerShown = false;
 let tutorialEventShown = false;
 
+// Token de invalidez: cada show/hide lo incrementa. Un hide retardado solo
+// se completa si su token sigue vigente; así, un toast que se vuelve a
+// mostrar 400 ms después de ocultarse (p. ej. el siguiente mensaje didáctico
+// del mismo tick en que se reanuda) no es enterrado por el timer anterior.
+let tutorialToastToken = 0;
+
+function hideTutorialToast() {
+    let toast = document.getElementById('tutorial-toast');
+    if (!toast) return;
+    let token = ++tutorialToastToken;
+    toast.classList.remove('active', 'wait-tap');
+    setTimeout(() => {
+        if (token === tutorialToastToken) toast.classList.add('hidden-view');
+    }, 400);
+}
+
 function showTutorialMessage(title, text) {
     let toast = document.getElementById('tutorial-toast');
     let toastTitle = document.getElementById('tutorial-toast-title');
     let toastText = document.getElementById('tutorial-toast-text');
     if (!toast || !toastTitle || !toastText) return;
+    tutorialToastToken++; // anula cualquier hide pendiente de un toast anterior
     toastTitle.innerText = title;
     toastText.innerText = text;
-    toast.classList.remove('hidden-view');
-    setTimeout(() => toast.classList.add('active'), 10);
     clearTimeout(tutorialTimeout);
-    tutorialTimeout = setTimeout(() => {
-        toast.classList.remove('active');
-        setTimeout(() => toast.classList.add('hidden-view'), 400);
-    }, 6000);
+    toast.classList.remove('hidden-view', 'wait-tap');
+    setTimeout(() => {
+        if (toast.classList.contains('hidden-view')) return;
+        toast.classList.add('active');
+    }, 10);
+
+    // Regla permanente del modo guiado: en combate, cada intervención del
+    // tutorial PAUSA la partida y espera un tap del jugador para continuar.
+    let inCombat = !document.getElementById('view-game').classList.contains('hidden-view');
+    if (inCombat) {
+        if (gameState.isPlaying) pauseGame();
+        toast.classList.add('wait-tap');
+        toast.onclick = () => {
+            hideTutorialToast();
+            // Con el modal de fin de partida visible no hay nada que
+            // reanudar; si el jugador ya reanudó por su cuenta, tampoco.
+            let over = !document.getElementById('gameover-modal').classList.contains('hidden-view');
+            if (!over && !gameState.isPlaying) startGame();
+        };
+        return;
+    }
+
+    toast.onclick = hideTutorialToast;
+    tutorialTimeout = setTimeout(hideTutorialToast, 6000);
 }
 
 function setTutorialStep(step) {
@@ -456,7 +527,6 @@ function setTutorialStep(step) {
 
     let btnCampaign = document.getElementById('btn-campaign');
     let btnDecks = document.getElementById('btn-decks');
-    let btnMainPlay = document.getElementById('btn-main-play');
     let btnEvents = document.getElementById('btn-events');
     let btnPvp = document.getElementById('btn-pvp');
     let btnComingSoon = document.getElementById('btn-coming-soon');
@@ -468,28 +538,23 @@ function setTutorialStep(step) {
 
     if (step === 1) {
         if (btnDecks) btnDecks.classList.add('tutorial-blocked');
-        if (btnMainPlay) btnMainPlay.classList.add('tutorial-blocked');
         if (btnCampaign) btnCampaign.classList.add('tutorial-glow');
         showTutorialMessage("¡Bienvenido a Ecos del Olimpo!", "Toca 'Campaña' en la barra inferior para empezar el tutorial.");
     } else if (step === 2) {
         if (btnDecks) btnDecks.classList.add('tutorial-blocked');
-        if (btnMainPlay) btnMainPlay.classList.add('tutorial-blocked');
         if (btnCampaign) btnCampaign.classList.add('tutorial-blocked');
         showTutorialMessage("Capítulo 1.0: El Despertar en la Hélade", "Este es el tutorial. Tócalo para empezar.");
     } else if (step === 3) {
         if (btnDecks) btnDecks.classList.add('tutorial-blocked');
-        if (btnMainPlay) btnMainPlay.classList.add('tutorial-blocked');
         if (btnCampaign) btnCampaign.classList.add('tutorial-blocked');
         let btnContinue = document.querySelector('#view-chapter-intro button');
         if (btnContinue) btnContinue.classList.add('tutorial-glow');
-        showTutorialMessage("Lee la historia", "Toca 'Comenzar combate' cuando estés listo.");
+        showTutorialMessage("Lee la historia", "Tómate tu tiempo. Toca la pantalla para mostrar las acciones y luego toca 'Comenzar combate'.");
     } else if (step === 4) {
         if (btnDecks) btnDecks.classList.add('tutorial-blocked');
-        if (btnMainPlay) btnMainPlay.classList.add('tutorial-blocked');
         if (btnCampaign) btnCampaign.classList.add('tutorial-blocked');
     } else if (step === 5) {
         if (btnDecks) btnDecks.classList.add('tutorial-glow');
-        if (btnMainPlay) btnMainPlay.classList.add('tutorial-blocked');
         if (btnCampaign) btnCampaign.classList.add('tutorial-blocked');
         showTutorialMessage("¡Deckbuilder desbloqueado!", "Toca 'Mazos' para ver tus cartas y armar tu mazo.");
     } else if (step === 6) {

@@ -450,7 +450,8 @@ body {
     .fx-float, .fx-float-wrap, .fx-overlay, .fx-event-cast, .fx-event-shine,
     .fx-gloria-beam, .fx-leaf, .animate-deploy, .animate-dissolve,
     .fx-pulse-green, .fx-pulse-gray, .fx-clash-r, .fx-clash-l, .fx-shake,
-    .oracle-aura, .stat-up, .stat-down, .turn-pulse, .tutorial-glow { animation: none !important; }
+    .oracle-aura, .stat-up, .stat-down, .turn-pulse, .tutorial-glow,
+    #intro-tap-hint span, #tutorial-toast-tap { animation: none !important; }
     .fx-float, .fx-overlay, .fx-event-cast, .fx-gloria-beam, .fx-leaf { opacity: 0 !important; }
 }
 
@@ -482,3 +483,47 @@ nav.absolute.bottom-0 {
 
 /* Bloqueo durante tutorial */
 .tutorial-blocked { opacity: 0.3; pointer-events: none; filter: grayscale(100%); }
+
+/* --- GLORIA DE LOS SERES: indicador FUERA del marco de la carta ---
+   Cada Ser muestra junto a su esquina cuánta gloria suma al final del
+   turno (su ATK efectivo). Azul → lado izquierdo (hacia fuera), rival →
+   derecho. Se atenúa si el Ser no puntúa (aturdido/muriendo). */
+.glory-badge {
+    position: absolute;
+    top: 4px;
+    z-index: 20;
+    display: flex;
+    align-items: center;
+    gap: 1px;
+    background: rgba(2, 6, 23, 0.95);
+    border: 1px solid #fbbf24;
+    color: #fcd34d;
+    font-family: 'Orbitron', sans-serif;
+    font-size: 9px;
+    font-weight: 800;
+    line-height: 13px;
+    padding: 0 4px;
+    border-radius: 9999px;
+    box-shadow: 0 0 6px rgba(251, 191, 36, 0.4);
+    pointer-events: none;
+}
+.glory-badge i { font-size: 7px; }
+.glory-badge.side-left { left: -8px; }
+.glory-badge.side-right { right: -8px; }
+.glory-badge.glory-dim { opacity: 0.35; }
+
+/* --- INTRO DE CAPÍTULO: primero el lore, acciones tras el tap ---
+   Al abrir, solo se lee la historia. El primer tap muestra los botones y
+   desenfoca el lore para que no estorbe. Estado en una clase del contenedor. */
+#intro-actions { opacity: 0; transform: translateY(10px); pointer-events: none; transition: opacity 0.35s ease, transform 0.35s ease; }
+#view-chapter-intro.lore-revealed #intro-actions { opacity: 1; transform: none; pointer-events: auto; }
+#intro-chapter-subtitle, #intro-beats { transition: filter 0.4s ease, opacity 0.4s ease; }
+#view-chapter-intro.lore-revealed #intro-chapter-subtitle,
+#view-chapter-intro.lore-revealed #intro-beats { filter: blur(3px); opacity: 0.55; }
+#intro-tap-hint { transition: opacity 0.3s ease; }
+#view-chapter-intro.lore-revealed #intro-tap-hint { opacity: 0; }
+
+/* --- TUTORIAL EN COMBATE: pausa didáctica hasta el tap --- */
+#tutorial-toast-tap { display: none; }
+#tutorial-toast.wait-tap { cursor: pointer; }
+#tutorial-toast.wait-tap #tutorial-toast-tap { display: block; }

@@ -17,7 +17,11 @@ const CHAPTERS = [
         epilogue: 'La fe de los mortales encendió la primera chispa y el Olimpo respondió: la primera intervención divina marca el amanecer de una nueva era. La Niebla del Caos retrocede por ahora, pero las criaturas siguen acechando entre los bosques antiguos... y la Hélade necesitará héroes para lo que viene.',
         art: 'assets/capitulos/capitulo-01-el-despertar-en-la-helade.webp',
         rival: { name: 'Caos', sub: 'TELAR' },
-        botDeck: ['c1', 'c2', 'c3', 'c4', 'c5', 'c6', 'c7', 'c8', 'c9', 'c10']
+        // Mazo del bot NO espejo: sin Minotauro (c3) ni Embestida (c7),
+        // duplica los dos Seres más débiles y arranca por el Sátiro. Con el
+        // mazo idéntico al del jugador, ambos puntuaban lo mismo todos los
+        // turnos y la partida no acababa nunca.
+        botDeck: ['c2', 'c1', 'c4', 'c8', 'c6', 'c10', 'c5', 'c1', 'c9', 'c2']
     },
     {
         id: 2,
