@@ -54,6 +54,27 @@ const CHAPTERS = [
         // El Héroe de Bronce (c30) llega como jugada fuerte de mitad de
         // partida y el Coloso (c24) cierra el mazo como amenaza tardía.
         botDeck: ['c26', 'c28', 'c29', 'c22', 'c21', 'c30', 'c23', 'c25', 'c27', 'c24']
+    },
+    {
+        id: 4,
+        number: '1.3',
+        title: 'El Eclipse del Olimpo',
+        subtitle: 'La sangre y el bronce han forjado reinos, pero también han despertado la envidia en las alturas. Los dioses del Olimpo, que hasta ahora observaban a los mortales como simples hormigas, han comenzado a tomar partido en sus guerras. Zeus, temeroso de que los reyes de la Hélade se vuelvan demasiado poderosos, ha lanzado un edicto: ningún mortal debe alzarse por encima de los demás. Pero no todos los dioses están de acuerdo. Hera, Atenea y Ares ven en los héroes mortales herramientas para sus propios juegos de poder. La discordia se ha instalado en el Olimpo, y su sombra cae sobre Grecia como un eclipse.',
+        beats: [
+            { icon: 'fa-bolt-lightning', title: 'El Edicto de Zeus', text: 'El trueno proclama la ley del cielo: ningún mortal debe alzarse por encima de los demás. Los reyes que aunaron las tribus bajo el bronce ven ahora cómo el Olimpo apunta su ira hacia ellos.' },
+            { icon: 'fa-scale-balanced', title: 'Los Dioses Tomas Partido', text: 'Hera, Atenea y Ares no aceptan el edicto: ven en los héroes mortales piezas para sus propios juegos de poder. Cada bando divino busca un campeón entre los valles, y sus bendiciones y cóleras empiezan a caer sobre Grecia.' },
+            { icon: 'fa-sun', title: 'La Sombra del Eclipse', text: 'El sol se apaga en pleno día y la sombra del eclipse cubre el campo de batalla. Los mortales, sin saberlo, están a punto de convertirse en peones de una guerra divina.' }
+        ],
+        epilogue: 'El eclipse pasó, pero nada volvió a ser igual: los mortales han empuñado el poder de los dioses y el Olimpo está roto en bandos. Zeus ha visto a un campeón sobrevivir a su edicto... y Hera y Atenea ya tejen la próxima alianza. La era en la que los dioses jugaban con los hombres está terminando: viene la era en la que los hombres obligarán a los dioses a elegir bando.',
+        art: 'assets/capitulos/capitulo-1-3-el-eclipse-del-olimpo.webp',
+        rival: { name: 'Zeus', sub: 'EDICTO' },
+        // Orden fijo del bot calibrado con simulador (default 0.3% de
+        // winrate, mazo optimizado 71%): c33(2), c39(2), c32(4), c37(2),
+        // c35(3), c40(3), c31(5), c36(4), c38(5), c34(9).
+        // El Vidente abre (ramp + gloria), la Cólera limpia la cima temprana,
+        // el Guardián abarata los Eventos propios, el Heraldo buffa la línea
+        // ya desplegada y el Coloso de Bronce (c34) cierra inmune.
+        botDeck: ['c33', 'c39', 'c32', 'c37', 'c35', 'c40', 'c31', 'c36', 'c38', 'c34']
     }
 ];
 

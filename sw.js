@@ -7,19 +7,19 @@
 //    revalidate: respuesta instantánea desde caché y refresco en segundo
 //    plano. Reabrir el juego no vuelve a descargar ninguna imagen.
 // Para publicar cambios: subir la versión de CACHE (y los ?v= del HTML).
-const CACHE = 'nexo-v20261106g';
+const CACHE = 'nexo-v20261106h';
 
 const PRECACHE = [
     './', './index.html', './manifest.json', './icon.svg',
-    './css/styles.css?v=20261106f',
-    './js/cards.js?v=20261106f',
-    './js/state.js?v=20261106f',
-    './js/fx.js?v=20261106f',
-    './js/deck.js?v=20261106f',
-    './js/chapters.js?v=20261106f',
-    './js/ui.js?v=20261106f',
-    './js/game.js?v=20261106f',
-    './js/main.js?v=20261106f',
+    './css/styles.css?v=20261106h',
+    './js/cards.js?v=20261106h',
+    './js/state.js?v=20261106h',
+    './js/fx.js?v=20261106h',
+    './js/deck.js?v=20261106h',
+    './js/chapters.js?v=20261106h',
+    './js/ui.js?v=20261106h',
+    './js/game.js?v=20261106h',
+    './js/main.js?v=20261106h',
     // Artes de cartas
     './assets/cartas/carta-01-mortal-de-arcadia.webp',
     './assets/cartas/carta-02-satiro-de-los-bosques.webp',
@@ -41,9 +41,31 @@ const PRECACHE = [
     './assets/cartas/carta-18-centinela-del-barranco.webp',
     './assets/cartas/carta-19-derrumbe-rocas-sagradas.webp',
     './assets/cartas/carta-20-profecia-sangre-derramada.webp',
+    './assets/cartas/carta-21-juramento-lanzas-bronce.webp',
+    './assets/cartas/carta-22-forjador-yunque-oculto.webp',
+    './assets/cartas/carta-23-ofrenda-hecatombe.webp',
+    './assets/cartas/carta-24-coloso-grieta-profunda.webp',
+    './assets/cartas/carta-25-ira-cielo-abierto.webp',
+    './assets/cartas/carta-26-cazador-bestias-colinas.webp',
+    './assets/cartas/carta-27-juicio-rayo-caido.webp',
+    './assets/cartas/carta-28-vigia-muralla-ciclopea.webp',
+    './assets/cartas/carta-29-temblor-raices-ocultas.webp',
+    './assets/cartas/carta-30-despertar-heroe-bronce.webp',
+    './assets/cartas/carta-31-campeon-eclipse.webp',
+    './assets/cartas/carta-32-guardian-templo-delfos.webp',
+    './assets/cartas/carta-33-vidente-ciego-arcadia.webp',
+    './assets/cartas/carta-34-coloso-bronce-olvidado.webp',
+    './assets/cartas/carta-35-heraldo-dioses.webp',
+    './assets/cartas/carta-36-eclipse-zeus.webp',
+    './assets/cartas/carta-37-bendicion-atenea.webp',
+    './assets/cartas/carta-38-juicio-hades.webp',
+    './assets/cartas/carta-39-colera-ares.webp',
+    './assets/cartas/carta-40-traicion-hermes.webp',
     // Artes de capítulos
     './assets/capitulos/capitulo-01-el-despertar-en-la-helade.webp',
-    './assets/capitulos/capitulo-1-1-las-grietas-de-la-discordia.webp'
+    './assets/capitulos/capitulo-1-1-las-grietas-de-la-discordia.webp',
+    './assets/capitulos/capitulo-1-2-el-veredicto-de-la-sangre-y-el-bronce.webp',
+    './assets/capitulos/capitulo-1-3-el-eclipse-del-olimpo.webp'
 ];
 
 self.addEventListener('install', (event) => {

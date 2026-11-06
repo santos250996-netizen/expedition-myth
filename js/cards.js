@@ -321,6 +321,145 @@ const ALL_CARDS = [
                         if (i > 0 && !c.dying) { c.atk += 1; queueFx({ t: 'buff', side: sideOf(p), uid: c.uid, text: '+1 ATK', icon: 'fa-medal' }); }
                     });
                 }, startTurn: null
+            },
+            {
+                id: 'c31', name: 'El Campeón del Eclipse', kind: 'Ser', cost: 5, atk: 4, hp: 4,
+                icon: 'fa-circle-half-stroke',
+                desc: 'Al entrar: Inflige 2 de daño al HP del Ser rival en la Fila 1.',
+                lore: 'Un guerrero mortal que, durante el eclipse, fue tocado por la sombra de un dios. Ahora porta una armadura negra que absorbe la luz y una lanza que brilla con un fuego frío. Los reyes lo temen; los dioses lo vigilan.',
+                art: 'assets/cartas/carta-31-campeon-eclipse.webp',
+                effect: (p, opp) => { let target = opp.activeBoard[0]; if (target && !target.dying) { dealDamage(target, 2); queueFx({ t: 'debuff', side: sideOf(opp), uid: target.uid, text: '-2 HP', icon: 'fa-circle-half-stroke', overlay: 'hit', pulse: 'fx-shake' }); } }, startTurn: null
+            },
+            {
+                id: 'c32', name: 'El Guardián del Templo de Delfos', kind: 'Ser', cost: 4, atk: 3, hp: 6,
+                icon: 'fa-scroll',
+                desc: 'Mientras esté en el tablero, tus Eventos cuestan -1 Energía (mínimo 0) y no pueden ser contrarrestados por efectos rivales.',
+                lore: 'Un guerrero-sacerdote que ha jurado proteger el oráculo con su vida. Su fe es tan fuerte que puede desviar la ira de los dioses. Se dice que su escudo está hecho con el mármol de un altar antiguo.',
+                art: 'assets/cartas/carta-32-guardian-templo-delfos.webp',
+                effect: null, startTurn: null
+            },
+            {
+                id: 'c33', name: 'El Vidente Ciego de Arcadia', kind: 'Ser', cost: 2, atk: 1, hp: 3,
+                icon: 'fa-hat-wizard',
+                desc: 'Al inicio de tu turno, si está en la Fila 1, ganas +1 Punto de Gloria y +1 Energía extra.',
+                lore: 'Un anciano que perdió los ojos al mirar directamente a un dios, pero ganó la capacidad de ver el futuro. Sus profecías son oscuras, pero siempre se cumplen. Los reyes lo consultan antes de cada batalla.',
+                art: 'assets/cartas/carta-33-vidente-ciego-arcadia.webp',
+                effect: null,
+                startTurn: (self, player) => {
+                    if (player.activeBoard[0] === self && !self.dying) {
+                        player.extraPoints += 1;
+                        player.energy += 1;
+                        queueFx({ t: 'gloria', side: sideOf(player), uid: self.uid, text: '+1 GLORIA', icon: 'fa-hat-wizard', num: 1 });
+                        queueFx({ t: 'discount', side: sideOf(player), text: '+1' });
+                    }
+                }
+            },
+            {
+                id: 'c34', name: 'El Coloso de Bronce Olvidado', kind: 'Ser', cost: 9, atk: 10, hp: 10,
+                icon: 'fa-monument',
+                desc: 'Inmune a la reducción de ATK y a la destrucción directa. Al final de cada turno, pierde 1 HP (se desgasta lentamente).',
+                lore: 'Una estatua gigante de bronce que cobró vida durante el eclipse. No obedece a nadie, pero tampoco ataca a los mortales; solo camina por los valles, aplastando todo lo que se cruza en su camino.',
+                art: 'assets/cartas/carta-34-coloso-bronce-olvidado.webp',
+                effect: null,
+                startTurn: (self, player) => {
+                    // Desgaste: una vez por turno, sin pasar por dealDamage
+                    // (no es daño canónico ni dispara reacciones al daño).
+                    self.hp -= 1;
+                    if (self.hp <= 0) { self.hp = 0; self.dying = true; }
+                    queueFx({ t: 'debuff', side: sideOf(player), uid: self.uid, text: '-1 HP', icon: 'fa-monument', overlay: 'hit', pulse: 'fx-shake' });
+                },
+                noAtkRed: true, noDestroy: true
+            },
+            {
+                id: 'c35', name: 'El Heraldo de los Dioses', kind: 'Ser', cost: 3, atk: 2, hp: 4,
+                icon: 'fa-dove',
+                desc: 'Al entrar: todos los demás Seres aliados ganan +1 ATK permanentemente.',
+                lore: 'Un mensajero alado que desciende del Olimpo con decretos divinos. Su llegada anuncia la intervención directa de los dioses en los asuntos mortales. Nadie se atreve a desobedecerlo.',
+                art: 'assets/cartas/carta-35-heraldo-dioses.webp',
+                effect: (p) => {
+                    p.activeBoard.forEach((c, i) => {
+                        if (i > 0 && !c.dying) { c.atk += 1; queueFx({ t: 'buff', side: sideOf(p), uid: c.uid, text: '+1 ATK', icon: 'fa-dove' }); }
+                    });
+                }, startTurn: null
+            },
+            {
+                id: 'c36', name: 'El Eclipse de Zeus', kind: 'Evento', cost: 4, atk: 0, hp: 0,
+                icon: 'fa-sun',
+                desc: 'Inflige 3 de daño al HP de todos los Seres rivales en el tablero.',
+                lore: 'El cielo se oscurece y un rayo cae sobre el campo de batalla, marcando el territorio como sagrado. Los mortales que osen luchar bajo el eclipse serán juzgados por el propio Zeus.',
+                art: 'assets/cartas/carta-36-eclipse-zeus.webp',
+                effect: (p, opp) => {
+                    opp.activeBoard.filter(c => !c.dying).slice().forEach(c => {
+                        dealDamage(c, 3);
+                        queueFx({ t: 'debuff', side: sideOf(opp), uid: c.uid, text: '-3 HP', icon: 'fa-sun', overlay: 'hit', pulse: 'fx-shake' });
+                    });
+                }
+            },
+            {
+                id: 'c37', name: 'La Bendición de Atenea', kind: 'Evento', cost: 2, atk: 0, hp: 0,
+                icon: 'fa-hand-sparkles',
+                desc: 'Otorga +2 ATK y +2 HP a todos tus Seres aliados hasta el final del turno.',
+                lore: 'La diosa de la sabiduría y la guerra justa extiende su égida sobre los mortales que luchan con honor. Su bendición otorga claridad mental y fuerza sobrehumana.',
+                art: 'assets/cartas/carta-37-bendicion-atenea.webp',
+                effect: (p) => {
+                    p.activeBoard.forEach(c => {
+                        if (!c.dying) {
+                            c.tempAtkMod += 2;
+                            c.hp += 2;
+                            c.tempHpMod = (c.tempHpMod || 0) + 2;
+                            queueFx({ t: 'buff', side: sideOf(p), uid: c.uid, text: '+2/+2', icon: 'fa-hand-sparkles' });
+                        }
+                    });
+                }, startTurn: null
+            },
+            {
+                id: 'c38', name: 'El Juicio de Hades', kind: 'Evento', cost: 5, atk: 0, hp: 0,
+                icon: 'fa-scale-balanced',
+                desc: 'Destruye el Ser rival con más ATK (entre los destruibles) y otorga +5 Puntos de Gloria.',
+                lore: 'Las puertas del inframundo se entreabren y el dios de los muertos reclama las almas de los caídos. Los Seres que mueran en este turno no irán al Olimpo; irán al Tártaro.',
+                art: 'assets/cartas/carta-38-juicio-hades.webp',
+                effect: (p, opp) => {
+                    p.score += 5;
+                    queueFx({ t: 'gloria', side: sideOf(p), text: '+5 GLORIA', icon: 'fa-scale-balanced', num: 5 });
+                    let alive = opp.activeBoard.filter(c => !c.dying && !c.noDestroy);
+                    if (alive.length > 0) {
+                        let strongest = alive.reduce((max, c) => (c.atk + (c.tempAtkMod || 0)) > (max.atk + (max.tempAtkMod || 0)) ? c : max, alive[0]);
+                        strongest.dying = true;
+                        queueFx({ t: 'sacrifice', side: sideOf(opp), uid: strongest.uid });
+                    }
+                }, startTurn: null
+            },
+            {
+                id: 'c39', name: 'La Cólera de Ares', kind: 'Evento', cost: 2, atk: 0, hp: 0,
+                icon: 'fa-meteor',
+                desc: 'Inflige 2 de daño al HP de TODOS los Seres en el tablero (tanto aliados como rivales).',
+                lore: 'El dios de la guerra, enfurecido por la osadía de los mortales, desciende al campo de batalla y siembra el caos. Ni los aliados ni los enemigos están a salvo de su furia.',
+                art: 'assets/cartas/carta-39-colera-ares.webp',
+                effect: (p, opp) => {
+                    [p, opp].forEach(owner => owner.activeBoard.filter(c => !c.dying).slice().forEach(c => {
+                        dealDamage(c, 2);
+                        queueFx({ t: 'debuff', side: sideOf(owner), uid: c.uid, text: '-2 HP', icon: 'fa-meteor', overlay: 'hit', pulse: 'fx-shake' });
+                    }));
+                }
+            },
+            {
+                id: 'c40', name: 'La Traición de Hermes', kind: 'Evento', cost: 3, atk: 0, hp: 0,
+                icon: 'fa-user-secret',
+                desc: 'Roba la próxima carta del mazo rival (pasará a tu mazo) y ganas +2 Puntos de Gloria.',
+                lore: 'El mensajero de los dioses, conocido por su astucia, roba una carta del mazo rival y la entrega a los mortales. Nadie sabe qué contiene, pero Hermes siempre tiene un plan.',
+                art: 'assets/cartas/carta-40-traicion-hermes.webp',
+                effect: (p, opp) => {
+                    p.score += 2;
+                    queueFx({ t: 'gloria', side: sideOf(p), text: '+2 GLORIA', icon: 'fa-user-secret', num: 2 });
+                    // Sin mano en este motor: el robo opera sobre los mazos
+                    // restantes (cada jugador tiene una copia propia desde
+                    // resetMatch, así que el robo no muta el mazo guardado).
+                    if (opp.deck && p.deck && opp.deckPointer < opp.deck.length) {
+                        let robada = opp.deck.splice(opp.deckPointer, 1)[0];
+                        p.deck.splice(p.deckPointer, 0, robada);
+                        queueFx({ t: 'discount', side: sideOf(p), text: 'ROBADA' });
+                    }
+                }, startTurn: null
             }
         ];
 

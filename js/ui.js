@@ -79,8 +79,10 @@ function updateHUD() {
     document.getElementById('p1-energy-badge').innerText = gameState.p1.energy;
     document.getElementById('p2-energy-badge').innerText = gameState.p2.energy;
 
-    renderNextBox('p1', playerDeck[gameState.p1.deckPointer], gameState.p1);
-    renderNextBox('p2', rivalDeck[gameState.p2.deckPointer], gameState.p2);
+    // Mazos por partida (copias en resetMatch): la caja SIGUIENTE refleja el
+    // robo de Hermes (c40) y cualquier mutación del mazo durante el combate.
+    renderNextBox('p1', (gameState.p1.deck || playerDeck)[gameState.p1.deckPointer], gameState.p1);
+    renderNextBox('p2', (gameState.p2.deck || rivalDeck)[gameState.p2.deckPointer], gameState.p2);
 }
 
 // Cuenta animada del marcador (rAF, easing de salida).
@@ -160,9 +162,10 @@ function createCardElement(card, theme, animate) {
     let borderColor = isBlue ? 'border-blue-400 shadow-[0_0_10px_rgba(59,130,246,0.5)]' : 'border-fuchsia-400 shadow-[0_0_10px_rgba(217,70,239,0.5)]';
 
     // data-uid: ancla para los FX y para la reconciliación del tablero.
-    // oracle-aura: el Balbuceo del Oráculo c8 respira mientras esté en
-    // tablero. animate-dissolve: cartas muriendo este tick.
-    cardDiv.className = `w-full max-w-[160px] h-[60px] border-2 ${borderColor} rounded-lg relative overflow-hidden flex flex-col justify-between ${animate ? 'animate-deploy' : ''} ${card.id === 'c8' ? 'oracle-aura' : ''} ${card.dying ? 'animate-dissolve' : ''} cursor-pointer hover:scale-105 active:scale-95 transition-transform`;
+    // oracle-aura: los auras de descuento (Oráculo c8, Guardián de Delfos
+    // c32) respiran mientras estén en tablero. animate-dissolve: cartas
+    // muriendo este tick.
+    cardDiv.className = `w-full max-w-[160px] h-[60px] border-2 ${borderColor} rounded-lg relative overflow-hidden flex flex-col justify-between ${animate ? 'animate-deploy' : ''} ${(card.id === 'c8' || card.id === 'c32') ? 'oracle-aura' : ''} ${card.dying ? 'animate-dissolve' : ''} cursor-pointer hover:scale-105 active:scale-95 transition-transform`;
     cardDiv.dataset.uid = card.uid || '';
     cardDiv.onclick = () => openCardModal(card.id);
 

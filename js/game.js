@@ -1,12 +1,22 @@
 // --- LÓGICA DE COMBATE ---
 // Reloj de turnos, despliegue por energía, resolución de efectos y fin de partida.
 
-// Descuento del Oráculo Ciego (c8): los Eventos cuestan -1 mientras haya un
-// Oráculo vivo en tablero. Única fuente: la usa la partida y el HUD, así el
+// Descuento de Eventos: cada aura viva en tablero (Oráculo c8, Guardián de
+// Delfos c32) abarata los Eventos en 1 Energía, mínimo 0. Mazos singleton →
+// como mucho dos auras. Única fuente: la usa la partida y el HUD, así el
 // coste mostrado siempre coincide con el cobrado.
 function oracleDiscountFor(player, card) {
     if (!card || card.kind !== 'Evento') return 0;
-    return player.activeBoard.some(c => c.id === 'c8' && !c.dying) ? 1 : 0;
+    return player.activeBoard.filter(c => (c.id === 'c8' || c.id === 'c32') && !c.dying).length;
+}
+
+// Expira el +HP temporal (Bendición de Atenea c37): la bendición se retira al
+// comenzar el tick siguiente; si el daño recibido la consumió, el Ser muere.
+function expireTempHp(card) {
+    if (!card.tempHpMod) return;
+    card.hp -= card.tempHpMod;
+    card.tempHpMod = 0;
+    if (card.hp <= 0) { card.hp = 0; card.dying = true; }
 }
 
 // Daño canónico: aplica HP, marca moribunda y, si sobrevive, dispara la
@@ -46,16 +56,18 @@ function gameTick() {
                 dealDamage(h.target, 1);
             });
 
-            gameState.p1.activeBoard.forEach(c => { c.tempAtkMod = 0; c.stunned = false; });
-            gameState.p2.activeBoard.forEach(c => { c.tempAtkMod = 0; c.stunned = false; });
+            gameState.p1.activeBoard.forEach(c => { c.tempAtkMod = 0; c.stunned = false; expireTempHp(c); });
+            gameState.p2.activeBoard.forEach(c => { c.tempAtkMod = 0; c.stunned = false; expireTempHp(c); });
 
             // Turno COMPARTIDO: no hay "primero" ni "segundo". Fase 1: ambos
             // eligen y pagan su carta contra el mismo estado; los Seres entran
             // a la vez a la cima. Fase 2: los efectos resuelven, todos contra
             // tableros ya actualizados por los dos — así el debuff de nadie
-            // ve un despliegue que el otro aún no hizo.
-            let play1 = beginPlay(gameState.p1, playerDeck);
-            let play2 = beginPlay(gameState.p2, rivalDeck);
+            // ve un despliegue que el otro aún no hizo. Cada jugador juega
+            // sobre una COPIA de su mazo hecha en resetMatch: efectos que
+            // roban/mutan cartas (c40) no tocan el mazo guardado del jugador.
+            let play1 = beginPlay(gameState.p1, gameState.p1.deck || playerDeck);
+            let play2 = beginPlay(gameState.p2, gameState.p2.deck || rivalDeck);
             if (play1) deployPlay(gameState.p1, play1);
             if (play2) deployPlay(gameState.p2, play2);
             if (play1) resolvePlay(gameState.p1, gameState.p2, play1);
@@ -216,6 +228,11 @@ function gameTick() {
             gameState.clashQueue = [];
             gameState.p1 = { score: 0, energy: 1, deckPointer: 0, activeBoard: [], lastPlayed: null, extraPoints: 0 };
             gameState.p2 = { score: 0, energy: 1, deckPointer: 0, activeBoard: [], lastPlayed: null, extraPoints: 0 };
+            // Copias de mazo por partida (DESPUÉS de re-crear p1/p2): el robo
+            // de Hermes (c40) y cualquier mutación juegan sobre la copia, no
+            // sobre el mazo guardado del jugador.
+            gameState.p1.deck = [...playerDeck];
+            gameState.p2.deck = [...rivalDeck];
             document.getElementById('pause-overlay').classList.add('hidden-view');
             updateHUD();
             renderBoards();

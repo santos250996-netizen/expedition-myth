@@ -3,6 +3,83 @@
 Registro de veredictos y mediciones del skill `tcg-balance-architect`.
 Formato: fecha — carta — veredicto, con números y decisión.
 
+### 2026-11-06 — Capítulo 1.3 "El Eclipse del Olimpo" (c31–c40) — set nuevo al pool
+- Petición: 10 cartas nuevas del diseñador con lore del capítulo; mecánicas
+  nuevas: aura de descuento de Eventos ampliada (c32), aceleración
+  condicionada a la Fila 1 con gloria (c33), desgaste por turno (c34), buff
+  temporal +2/+2 (c37), destrucción del más fuerte (c38) y robo de carta
+  (c40).
+- Método: veredicto CRUZADO vs vanilla del mismo coste, n=2000, seed 5,
+  horizonte 25, mazo base c1–c10 (la candidata entra por la carta de su
+  mismo coste). Marco de familia (escalera del pool, ver 1.2): c3 ancla 0.0,
+  c2 +3.4, c6 −5.5, c9 −16.8, c5 −23.3, c7 −41.9.
+- VEREDICTOS FINALES (Δ total / decisión):
+  - **c31 Campeón del Eclipse** (Ser 5): spec 5/5 medía **+17.3 OP** (el
+    golpe de 2 a la Fila 1 niega +15.5: a mitad de partida la renta
+    concentrada en la cima hace el nip mucho más valioso que a coste 2, donde
+    c26 medía +3.5). Ajuste a **4/4** → **+2.9**: caliente pero tolerable
+    (familia de c2 +3.4; precedente c30 +4.1). El 2 de daño del spec se
+    conserva intacto; nota de motor: "todos los Seres rivales en la Fila 1"
+    colapsa al Ser de la cima, porque en este motor la Fila 1 es UNA posición.
+  - **c32 Guardián del Templo de Delfos** (Ser 4): spec 2/6 medía −22.8 (el
+    descuento de Eventos vale ≈ +4.4 en el pool base; el cuerpo perdía la
+    renta de ATK, que vale ~14 pts por punto). Ajuste a **3/6** (curva
+    exacta de 9 stats redistribuida a guardián) → **−9.1**: familia de
+    c6/c28, coherente con el sabor de sacerdote defensivo.
+  - **c33 Vidente Ciego de Arcadia** (Ser 2): spec intacto **1/3** →
+    **−2.5** (ruido; mejor que el Vigía c28 −5.8 con la +1 gloria extra por
+    turno si manda en la Fila 1). Sin cambios.
+  - **c34 Coloso de Bronce Olvidado** (Ser 9): spec 7/9 medía **−37.1** en
+    base y −25.8 en hostil: 16 stats vs 19 de curva MÁS el desgaste, que
+    cuesta ≈ −20 pts de renta a horizonte 25. Ajuste a **10/10** (20 stats,
+    la curva no basta a coste 9 cuando la carta se desgasta sola) →
+    **−8.2**: familia de c6. Inmunidades (`noAtkRed`/`noDestroy`) reutilizan
+    el sistema del 1.2; el desgaste NO es daño canónico (no dispara
+    reacciones como la del Titán).
+  - **c35 Heraldo de los Dioses** (Ser 3): spec 2/4 con "+1 ATK a todos tus
+    Seres (él incluido)" medía **+11.3 OP** (misma renta compuesta que el
+    Héroe de Bronce en 1.2). Con el precedente c30 se aplica a **los DEMÁS
+    Seres** con el cuerpo spec intacto 2/4 → **−2.6**. Sin cambios de stats.
+  - **c36 Eclipse de Zeus** (Evento 4): spec intacto (3 daño a todos los
+    rivales) → **−26.0**: hermana menor de la Ira del Cielo (c25 −23.0), en
+    familia ≈ c5. Sin cambios.
+  - **c37 Bendición de Atenea** (Evento): spec coste 3 medía **−41.7** (el
+    +HP temporal casi no vale y el buff dura un solo tick de gloria).
+    Ajuste: **coste 2**, efecto spec intacto (+2/+2 hasta fin de turno) →
+    **−20.7**: espejo exacto del Temblor c29 (−1 ATK rival este turno,
+    −22.4). Simetría documentada: bendición propia a coste de cólera ajena.
+  - **c38 Juicio de Hades** (Evento 5): spec intacto (destruye al de MÁS
+    ATK + 5 gloria) → **−12.7**: familia de Pacto (c9 −16.8) pero con
+    métricas muy superiores (0.93 muertes/partida, 93% ≥1, niega ≈ 33.3
+    pts: caza la renta grande). Respeta `noDestroy`: elige el más fuerte
+    ENTRE los destruibles (precedente c24). Sin cambios.
+  - **c39 Cólera de Ares** (Evento 2): spec intacto (2 daño a TODOS) →
+    **−21.6**: es la Disputa del Territorio c13 (−24.1) con otra piel; en
+    familia ≈ c5. Sin cambios.
+  - **c40 Traición de Hermes** (Evento 3): spec adaptado al motor → **−18.1**,
+    familia de c9. El efecto mide +26.4 (gana +16.2 propio por jugar la
+    carta robada y niega +10.2). Nota de diseño: este motor NO tiene mano;
+    "roba 1 carta del mazo rival" se implementa como robo de la PRÓXIMA
+    carta del mazo rival a tu propio mazo (lectura determinista, sin RNG,
+    válida tick a tick). Sin cambios de coste.
+- Motor (js/game.js, js/ui.js): (1) `oracleDiscountFor` ahora cuenta TODAS
+  las auras vivas (c8 y c32; mazos singleton → máx −2); el HUD de "SIGUIENTE"
+  usa la misma función. La protección anti-contrarresto de c32 queda como
+  texto futuro: en el pool actual NINGÚN efecto contrarresta Eventos, así
+  que es inerte (documentado, no simulado). (2) `tempHpMod` nuevo: el +HP
+  temporal de c37 expira al comenzar el tick siguiente y puede matar si el
+  daño recibido consumió la bendición. (3) Copia de mazo por partida en
+  `resetMatch` (`p1.deck`/`p2.deck`): el robo de c40 muta la copia, nunca el
+  mazo guardado del jugador; el HUD lee la copia.
+- Dificultad del capítulo (bot en orden fijo): se calibró el ORDEN del mazo
+  bot con las mismas 10 cartas. Final elegido c33→c39→c32→c37→c35→c40→
+  c31→c36→c38→c34: mazo base c1–c10 gana **0.3%** (n=2000, seed 5; el bot
+  1.2 dejaba 0.6% — el 1.3 es más duro) y un mazo optimizado con las cartas
+  fuertes del pool gana **69.6%** (objetivo ≈70%: el capítulo empuja a
+  reconstruir mazo con el set del eclipse, sin ser injusto).
+- Nota: el epílogo deja abierta la Guerra de los Dioses para el capítulo
+  siguiente; las artes usan paleta de eclipse (obsidiana + corona dorada).
+
 ### 2026-11-05 — Capítulo 1.2 "El Veredicto de la Sangre y el Bronce" (c21–c30) — set nuevo al pool
 - Petición: 10 cartas nuevas del diseñador con lore del capítulo; mecánicas
   nuevas: buff de HP, inmunidades, energía condicional, gloria escalada.
