@@ -15,17 +15,25 @@ function safeStorageSet(key, value) {
 
 // --- INICIALIZACIÓN ---
 function loadDeck() {
-            let saved = safeStorageGet('nexo_deck_v1');
-            if (saved) {
-                try {
-                    let savedIds = JSON.parse(saved);
-                    let uniqueIds = [...new Set(savedIds)];
-                    playerDeck = uniqueIds.map(id => ALL_CARDS.find(c => c.id === id)).filter(c => c !== undefined);
-                } catch(e) { console.error("Error loading deck", e); }
-            }
-            if (!playerDeck || playerDeck.length === 0) playerDeck = [...ALL_CARDS];
-            if (playerDeck.length > 10) playerDeck = playerDeck.slice(0, 10);
-        }
+    // Inicializar el inventario del jugador (cartas del Capítulo 1.0).
+    initOwnedCards();
+
+    let saved = safeStorageGet('nexo_deck_v1');
+    if (saved) {
+        try {
+            let savedIds = JSON.parse(saved);
+            let uniqueIds = [...new Set(savedIds)];
+            // Filtrar solo las cartas que el jugador posee.
+            playerDeck = uniqueIds.map(id => ALL_CARDS.find(c => c.id === id)).filter(c => c !== undefined && ownedCardIds.includes(c.id));
+        } catch(e) { console.error("Error loading deck", e); }
+    }
+
+    // Sin mazo guardado (o vacío): starter con las cartas que se poseen.
+    if (!playerDeck || playerDeck.length === 0) {
+        playerDeck = ALL_CARDS.filter(c => ownedCardIds.includes(c.id)).slice(0, 10);
+    }
+    if (playerDeck.length > 10) playerDeck = playerDeck.slice(0, 10);
+}
 
         function saveDeck() {
             try { 
@@ -199,10 +207,13 @@ function loadDeck() {
         function renderCollection() {
             let container = document.getElementById('collection-container');
             container.innerHTML = '';
-            let availableCards = ALL_CARDS.filter(card => !playerDeck.some(d => d.id === card.id));
+            // Solo cartas que el jugador POSEE y que no estén ya en el mazo.
+            let availableCards = ALL_CARDS.filter(card =>
+                ownedCardIds.includes(card.id) && !playerDeck.some(d => d.id === card.id)
+            );
 
             if (availableCards.length === 0) {
-                container.innerHTML = `<div class="text-center text-slate-500 text-xs p-4">Todas las cartas están en tu mazo.</div>`;
+                container.innerHTML = `<div class="text-center text-slate-500 text-xs p-4">Gana combates en la Campaña para obtener nuevas cartas.</div>`;
                 return;
             }
 

@@ -232,6 +232,24 @@ function showGameOver() {
         epilogueBox.classList.add('hidden');
     }
 
+    // --- SISTEMA DE RECOMPENSAS ---
+    // Al ganar en un capítulo que no sea el tutorial (1.0) hay un 33% de
+    // probabilidades de llevarse una carta del mazo del rival que falte en
+    // la colección. Va DESPUÉS del epílogo: si se ejecutara antes, el
+    // innerText del epílogo machacaría el mensaje de recompensa.
+    if (p1Score > p2Score && currentChapter && currentChapter.id !== 1 && Math.random() < 0.33) {
+        let cardsToGive = currentChapter.botDeck.filter(id => !ownedCardIds.includes(id));
+        if (cardsToGive.length > 0) {
+            let newCardId = cardsToGive[Math.floor(Math.random() * cardsToGive.length)];
+            ownedCardIds.push(newCardId);
+            safeStorageSet('nexo_owned_cards', JSON.stringify(ownedCardIds));
+
+            let cardData = ALL_CARDS.find(c => c.id === newCardId);
+            document.getElementById('gameover-epilogue-text').innerText += `\n\n¡Has obtenido una nueva carta: ${cardData.name}!`;
+            epilogueBox.classList.remove('hidden');
+        }
+    }
+
     // Aviso háptico suave al cerrar la partida (móvil).
     if (navigator.vibrate) navigator.vibrate(p1Score >= p2Score ? [30, 40, 60] : 50);
 
@@ -301,20 +319,28 @@ function renderChapterSelect() {
             (isChapterCompleted(a.id) ? 1 : 0) - (isChapterCompleted(b.id) ? 1 : 0)
         );
 
-        ordered.forEach((ch) => {
+        ordered.forEach((ch, index) => {
             let done = isChapterCompleted(ch.id);
+            // Un capítulo está desbloqueado si es el primero, si el anterior
+            // (en la lista ordenada) ya está completado o si él mismo lo está.
+            let unlocked = (index === 0) || isChapterCompleted(ordered[index - 1].id) || done;
             let item = document.createElement('div');
             item.className = "active:scale-[0.98] transition-transform cursor-pointer";
-            item.onclick = () => openChapterIntro(ch.id);
+            item.onclick = () => {
+                if (unlocked) openChapterIntro(ch.id);
+                else alert("Completa el capítulo anterior para desbloquear este.");
+            };
             item.innerHTML = `
-                <div class="relative rounded-xl overflow-hidden border-2 ${done ? 'border-amber-400/70 shadow-[0_0_15px_rgba(251,191,36,0.25)]' : 'border-blue-500/70 shadow-[0_0_15px_rgba(59,130,246,0.25)]'}">
+                <div class="relative rounded-xl overflow-hidden border-2 ${done ? 'border-amber-400/70 shadow-[0_0_15px_rgba(251,191,36,0.25)]' : (unlocked ? 'border-blue-500/70 shadow-[0_0_15px_rgba(59,130,246,0.25)]' : 'border-slate-700 opacity-50')}">
                     <div class="aspect-[16/10] bg-cover bg-center" style="background-image:url('${ch.art}')"></div>
                     <div class="absolute inset-0 bg-gradient-to-t from-black/90 via-black/25 to-black/45"></div>
                     <div class="absolute top-2 left-3 right-3 flex items-center justify-between">
                         <span class="text-[9px] font-orbitron tracking-[0.25em] text-amber-300 font-bold">CAPÍTULO ${ch.number}</span>
                         ${done
                             ? '<span class="text-[8px] bg-green-600/90 text-white px-1.5 py-0.5 rounded font-bold">✓ COMPLETADO</span>'
-                            : '<span class="text-[8px] bg-blue-600/90 text-white px-1.5 py-0.5 rounded font-bold">DISPONIBLE</span>'}
+                            : (unlocked
+                                ? '<span class="text-[8px] bg-blue-600/90 text-white px-1.5 py-0.5 rounded font-bold">DISPONIBLE</span>'
+                                : '<span class="text-[8px] bg-slate-600/90 text-white px-1.5 py-0.5 rounded font-bold"><i class="fa-solid fa-lock"></i> BLOQUEADO</span>')}
                     </div>
                     <div class="absolute bottom-2 left-3 right-3">
                         <div class="text-white font-orbitron font-black text-base leading-tight">${ch.title}</div>

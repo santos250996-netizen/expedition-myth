@@ -38,6 +38,15 @@ if ('serviceWorker' in navigator &&
 }
 
 window.onload = () => {
+    // Cargar inventario de cartas guardado (si existe).
+    let savedOwned = safeStorageGet('nexo_owned_cards');
+    if (savedOwned) {
+        try { ownedCardIds = JSON.parse(savedOwned); } catch(e) {}
+    }
+    if (!ownedCardIds || ownedCardIds.length === 0) {
+        initOwnedCards(); // Inicializar con las cartas del tutorial
+    }
+
     loadDeck();
     document.getElementById('deck-count-label').innerText = playerDeck.length;
     updateHUD();
