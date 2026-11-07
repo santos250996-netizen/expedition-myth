@@ -43,6 +43,17 @@ function loadDeck() {
             if (!used.has(c.id)) { playerDeck.push(c); used.add(c.id); }
         }
     }
+
+    // Validación: si alguna carta del mazo guardado ya no está en
+    // ownedCardIds (por reinicio de progreso, migración, etc.), se elimina.
+    // Si el mazo queda vacío tras la validación, se reconstruye el starter.
+    if (!isDevMode()) {
+        let validIds = new Set(ownedCardIds);
+        playerDeck = playerDeck.filter(c => validIds.has(c.id));
+        if (playerDeck.length === 0) {
+            playerDeck = ALL_CARDS.filter(c => ownedCardIds.includes(c.id)).slice(0, 10);
+        }
+    }
 }
 
         function saveDeck() {

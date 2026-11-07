@@ -1,82 +1,119 @@
 // --- INTERFAZ ---
 // Modal de detalle de carta, HUD, tableros y pantallas de fin de partida.
 
-// --- MODAL DE CARTA ---
+// --- MODAL DE CARTA: 2 MODOS (COMBATE / LORE) ---
+// Por defecto: COMBATE (stats + efecto + keyword, sin lore).
+// Al tocar la carta: LORE (se oculta todo, arte expandido, lore debajo).
+// Toggle solo tocando la carta. Icono sutil como indicador.
+let cardModalMode = 'combat';
+
 function openCardModal(cardId) {
     let card = ALL_CARDS.find(c => c.id === cardId);
-    if(!card) return;
+    if (!card) return;
 
     // FIX: al abrir el detalle en combate se pausaba y al cerrar nunca se reanudaba.
     modalAutoPaused = false;
     if (gameState.isPlaying) { pauseGame(); modalAutoPaused = true; }
 
+    // Guardar la carta activa para el toggle.
+    window._modalActiveCard = card;
+    cardModalMode = 'combat';
+
+    // Renderizar en modo combate.
+    renderCardModalContent(card);
+    applyCardModalMode();
+
+    document.getElementById('card-modal').classList.remove('hidden-view');
+}
+
+// Renderiza el contenido del modal (arte, coste, nombre, tipo, stats, desc,
+// facción, keyword, lore). NO decide qué se ve; eso lo hace applyCardModalMode.
+function renderCardModalContent(card) {
     document.getElementById('modal-card-art').style.backgroundImage = `url('${card.art}')`;
     document.getElementById('modal-card-cost').innerText = card.cost;
     document.getElementById('modal-card-name').innerText = card.name;
     document.getElementById('modal-card-desc').innerText = card.desc;
-    document.getElementById('modal-card-lore').innerText = card.lore;
+    document.getElementById('modal-card-lore').innerText = card.lore || '';
 
-    // Facción
     let factionEl = document.getElementById('modal-card-faction');
-    if (factionEl) {
-        factionEl.innerText = card.faction ? card.faction.toUpperCase() : 'NEUTRAL';
-    }
+    if (factionEl) factionEl.innerText = card.faction ? card.faction.toUpperCase() : 'NEUTRAL';
 
-    // Tipo (SER / EVENTO)
     let typeIcon = document.getElementById('modal-card-type-icon');
     let typeText = document.getElementById('modal-card-type');
-    
+    let statsBox = document.querySelector('.card-stats-box');
     if (card.kind === 'Ser') {
         typeIcon.className = "fa-solid fa-shield-halved text-[8px] text-blue-400";
         typeText.innerText = "SER";
         typeText.className = "bg-blue-600 text-white text-[8px] px-1 rounded font-bold uppercase";
         document.getElementById('modal-card-atk').innerText = card.atk;
         document.getElementById('modal-card-hp').innerText = card.hp;
-        document.getElementById('modal-card-atk').style.display = 'flex';
-        document.getElementById('modal-card-hp').style.display = 'flex';
+        if (statsBox) statsBox.style.display = 'flex';
     } else if (card.kind === 'Token') {
         typeIcon.className = "fa-solid fa-shield-halved text-[8px] text-emerald-400";
         typeText.innerText = "TOKEN";
         typeText.className = "bg-emerald-600 text-white text-[8px] px-1 rounded font-bold uppercase";
         document.getElementById('modal-card-atk').innerText = card.atk;
         document.getElementById('modal-card-hp').innerText = card.hp;
-        document.getElementById('modal-card-atk').style.display = 'flex';
-        document.getElementById('modal-card-hp').style.display = 'flex';
+        if (statsBox) statsBox.style.display = 'flex';
     } else {
         typeIcon.className = "fa-solid fa-bolt text-[8px] text-amber-400";
         typeText.innerText = "EVENTO";
         typeText.className = "bg-amber-600 text-white text-[8px] px-1 rounded font-bold uppercase";
-        document.getElementById('modal-card-atk').style.display = 'none';
-        document.getElementById('modal-card-hp').style.display = 'none';
+        // Los Eventos no tienen stats: se oculta la caja (en modo lore la
+        // oculta el CSS con !important, así que no hace falta nada más).
+        if (statsBox) statsBox.style.display = 'none';
     }
 
-    // Explicación de la keyword
+    // Keyword.
     let keywordBox = document.getElementById('modal-keyword-box');
     let keywordText = document.getElementById('modal-keyword-text');
     let keywordExplanation = '';
-
-    if (card.desc.includes('Embestida')) {
+    if (card.desc && card.desc.includes('Embestida')) {
         keywordExplanation = "<strong>Embestida X:</strong> Consume X ATK y HP para infligir X de daño al Ser rival de su misma fila.";
-    } else if (card.desc.includes('Laberinto')) {
+    } else if (card.desc && card.desc.includes('Laberinto')) {
         keywordExplanation = "<strong>Laberinto X:</strong> Atrapa a un Ser rival aleatorio X turnos. Mientras esté atrapado, su ATK y HP son 0 y no puede ser afectado por nada.";
-    } else if (card.desc.includes('Bloqueo')) {
+    } else if (card.desc && card.desc.includes('Bloqueo')) {
         keywordExplanation = "<strong>Bloqueo X:</strong> Amortigua hasta X puntos de reducción (ATK o HP) sobre tus cartas. Al agotarse, el efecto se desactiva.";
-    } else if (card.desc.includes('Enfurecer')) {
+    } else if (card.desc && card.desc.includes('Enfurecer')) {
         keywordExplanation = "<strong>Enfurecer X:</strong> Cada vez que esta carta recibe daño, gana +X ATK permanentemente.";
     }
-
     if (keywordExplanation) {
         keywordText.innerHTML = keywordExplanation;
         keywordBox.classList.remove('hidden');
     } else {
         keywordBox.classList.add('hidden');
     }
+}
 
-    document.getElementById('card-modal').classList.remove('hidden-view');
+// Aplica el modo actual al modal (combate o lore): muestra/oculta elementos.
+function applyCardModalMode() {
+    let isLore = cardModalMode === 'lore';
+    let frame = document.querySelector('.card-modal-frame');
+    if (frame) frame.classList.toggle('card-modal-lore-mode', isLore);
+
+    // El lore box (debajo del marco) se muestra solo en modo lore.
+    let loreBox = document.getElementById('card-modal-lore-box');
+    if (loreBox) loreBox.classList.toggle('hidden-view', !isLore);
+
+    // Icono indicador.
+    let hint = document.getElementById('modal-card-mode-hint');
+    if (hint) {
+        hint.innerHTML = isLore
+            ? '<i class="fa-solid fa-swords"></i>'
+            : '<i class="fa-solid fa-book-open"></i>';
+    }
+}
+
+// Toggle entre modos al tocar la carta.
+function toggleCardModalMode() {
+    cardModalMode = cardModalMode === 'combat' ? 'lore' : 'combat';
+    applyCardModalMode();
 }
 
 function closeCardModal() {
     document.getElementById('card-modal').classList.add('hidden-view');
+    cardModalMode = 'combat';
+    window._modalActiveCard = null;
     // FIX: reanudar solo si esta modal fue quien pausó el juego.
     if (modalAutoPaused) {
         modalAutoPaused = false;
@@ -471,7 +508,9 @@ function openChapters() {
 
 function openEvents() {
     if (!isChapterCompleted(1)) {
-        alert("Completa el Capítulo 1 para desbloquear los eventos.");
+        // Bloqueado: el botón ya se ve gris con candado (CSS). No hacer nada.
+        // Si quieres feedback, puedes vibrar ligeramente en móvil.
+        if (navigator.vibrate) navigator.vibrate(30);
         return;
     }
     switchView('view-chapters');
@@ -479,6 +518,15 @@ function openEvents() {
         let el = document.getElementById('events-section');
         if (el) el.scrollIntoView({ behavior: 'smooth' });
     }, 120);
+}
+
+// Actualiza el estado visual del botón de eventos (con o sin candado) según
+// si el Cap 1 está completado. Se llama al cambiar de vista y al cargar.
+function updateEventsButtonState() {
+    let btn = document.getElementById('btn-events');
+    if (!btn) return;
+    let locked = !isChapterCompleted(1) && !isDevMode();
+    btn.classList.toggle('locked', locked);
 }
 
 function renderChapterSelect() {

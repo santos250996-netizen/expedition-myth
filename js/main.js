@@ -39,6 +39,8 @@ function switchView(viewId) {
     if (viewId === 'view-deckbuilder' && tutorialActive && tutorialStep === 5) {
         setTutorialStep(6);
     }
+
+    updateEventsButtonState();
 }
 
 // --- CONTROLES DE REPRODUCCIÓN (estado centralizado) ---
@@ -85,6 +87,7 @@ window.onload = () => {
     loadProfile();
     renderProfile();
     checkNewVersion();
+    updateEventsButtonState();
 
     // --- Cargar estado del tutorial ---
     let savedTutorial = safeStorageGet('nexo_tutorial_v1');

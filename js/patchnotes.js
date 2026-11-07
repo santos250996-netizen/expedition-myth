@@ -7,6 +7,32 @@
 
 const PATCH_NOTES = [
     {
+        version: '1.5.0',
+        date: '2026-11-07',
+        title: 'Modal de Carta Profesional',
+        highlights: [
+            'El modal de carta ahora tiene 2 modos: combate y lore',
+            'Toca la carta para ver el arte completo y su historia',
+            'Bugs corregidos y mejoras de UX'
+        ],
+        changes: {
+            new: [
+                'Modo combate (por defecto): stats, efecto y keyword, sin lore',
+                'Modo lore (al tocar la carta): arte expandido y lore debajo',
+                'Icono indicador de modo (libro/espada) en el marco',
+                'Botón de eventos con candado visual (gris + candado) en vez de alert'
+            ],
+            buffs: [],
+            nerfs: [],
+            fixes: [
+                'FIX: c9 (Pacto de Sangre) y c23 (Ofrenda) respetan noDestroy y stunned',
+                'FIX: validación de ownedCardIds en loadDeck (mazos huérfanos se limpian)',
+                'Limpieza: eliminado pulse: fx-shake (dato muerto)'
+            ],
+            removed: []
+        }
+    },
+    {
         version: '1.4.0',
         date: '2026-11-07',
         title: 'Efectos Visuales y Recompensas',

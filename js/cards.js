@@ -82,7 +82,7 @@ const ALL_CARDS = [
                     if (own.length === 0) return;
                     p.score += 4;
                     queueFx({ t: 'gloria', side: sideOf(p), text: '+4 GLORIA', icon: 'fa-droplet', num: 4 });
-                    let alive = opp.activeBoard.filter(c => !c.dying && !c.noDestroy);
+                    let alive = opp.activeBoard.filter(c => !c.dying && !c.noDestroy && !c.stunned);
                     if (alive.length > 0) {
                         let weakest = alive.reduce((min, c) => c.hp < min.hp ? c : min, alive[0]);
                         weakest.dying = true;
@@ -91,7 +91,7 @@ const ALL_CARDS = [
                     // Drawback: tu Ser con más HP paga 4 HP (puede morir).
                     let strongest = own.reduce((max, c) => c.hp > max.hp ? c : max, own[0]);
                     strongest.hp = Math.max(0, strongest.hp - 4);
-                    queueFx({ t: 'debuff', side: sideOf(p), uid: strongest.uid, text: '-4 HP', icon: 'fa-droplet', overlay: 'hit', pulse: 'fx-shake' });
+                    queueFx({ t: 'debuff', side: sideOf(p), uid: strongest.uid, text: '-4 HP', icon: 'fa-droplet', overlay: 'hit' });
                     if (strongest.hp === 0) { strongest.dying = true; queueFx({ t: 'sacrifice', side: sideOf(p), uid: strongest.uid }); }
                 } 
             },
@@ -239,7 +239,7 @@ const ALL_CARDS = [
         if (!alive.length) return;
         let target = alive.reduce((max, c) => (c.atk + (c.tempAtkMod || 0)) > (max.atk + (max.tempAtkMod || 0)) ? c : max, alive[0]);
         dealDamage(target, 4, sideOf(opp));
-        queueFx({ t: 'debuff', side: sideOf(opp), uid: target.uid, text: '-4 HP', icon: 'fa-skull', overlay: 'hit', pulse: 'fx-shake' });
+        queueFx({ t: 'debuff', side: sideOf(opp), uid: target.uid, text: '-4 HP', icon: 'fa-skull', overlay: 'hit' });
     },
     startTurn: null
 }

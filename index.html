@@ -12,9 +12,9 @@
          Tailwind va precompilado (solo las clases usadas): el runtime del
          Play CDN recompilaba estilos en cada mutación del DOM y lastraba
          el render. -->
-    <link rel="stylesheet" href="css/vendor/tailwind.min.css?v=20261115b">
+    <link rel="stylesheet" href="css/vendor/tailwind.min.css?v=20261116a">
     <link href="css/vendor/all.min.css" rel="stylesheet">
-    <link rel="stylesheet" href="css/styles.css?v=20261115b">
+    <link rel="stylesheet" href="css/styles.css?v=20261116a">
 </head>
 <body class="bg-black flex justify-center items-center">
 
@@ -329,11 +329,14 @@
             </footer>
         </div>
 
-        <!-- MODAL DE CARTA (Fiel a la captura) -->
+        <!-- MODAL DE CARTA (2 modos: combate / lore) -->
         <div id="card-modal" class="absolute inset-0 bg-black/80 z-50 flex flex-col items-center justify-center p-4 hidden-view">
-            <div class="card-modal-frame">
+            <div class="card-modal-frame" onclick="toggleCardModalMode()">
                 <div id="modal-card-art" class="card-art-bg"></div>
                 <div class="card-gradient-top"></div>
+
+                <!-- Icono indicador de modo (sutil, esquina superior derecha) -->
+                <div id="modal-card-mode-hint" class="card-mode-hint"><i class="fa-solid fa-book-open"></i></div>
 
                 <div id="modal-card-cost" class="card-cost-badge">1</div>
 
@@ -358,13 +361,15 @@
                 </div>
             </div>
 
-            <!-- Keyword (Fuera de la carta) -->
-            <div id="modal-keyword-box" class="w-full max-w-xs mt-2 bg-amber-950/50 border border-amber-500/50 p-2 rounded-lg hidden">
-                <p id="modal-keyword-text" class="text-[10px] text-amber-200 leading-tight text-center"></p>
+            <!-- Bloque de keyword (solo en modo combate) -->
+            <div id="modal-keyword-box" class="w-full max-w-xs mt-3 bg-slate-900/90 border border-slate-700 p-2 rounded-lg hidden-view">
+                <p class="text-[8px] font-orbitron font-bold uppercase tracking-[0.2em] text-amber-300 text-center mb-1">KEYWORD</p>
+                <p id="modal-keyword-text" class="text-[10px] text-slate-300 leading-tight text-center"></p>
             </div>
 
-            <!-- Lore (Fuera de la carta) -->
-            <div class="w-full max-w-xs mt-4 bg-slate-900/90 border border-slate-700 p-3 rounded-lg">
+            <!-- Bloque de lore (solo en modo lore) -->
+            <div id="card-modal-lore-box" class="w-full max-w-xs mt-4 bg-slate-900/90 border border-slate-700 p-3 rounded-lg hidden-view">
+                <p class="text-[9px] font-orbitron font-bold uppercase tracking-[0.25em] text-amber-300 text-center mb-1">LORE</p>
                 <p class="text-[10px] text-slate-400 italic leading-tight text-center" id="modal-card-lore"></p>
             </div>
 
@@ -456,15 +461,15 @@
     </div>
 
 
-    <script src="js/cards.js?v=20261115b"></script>
-    <script src="js/state.js?v=20261115b"></script>
-    <script src="js/fx.js?v=20261115b"></script>
-    <script src="js/deck.js?v=20261115b"></script>
-    <script src="js/chapters.js?v=20261115b"></script>
-    <script src="js/patchnotes.js?v=20261115b"></script>
-    <script src="js/ui.js?v=20261115b"></script>
-    <script src="js/game.js?v=20261115b"></script>
-    <script src="js/dev.js?v=20261115b"></script>
-<script src="js/main.js?v=20261115b"></script>
+    <script src="js/cards.js?v=20261116a"></script>
+    <script src="js/state.js?v=20261116a"></script>
+    <script src="js/fx.js?v=20261116a"></script>
+    <script src="js/deck.js?v=20261116a"></script>
+    <script src="js/chapters.js?v=20261116a"></script>
+    <script src="js/patchnotes.js?v=20261116a"></script>
+    <script src="js/ui.js?v=20261116a"></script>
+    <script src="js/game.js?v=20261116a"></script>
+    <script src="js/dev.js?v=20261116a"></script>
+<script src="js/main.js?v=20261116a"></script>
 </body>
 </html>

@@ -239,7 +239,7 @@ function gameTick() {
                 let t = s.opp.activeBoard[0];
                 if (t && !t.dying) {
                     dealDamage(t, 3, sideOf(s.opp));
-                    queueFx({ t: 'debuff', side: sideOf(s.opp), uid: t.uid, text: '-3 HP', icon: 'fa-house-crack', overlay: 'hit', pulse: 'fx-shake' });
+                    queueFx({ t: 'debuff', side: sideOf(s.opp), uid: t.uid, text: '-3 HP', icon: 'fa-house-crack', overlay: 'hit' });
                 }
             });
             gameState.p1.activeBoard.slice().forEach(card => { if(card.startTurn) card.startTurn(card, gameState.p1, gameState.p2); });
