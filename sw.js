@@ -7,7 +7,7 @@
 //    revalidate: respuesta instantánea desde caché y refresco en segundo
 //    plano. Reabrir el juego no vuelve a descargar ninguna imagen.
 // Para publicar cambios: subir la versión de CACHE (y los ?v= del HTML).
-const CACHE = 'nexo-v20261107c';
+const CACHE = 'nexo-v20261108a';
 
 const PRECACHE = [
     './', './index.html', './manifest.json', './icon.svg',
@@ -76,6 +76,17 @@ const PRECACHE = [
     './assets/cartas/carta-38-juicio-hades.webp',
     './assets/cartas/carta-39-colera-ares.webp',
     './assets/cartas/carta-40-traicion-hermes.webp',
+    // Artes del mazo de Asterión (subhistoria) — placeholders hasta tener arte propio
+    './assets/cartas/asterion-a2-enfurecido.webp',
+    './assets/cartas/asterion-a3-senor-laberinto.webp',
+    './assets/cartas/asterion-a4-toro-blanco.webp',
+    './assets/cartas/asterion-a5-teseo-laberinto.webp',
+    './assets/cartas/asterion-a6-pasifae.webp',
+    './assets/cartas/asterion-a7-dedalo.webp',
+    './assets/cartas/asterion-a8-vaca-madera.webp',
+    './assets/cartas/asterion-a9-nacimiento-minotauro.webp',
+    './assets/cartas/asterion-a10-construccion-laberinto.webp',
+    './assets/cartas/asterion-a11-muerte-minotauro.webp',
     // Artes de capítulos
     './assets/capitulos/capitulo-01-el-despertar-en-la-helade.webp',
     './assets/capitulos/capitulo-1-1-las-grietas-de-la-discordia.webp',

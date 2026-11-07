@@ -34,6 +34,14 @@ function openCardModal(cardId) {
         document.getElementById('modal-card-hp').innerText = card.hp;
         document.getElementById('modal-card-atk').style.display = 'flex';
         document.getElementById('modal-card-hp').style.display = 'flex';
+    } else if (card.kind === 'Token') {
+        typeIcon.className = "fa-solid fa-shield-halved text-[8px] text-emerald-400";
+        typeText.innerText = "TOKEN";
+        typeText.className = "bg-emerald-600 text-white text-[8px] px-1 rounded font-bold uppercase";
+        document.getElementById('modal-card-atk').innerText = card.atk;
+        document.getElementById('modal-card-hp').innerText = card.hp;
+        document.getElementById('modal-card-atk').style.display = 'flex';
+        document.getElementById('modal-card-hp').style.display = 'flex';
     } else {
         typeIcon.className = "fa-solid fa-bolt text-[8px] text-amber-400";
         typeText.innerText = "EVENTO";
@@ -284,11 +292,23 @@ function showGameOver() {
     document.getElementById('final-p1').innerText = p1Score;
     document.getElementById('final-p2').innerText = p2Score;
 
-    // Avance de la historia: al vencer en un capítulo se marca como
-    // completado y se muestra su epílogo en el modal.
     let epilogueBox = document.getElementById('gameover-epilogue');
-    if (p1Score > p2Score && currentChapter) {
-        markChapterCompleted(currentChapter.id);
+    let won = p1Score > p2Score;
+    let isEvent = currentChapter && currentChapter.isEvent;
+    let isTutorial = currentChapter && currentChapter.id === 1;
+    let progressDone = false;
+
+    // Avance de la historia / evento
+    if (currentChapter) {
+        if (isEvent) {
+            if (won) { markEventCompleted(currentChapter.id); progressDone = true; }
+        } else if (won) {
+            markChapterCompleted(currentChapter.id);
+            progressDone = true;
+        }
+    }
+
+    if (progressDone && currentChapter) {
         document.getElementById('gameover-epilogue-text').innerText = currentChapter.epilogue;
         epilogueBox.classList.remove('hidden');
     } else {
@@ -296,24 +316,27 @@ function showGameOver() {
     }
 
     // --- SISTEMA DE RECOMPENSAS ---
-    // Al ganar en un capítulo que no sea el tutorial (1.0) hay un 33% de
-    // probabilidades de llevarse una carta del mazo del rival que falte en
-    // la colección. Va DESPUÉS del epílogo: si se ejecutara antes, el
-    // innerText del epílogo machacaría el mensaje de recompensa.
-    if (p1Score > p2Score && currentChapter && currentChapter.id !== 1 && Math.random() < 0.33) {
+    // Ganar Cap 2+ o evento: 33%. Perder Cap 2+ o evento: 15%.
+    // Cap 1 (tutorial): sin recompensa. Empate: sin recompensa.
+    let rewardChance = won ? 0.33 : (p2Score > p1Score ? 0.15 : 0);
+    let canReward = currentChapter && !isTutorial && rewardChance > 0;
+    if (canReward && Math.random() < rewardChance) {
         let cardsToGive = currentChapter.botDeck.filter(id => !ownedCardIds.includes(id));
         if (cardsToGive.length > 0) {
             let newCardId = cardsToGive[Math.floor(Math.random() * cardsToGive.length)];
             ownedCardIds.push(newCardId);
             safeStorageSet('nexo_owned_cards', JSON.stringify(ownedCardIds));
-
             let cardData = ALL_CARDS.find(c => c.id === newCardId);
-            document.getElementById('gameover-epilogue-text').innerText += `\n\n¡Has obtenido una nueva carta: ${cardData.name}!`;
-            epilogueBox.classList.remove('hidden');
+            let rewardText = (won ? '¡Has obtenido una nueva carta: ' : 'A pesar de la derrota, has obtenido: ') + (cardData ? cardData.name : newCardId) + '!';
+            if (progressDone) {
+                document.getElementById('gameover-epilogue-text').innerText += `\n\n${rewardText}`;
+            } else {
+                document.getElementById('gameover-epilogue-text').innerText = rewardText;
+                epilogueBox.classList.remove('hidden');
+            }
         }
     }
 
-    // Aviso háptico suave al cerrar la partida (móvil).
     if (navigator.vibrate) navigator.vibrate(p1Score >= p2Score ? [30, 40, 60] : 50);
 
     // --- TUTORIAL: AVANZAR AL GANAR O PERDER ---
@@ -380,16 +403,31 @@ function openChapters() {
     switchView('view-chapters');
 }
 
+function openEvents() {
+    if (!isChapterCompleted(1)) {
+        alert("Completa el Capítulo 1 para desbloquear los eventos.");
+        return;
+    }
+    switchView('view-chapters');
+    setTimeout(() => {
+        let el = document.getElementById('events-section');
+        if (el) el.scrollIntoView({ behavior: 'smooth' });
+    }, 120);
+}
+
 function renderChapterSelect() {
     let container = document.getElementById('chapters-list');
+    let eventsContainer = document.getElementById('events-list');
     // A prueba de fallos: si algo rompe (p. ej. un JS viejo en caché)
     // se muestra un aviso visible en lugar de una lista vacía.
     try {
         let frag = document.createDocumentFragment();
+        let campaign = CHAPTERS.filter(ch => !ch.isEvent);
+        let events = CHAPTERS.filter(ch => ch.isEvent);
 
         // Los completados se desplazan al fondo: arriba queda siempre
         // el próximo capítulo a jugar (orden estable entre iguales).
-        let ordered = [...CHAPTERS].sort((a, b) =>
+        let ordered = [...campaign].sort((a, b) =>
             (isChapterCompleted(a.id) ? 1 : 0) - (isChapterCompleted(b.id) ? 1 : 0)
         );
 
@@ -439,6 +477,44 @@ function renderChapterSelect() {
 
         container.innerHTML = '';
         container.appendChild(frag);
+
+        // --- EVENTOS ---
+        if (eventsContainer) {
+            let efrag = document.createDocumentFragment();
+            events.forEach(ev => {
+                let done = isEventCompleted(ev.id);
+                let unlocked = !ev.unlockedBy || isChapterCompleted(ev.unlockedBy);
+                let item = document.createElement('div');
+                item.className = "active:scale-[0.98] transition-transform cursor-pointer";
+                item.onclick = () => {
+                    if (unlocked) openChapterIntro(ev.id);
+                    else alert("Completa el Capítulo " + ev.unlockedBy + " para desbloquear este evento.");
+                };
+                item.innerHTML = `
+                    <div class="relative rounded-xl overflow-hidden border-2 ${done ? 'border-emerald-400/70 shadow-[0_0_15px_rgba(52,211,153,0.25)]' : (unlocked ? 'border-emerald-500/70 shadow-[0_0_15px_rgba(52,211,153,0.25)]' : 'border-slate-700 opacity-50')}">
+                        <div class="aspect-[16/10] bg-cover bg-center" style="background-image:url('${ev.art}')"></div>
+                        <div class="absolute inset-0 bg-gradient-to-t from-black/90 via-black/25 to-black/45"></div>
+                        <div class="absolute top-2 left-3 right-3 flex items-center justify-between">
+                            <span class="text-[9px] font-orbitron tracking-[0.25em] text-emerald-300 font-bold">EVENTO ${ev.number}</span>
+                            ${done
+                                ? '<span class="text-[8px] bg-green-600/90 text-white px-1.5 py-0.5 rounded font-bold">✓ COMPLETADO</span>'
+                                : (unlocked
+                                    ? '<span class="text-[8px] bg-emerald-600/90 text-white px-1.5 py-0.5 rounded font-bold">DISPONIBLE</span>'
+                                    : '<span class="text-[8px] bg-slate-600/90 text-white px-1.5 py-0.5 rounded font-bold"><i class="fa-solid fa-lock"></i> BLOQUEADO</span>')}
+                        </div>
+                        <div class="absolute bottom-2 left-3 right-3">
+                            <div class="text-white font-orbitron font-black text-base leading-tight">${ev.title}</div>
+                            <div class="text-[10px] text-slate-300 font-bold mt-0.5">
+                                <i class="fa-solid fa-user-ninja text-emerald-300"></i> Rival: ${ev.rival.name} · ${ev.botDeck.length} cartas
+                            </div>
+                        </div>
+                    </div>
+                `;
+                efrag.appendChild(item);
+            });
+            eventsContainer.innerHTML = '';
+            eventsContainer.appendChild(efrag);
+        }
     } catch (e) {
         console.error('renderChapterSelect:', e);
         container.innerHTML = '<div class="bg-slate-900 border border-red-500/60 rounded-xl p-4 text-center"><div class="text-red-400 font-orbitron font-bold text-sm">No se pudieron cargar los capítulos</div><p class="text-slate-400 text-xs mt-1">Fuerza la recarga de la página (Ctrl+Shift+R) e inténtalo de nuevo.</p></div>';
@@ -682,6 +758,7 @@ function confirmResetProgress() {
         safeStorageSet('nexo_owned_cards', '[]');
         safeStorageSet('nexo_tutorial_v1', 'false');
         safeStorageSet('nexo_chapters_v1', '[]');
+        safeStorageSet('nexo_events_v1', '[]');
         safeStorageSet('nexo_profile_v1', 'null');
         // El mazo guardado también se borra: al recargar se reconstruye el
         // starter con las cartas del Capítulo 1.0 (el aviso promete perder

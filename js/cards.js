@@ -463,6 +463,136 @@ const ALL_CARDS = [
                     }
                 }, startTurn: null
             }
+            ,
+{
+    id: 'a2', name: 'Asterión, Enfurecido', kind: 'Ser', faction: 'Poseidón', cost: 5, atk: 5, hp: 5,
+    icon: 'fa-cow',
+    desc: 'Embestida 1.',
+    lore: 'Probó la sangre humana y perdió la cordura. Minos ordenó encerrarlo en el laberinto antes de que fuera demasiado tarde.',
+    art: '', // TODO: arte
+    substory: 'asterion',
+    effect: null,
+    startTurn: (self, player, opp) => { embestida(self, player, opp, 1); }
+},
+{
+    id: 'a3', name: 'Asterión, el Señor del Laberinto', kind: 'Ser', faction: 'Poseidón', cost: 7, atk: 6, hp: 4,
+    icon: 'fa-maze',
+    desc: 'Al entrar: Laberinto 2 (atrapa a un Ser rival aleatorio 2 turnos).',
+    lore: 'Aprendió a moverse por el laberinto como si fuera su propio cuerpo. Los que entran no encuentran la salida; él tampoco la busca.',
+    art: '', // TODO: arte
+    substory: 'asterion',
+    effect: (p, opp) => { laberinto(p, opp, 2); },
+    startTurn: null
+},
+{
+    id: 'a4', name: 'El Toro Blanco de Creta', kind: 'Ser', faction: 'Poseidón', cost: 4, atk: 1, hp: 5,
+    icon: 'fa-cow',
+    desc: 'Bloqueo 2.',
+    lore: 'Regalo de Poseidón a Minos. Minos no lo sacrificó, desatando la maldición que engendraría al Minotauro.',
+    art: '', // TODO: arte
+    substory: 'asterion',
+    effect: null,
+    startTurn: null
+},
+{
+    id: 'a5', name: 'Teseo en el Laberinto', kind: 'Ser', faction: 'Atenea', cost: 5, atk: 4, hp: 4,
+    icon: 'fa-scroll',
+    desc: 'Al entrar: +2 Gloria por cada aliado en el tablero.',
+    lore: 'Entró con el hilo de Ariadna y sus aliados. Buscaba sobrevivir y liberar Atenas del tributo de sangre.',
+    art: '', // TODO: arte
+    substory: 'asterion',
+    effect: (p) => {
+        let n = 2 * p.activeBoard.filter(c => !c.dying && !c.stunned).length;
+        if (n > 0) {
+            p.score += n;
+            queueFx({ t: 'gloria', side: sideOf(p), text: '+' + n + ' GLORIA', icon: 'fa-scroll', num: n });
+        }
+    },
+    startTurn: null
+},
+{
+    id: 'a6', name: 'Pasífae, la Reina de Creta', kind: 'Ser', faction: 'Poseidón', cost: 2, atk: 0, hp: 3,
+    icon: 'fa-crown',
+    desc: 'Al entrar: +1 HP a todos tus Asterión en el tablero.',
+    lore: 'Víctima del hechizo de Poseidón. Aterrorizada por lo que engendró, se retiró de la corte y no volvió a mirar al cielo.',
+    art: '', // TODO: arte
+    substory: 'asterion',
+    effect: (p) => {
+        p.activeBoard.forEach(c => {
+            if (!c.dying && (c.id === 'c3' || c.id === 'a2' || c.id === 'a3')) {
+                c.hp += 1;
+                queueFx({ t: 'buff', side: sideOf(p), uid: c.uid, text: '+1 HP', icon: 'fa-crown' });
+            }
+        });
+    },
+    startTurn: null
+},
+{
+    id: 'a7', name: 'Dédalo, el Arquitecto', kind: 'Ser', faction: 'Atenea', cost: 3, atk: 1, hp: 4,
+    icon: 'fa-compass-drafting',
+    desc: 'Al entrar: invoca una Vaca de Madera Hueca (0/1) en tu tablero.',
+    lore: 'Arquitecto del laberinto. Su genio lo condenó a vivir con el peso de su obra y a ver cómo su creación devoraba a los que entraban.',
+    art: '', // TODO: arte
+    substory: 'asterion',
+    effect: (p) => {
+        let tpl = ALL_CARDS.find(c => c.id === 'a8');
+        if (tpl) summonCard(p, tpl);
+    },
+    startTurn: null
+},
+{
+    id: 'a8', name: 'Vaca de Madera Hueca', kind: 'Token', faction: 'Poseidón', cost: 0, atk: 0, hp: 1,
+    icon: 'fa-horse',
+    desc: 'Al ser destruida: invoca un Asterión, el Minotauro.',
+    lore: 'Construida por Dédalo para que Pasífae consumara su pasión prohibida. De su vientre de madera nació la maldición de Creta.',
+    art: '', // TODO: arte
+    substory: 'asterion',
+    effect: null,
+    startTurn: null,
+    onDeath: (owner) => {
+        let tpl = ALL_CARDS.find(c => c.id === 'c3');
+        if (tpl) summonCard(owner, tpl);
+    }
+},
+{
+    id: 'a9', name: 'El Nacimiento del Minotauro', kind: 'Evento', faction: 'Poseidón', cost: 3, atk: 0, hp: 0,
+    icon: 'fa-egg',
+    desc: 'Invoca un Asterión, el Minotauro en tu tablero.',
+    lore: 'De la unión prohibida nació Asterión, una criatura de cuerpo humano y cabeza de toro. Los dioses callaron; el palacio tembló.',
+    art: '', // TODO: arte
+    substory: 'asterion',
+    effect: (p) => {
+        let tpl = ALL_CARDS.find(c => c.id === 'c3');
+        if (tpl) summonCard(p, tpl);
+    },
+    startTurn: null
+},
+{
+    id: 'a10', name: 'La Construcción del Laberinto', kind: 'Evento', faction: 'Atenea', cost: 4, atk: 0, hp: 0,
+    icon: 'fa-dungeon',
+    desc: 'Laberinto 2: atrapa a un Ser rival aleatorio durante 2 turnos.',
+    lore: 'Dédalo trazó pasillos que no llevaban a ninguna parte y puertas que se cerraban sobre sí mismas. El laberinto no era una prisión: era una sentencia.',
+    art: '', // TODO: arte
+    substory: 'asterion',
+    effect: (p, opp) => { laberinto(p, opp, 2); },
+    startTurn: null
+},
+{
+    id: 'a11', name: 'La Muerte del Minotauro', kind: 'Evento', faction: 'Atenea', cost: 2, atk: 0, hp: 0,
+    icon: 'fa-skull',
+    desc: 'Inflige 4 de daño al Ser rival con más ATK.',
+    lore: 'Teseo alzó el puño y el laberinto quedó en silencio. El hilo de Ariadna marcó el camino de vuelta, pero nadie volvió igual.',
+    art: '', // TODO: arte
+    substory: 'asterion',
+    effect: (p, opp) => {
+        let alive = opp.activeBoard.filter(c => !c.dying && !c.stunned);
+        if (!alive.length) return;
+        let target = alive.reduce((max, c) => (c.atk + (c.tempAtkMod || 0)) > (max.atk + (max.tempAtkMod || 0)) ? c : max, alive[0]);
+        dealDamage(target, 4, sideOf(opp));
+        queueFx({ t: 'debuff', side: sideOf(opp), uid: target.uid, text: '-4 HP', icon: 'fa-skull', overlay: 'hit', pulse: 'fx-shake' });
+    },
+    startTurn: null
+}
         ];
 
 // El mazo del rival comparte estas mismas plantillas (las instancias en

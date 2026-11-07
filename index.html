@@ -12,9 +12,9 @@
          Tailwind va precompilado (solo las clases usadas): el runtime del
          Play CDN recompilaba estilos en cada mutación del DOM y lastraba
          el render. -->
-    <link rel="stylesheet" href="css/vendor/tailwind.min.css?v=20261107c">
+    <link rel="stylesheet" href="css/vendor/tailwind.min.css?v=20261108a">
     <link href="css/vendor/all.min.css" rel="stylesheet">
-    <link rel="stylesheet" href="css/styles.css?v=20261107c">
+    <link rel="stylesheet" href="css/styles.css?v=20261108a">
 </head>
 <body class="bg-black flex justify-center items-center">
 
@@ -56,6 +56,15 @@
                 <div id="chapters-list" class="space-y-5">
                     <!-- Renderizado JS -->
                 </div>
+                <div id="events-section" class="mt-8">
+                    <div class="flex items-center gap-2 mb-3">
+                        <span class="text-emerald-400 font-orbitron font-bold text-sm tracking-widest">EVENTOS</span>
+                        <span class="text-[10px] text-slate-500 font-bold">Subhistorias paralelas</span>
+                    </div>
+                    <div id="events-list" class="space-y-5">
+                        <!-- Renderizado JS -->
+                    </div>
+                </div>
             </div>
         </div>
 
@@ -93,7 +102,7 @@
             <div class="flex-1 p-4 overflow-y-auto pb-20">
                 <div class="grid grid-cols-2 gap-4">
                     <div onclick="switchView('view-deckbuilder')" class="flex flex-col items-center gap-2 cursor-pointer active:scale-95 transition-transform">
-                        <div class="w-full aspect-[4/3] rounded-xl border-2 border-blue-500 relative overflow-hidden bg-slate-800" style="background-image: url('assets/cartas/carta-01-mortal-de-arcadia.webp'); background-size: cover; background-position: center;">
+                        <div class="w-full aspect-[4/3] rounded-xl border-2 border-blue-500 relative overflow-hidden bg-slate-800" style="background-image: url('assets/cartas/carta-01-mortales-de-arcadia.webp'); background-size: cover; background-position: center;">
                             <div class="absolute inset-0 bg-black/20"></div>
                         </div>
                         <div class="text-center">
@@ -343,9 +352,13 @@
                 </div>
             </div>
 
+            <!-- Keyword (Fuera de la carta) -->
+            <div id="modal-keyword-box" class="w-full max-w-xs mt-2 bg-amber-950/50 border border-amber-500/50 p-2 rounded-lg hidden">
+                <p id="modal-keyword-text" class="text-[10px] text-amber-200 leading-tight text-center"></p>
+            </div>
+
             <!-- Lore (Fuera de la carta) -->
             <div class="w-full max-w-xs mt-4 bg-slate-900/90 border border-slate-700 p-3 rounded-lg">
-                <p class="text-[9px] font-orbitron font-bold uppercase tracking-[0.25em] text-amber-300 text-center mb-1" id="modal-card-faction"></p>
                 <p class="text-[10px] text-slate-400 italic leading-tight text-center" id="modal-card-lore"></p>
             </div>
 
@@ -386,8 +399,8 @@
         </div>
 
         <nav id="bottom-nav" class="absolute bottom-0 w-full bg-slate-950 border-t border-slate-800 flex justify-around items-end pb-2 pt-1 z-40 h-16">
-            <!-- Botón 1: Eventos (futuro) -->
-            <button id="btn-events" class="flex flex-col items-center gap-1 w-1/5 text-slate-600 cursor-not-allowed">
+            <!-- Botón 1: Eventos (subhistorias) -->
+            <button id="btn-events" onclick="openEvents()" class="flex flex-col items-center gap-1 w-1/5 text-slate-400 hover:text-emerald-400">
                 <i class="fa-solid fa-calendar-days text-xl"></i>
                 <span class="text-[9px] font-bold">EVENTOS</span>
             </button>
@@ -420,13 +433,13 @@
     </div>
 
 
-    <script src="js/cards.js?v=20261107c"></script>
-    <script src="js/state.js?v=20261107c"></script>
-    <script src="js/fx.js?v=20261107c"></script>
-    <script src="js/deck.js?v=20261107c"></script>
-    <script src="js/chapters.js?v=20261107c"></script>
-    <script src="js/ui.js?v=20261107c"></script>
-    <script src="js/game.js?v=20261107c"></script>
-    <script src="js/main.js?v=20261107c"></script>
+    <script src="js/cards.js?v=20261108a"></script>
+    <script src="js/state.js?v=20261108a"></script>
+    <script src="js/fx.js?v=20261108a"></script>
+    <script src="js/deck.js?v=20261108a"></script>
+    <script src="js/chapters.js?v=20261108a"></script>
+    <script src="js/ui.js?v=20261108a"></script>
+    <script src="js/game.js?v=20261108a"></script>
+    <script src="js/main.js?v=20261108a"></script>
 </body>
 </html>

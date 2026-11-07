@@ -80,6 +80,24 @@ const CHAPTERS = [
         // ya desplegada y el Coloso de Bronce (c34) cierra inmune.
         botDeck: ['c33', 'c39', 'c32', 'c37', 'c35', 'c40', 'c31', 'c36', 'c38', 'c34']
     }
+    ,
+{
+    id: 'asterion',
+    number: '★',
+    title: 'El Laberinto de Creta',
+    subtitle: 'Más allá de los valles de la Hélade, en la isla de Creta, un rey encerró en un laberinto al fruto de una maldición divina. El hilo de Ariadna aún no se ha tensado, y el toro espera en el centro.',
+    beats: [
+        { icon: 'fa-cow', title: 'La Maldición de Poseidón', text: 'Minos no sacrificó al Toro Blanco y el dios del mar cobró su ofrenda con creces: Pasífae engendró a Asterión, mitad hombre, mitad toro.' },
+        { icon: 'fa-dungeon', title: 'El Laberinto de Dédalo', text: 'El arquitecto trazó pasillos que no llevaban a ninguna parte. El Minotauro aprendió a moverse por ellos como si fueran su propio cuerpo.' },
+        { icon: 'fa-scroll', title: 'El Hilo de Ariadna', text: 'Teseo entró con el hilo y sus aliados. No buscaba gloria: buscaba sobrevivir y liberar Atenas del tributo de sangre.' }
+    ],
+    epilogue: 'El laberinto quedó en silencio y el toro cayó. Pero el hilo de Ariadna solo marca la salida para quien ya conoce la entrada: los que entraron no volvieron igual, y Creta nunca olvidó el precio de su maldición.',
+    art: 'assets/capitulos/capitulo-1-3-el-eclipse-del-olimpo.webp',
+    rival: { name: 'Asterión', sub: 'LABERINTO' },
+    isEvent: true,
+    unlockedBy: 1,
+    botDeck: ['c3', 'a2', 'a3', 'a4', 'a5', 'a6', 'a7', 'a9', 'a10', 'a11']
+}
 ];
 
 // Capítulo seleccionado (define el fondo de combate y el mazo del bot).

@@ -47,3 +47,22 @@ function loadProfile() {
 function saveProfile() {
     safeStorageSet('nexo_profile_v1', JSON.stringify(playerProfile));
 }
+
+// --- PROGRESO DE EVENTOS (subhistorias) ---
+// Los eventos se guardan aparte de los capítulos de campaña: completar un
+// evento no desbloquea capítulos y viceversa.
+function getCompletedEvents() {
+    let raw = safeStorageGet('nexo_events_v1');
+    if (!raw) return [];
+    try { return JSON.parse(raw); } catch(e) { return []; }
+}
+
+function isEventCompleted(id) { return getCompletedEvents().includes(id); }
+
+function markEventCompleted(id) {
+    let done = getCompletedEvents();
+    if (!done.includes(id)) {
+        done.push(id);
+        safeStorageSet('nexo_events_v1', JSON.stringify(done));
+    }
+}

@@ -33,6 +33,11 @@ function killCard(card, side) {
     let board = side === 'p1' ? gameState.p1.activeBoard : gameState.p2.activeBoard;
     let idx = board.indexOf(card);
     if (idx > -1) board.splice(idx, 1);
+    // Reacción al morir (Vaca de Madera Hueca a8: invoca un Asterión).
+    if (card.onDeath) {
+        let owner = side === 'p1' ? gameState.p1 : gameState.p2;
+        try { card.onDeath(owner); } catch (e) { console.error('onDeath:', e); }
+    }
 }
 
 // Daño canónico: aplica HP y, si la carta muere, killCard la retira del
@@ -41,7 +46,7 @@ function killCard(card, side) {
 // la reacción al daño (Titán Menor c12: +1 ATK permanente) no dependa de
 // quién golpea; la reacción solo dispara si el golpeado sobrevive.
 function dealDamage(target, amount, side) {
-    if (!target || target.dying) return;
+    if (!target || target.dying || target.stunned) return;
     target.hp -= amount;
     if (target.hp <= 0) {
         target.hp = 0;
@@ -79,6 +84,43 @@ function embestida(self, player, opp, X) {
     }
 }
 
+// --- KEYWORD: LABERINTO X ---
+// Atrapa a un Ser rival aleatorio X turnos. Mientras esté atrapado: ATK y HP
+// a 0, no ataca, no puntúa, no recibe daño ni efectos, no es elegido por
+// efectos dirigidos. Al expirar, recupera sus stats guardados. La carta
+// atrapada NO muere aunque su HP llegue a 0 (stunned la protege).
+function laberinto(player, opp, X) {
+    let targets = opp.activeBoard.filter(c => !c.dying && !c.stunned && !c.noLaberinto);
+    if (!targets.length) return;
+    let target = targets[Math.floor(Math.random() * targets.length)];
+    target.stunned = true;
+    target.laberintoTurns = X;
+    target._savedAtk = target.atk;
+    target._savedHp = target.hp;
+    target.atk = 0;
+    target.hp = 0;
+    queueFx({ t: 'debuff', side: sideOf(opp), uid: target.uid, text: 'LABERINTO ' + X, icon: 'fa-maze', overlay: 'fog', pulse: 'fx-pulse-gray' });
+}
+
+// --- INVOCACIÓN DE CARTAS ---
+// Instancia una carta (Ser o Token) en la cima del tablero del jugador,
+// con uid nuevo. Si el tablero está lleno (12), no se invoca.
+function summonCard(player, cardTemplate) {
+    if (!cardTemplate) return;
+    if (player.activeBoard.length >= 12) return;
+    let inst = {
+        ...cardTemplate,
+        uid: Math.random().toString(36).slice(2, 9),
+        tempAtkMod: 0,
+        tempHpMod: 0,
+        stunned: false,
+        laberintoTurns: 0
+    };
+    player.activeBoard.unshift(inst);
+    gameState.justDeployed.push(inst.uid);
+    queueFx({ t: 'buff', side: sideOf(player), uid: inst.uid, text: 'INVOCADO', icon: 'fa-wand-sparkles' });
+}
+
 // Lado del jugador dueño de una carta en tablero (para FX de reacciones que
 // se disparan sin contexto de jugador, como el buff del Titán).
 function ownerSideOf(card) {
@@ -106,6 +148,7 @@ function colossusShieldFor(owner, amount) {
 // pasa por dealDamage ni dispara reacciones al daño (Titán c12); el escudo
 // del Coloso (c24) la amortigua si está activa.
 function applyHpReduction(owner, target, amount, fxIcon) {
+    if (!target || target.dying || target.stunned) return;
     let left = colossusShieldFor(owner, amount);
     if (left <= 0) return;
     target.hp -= left;
@@ -128,6 +171,7 @@ function canStillScore(player) {
     if (player.deckPointer < player.deck.length) return true;
     let alive = player.activeBoard.filter(c => !c.dying);
     return alive.some(c => {
+        if (c.stunned) return (c.laberintoTurns || 0) > 0;
         if (c.atk > 0) return true;
         if (c.id === 'c15') return true;
         if (c.id === 'c2' && alive.some(o => o !== c && o.kind === 'Ser')) return true;
@@ -163,6 +207,28 @@ function gameTick() {
             gameState.p1.energy += 1;
             gameState.p2.energy += 1;
 
+            // Decremento de Laberinto: se hace ANTES de pendingStrikes y startTurn,
+            // para que los que despiertan este tick ya participen en el turno normal.
+            [gameState.p1, gameState.p2].forEach(owner => {
+                owner.activeBoard.forEach(c => {
+                    if (c.stunned && !c.dying) {
+                        c.laberintoTurns = (c.laberintoTurns || 0) - 1;
+                        if (c.laberintoTurns <= 0) {
+                            c.stunned = false;
+                            c.laberintoTurns = 0;
+                            c.atk = c._savedAtk || 0;
+                            c.hp = c._savedHp || 0;
+                            c._savedAtk = undefined;
+                            c._savedHp = undefined;
+                            queueFx({ t: 'buff', side: sideOf(owner), uid: c.uid, text: 'LIBERADO', icon: 'fa-unlock' });
+                        }
+                    }
+                });
+            });
+            // Reset de temp y expiración de HP temporal: solo no-stunned.
+            gameState.p1.activeBoard.forEach(c => { if (!c.stunned) { c.tempAtkMod = 0; expireTempHp(c); } });
+            gameState.p2.activeBoard.forEach(c => { if (!c.stunned) { c.tempAtkMod = 0; expireTempHp(c); } });
+
             // Inicio de turno SIMULTÁNEO: los choques de Embestida se
             // registran contra el mismo estado del tablero y el daño se
             // aplica después, para que ni el orden de los tableros ni una
@@ -180,11 +246,8 @@ function gameTick() {
             gameState.p1.activeBoard.slice().forEach(card => { if(card.startTurn) card.startTurn(card, gameState.p1, gameState.p2); });
             gameState.p2.activeBoard.slice().forEach(card => { if(card.startTurn) card.startTurn(card, gameState.p2, gameState.p1); });
             gameState.clashQueue.forEach(h => {
-                dealDamage(h.target, 1, h.side || ownerSideOf(h.target));
+                dealDamage(h.target, h.amount || 1, h.side || ownerSideOf(h.target));
             });
-
-            gameState.p1.activeBoard.forEach(c => { c.tempAtkMod = 0; c.stunned = false; expireTempHp(c); });
-            gameState.p2.activeBoard.forEach(c => { c.tempAtkMod = 0; c.stunned = false; expireTempHp(c); });
 
             // Turno COMPARTIDO: no hay "primero" ni "segundo". Fase 1: ambos
             // eligen y pagan su carta contra el mismo estado; los Seres entran
