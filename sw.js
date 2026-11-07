@@ -7,23 +7,23 @@
 //    revalidate: respuesta instantánea desde caché y refresco en segundo
 //    plano. Reabrir el juego no vuelve a descargar ninguna imagen.
 // Para publicar cambios: subir la versión de CACHE (y los ?v= del HTML).
-const CACHE = 'nexo-v20261106w';
+const CACHE = 'nexo-v20261107a';
 
 const PRECACHE = [
     './', './index.html', './manifest.json', './icon.svg',
-    './css/styles.css?v=20261106w',
-    './js/cards.js?v=20261106w',
-    './js/state.js?v=20261106w',
-    './js/fx.js?v=20261106w',
-    './js/deck.js?v=20261106w',
-    './js/chapters.js?v=20261106w',
-    './js/ui.js?v=20261106w',
-    './js/game.js?v=20261106w',
-    './js/main.js?v=20261106w',
+    './css/styles.css?v=20261107a',
+    './js/cards.js?v=20261107a',
+    './js/state.js?v=20261107a',
+    './js/fx.js?v=20261107a',
+    './js/deck.js?v=20261107a',
+    './js/chapters.js?v=20261107a',
+    './js/ui.js?v=20261107a',
+    './js/game.js?v=20261107a',
+    './js/main.js?v=20261107a',
     // Dependencias vendorizadas (antes CDN): Tailwind precompilado,
     // Font Awesome y Google Fonts. Sin ellas offline el juego perdería
     // estilos y tipografía.
-    './css/vendor/tailwind.min.css?v=20261106w',
+    './css/vendor/tailwind.min.css?v=20261107a',
     './css/vendor/all.min.css',
     './css/webfonts/fa-solid-900.woff2',
     './css/webfonts/fa-regular-400.woff2',
@@ -36,13 +36,13 @@ const PRECACHE = [
     './css/fonts/rajdhani-600.woff2',
     './css/fonts/rajdhani-700.woff2',
     // Artes de cartas
-    './assets/cartas/carta-01-mortal-de-arcadia.webp',
+    './assets/cartas/carta-01-mortales-de-arcadia.webp',
     './assets/cartas/carta-02-satiro-de-los-bosques.webp',
     './assets/cartas/carta-03-minotauro-joven.webp',
     './assets/cartas/carta-04-plegaria-arcana.webp',
     './assets/cartas/carta-05-niebla-del-caos.webp',
-    './assets/cartas/carta-06-lamento-fuente-seca.webp',
-    './assets/cartas/carta-07-embestida-de-erimanto.webp',
+    './assets/cartas/carta-06-ninfas-de-las-fuentes-secas.webp',
+    './assets/cartas/carta-07-jabali-de-erimanto.webp',
     './assets/cartas/carta-08-oraculo-ciego.webp',
     './assets/cartas/carta-09-pacto-de-sangre.webp',
     './assets/cartas/carta-10-ecos-de-dodona.webp',

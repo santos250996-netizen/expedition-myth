@@ -6,7 +6,7 @@
 const CHAPTERS = [
     {
         id: 1,
-        number: '1.0',
+        number: '1',
         title: 'El Despertar en la Hélade',
         subtitle: 'La historia comienza en una Grecia arcaica y dividida. Las tribus moran en valles oscuros y en las laderas de Arcadia, temiendo la noche y rindiendo culto a las fuerzas telúricas de la tierra.',
         beats: [

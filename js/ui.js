@@ -15,6 +15,7 @@ function openCardModal(cardId) {
     document.getElementById('modal-card-name').innerText = card.name;
     document.getElementById('modal-card-desc').innerText = card.desc;
     document.getElementById('modal-card-lore').innerText = card.lore;
+    document.getElementById('modal-card-faction').innerText = 'Facción · ' + card.faction;
 
     // Configurar el Tipo (SER o EVENTO)
     let kindBadge = document.getElementById('modal-card-kind');

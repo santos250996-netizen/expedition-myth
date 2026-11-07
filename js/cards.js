@@ -3,60 +3,60 @@
 // funciones effect/startTurn sobreviven para ambos jugadores.
 const ALL_CARDS = [
             { 
-                id: 'c1', name: 'Mortal de Arcadia', kind: 'Ser', cost: 1, atk: 1, hp: 1, 
+                id: 'c1', name: 'Mortales de Arcadia', kind: 'Ser', faction: 'Prometeo', cost: 1, atk: 1, hp: 1, 
                 icon: 'fa-user', 
                 desc: 'Sin habilidades, solo voluntad.', 
-                lore: 'En las laderas de los valles oscuros, pequeños grupos de hombres y mujeres intentan sobrevivir al frío y a la intemperie. No tienen armas de bronce ni armaduras pesadas, solo una frágil voluntad y fogatas improvisadas para espantar a la noche.',
-                art: 'assets/cartas/carta-01-mortal-de-arcadia.webp',
+                lore: 'En las laderas de los valles oscuros, pequeños grupos de hombres y mujeres intentan sobrevivir al frío y a la intemperie. No tienen armas de bronce ni armaduras pesadas, solo una frágil voluntad y fogatas improvisadas para espantar a la noche. Son la primera creación de Prometeo, el titán que les dio forma con barro y les robó el fuego a los dioses.',
+                art: 'assets/cartas/carta-01-mortales-de-arcadia.webp',
                 effect: null, startTurn: null 
             },
             { 
-                id: 'c2', name: 'Sátiro de los Bosques', kind: 'Ser', cost: 2, atk: 0, hp: 2, 
+                id: 'c2', name: 'Sátiro de los Bosques', kind: 'Ser', faction: 'Dioniso', cost: 2, atk: 0, hp: 2, 
                 icon: 'fa-leaf', 
                 desc: 'Inicio de turno: Gana +1 ATK por cada otro Ser aliado en el tablero.', 
-                lore: 'De la espesura más profunda de los matorrales surgen criaturas híbridas de torso humano y patas caprinas. Son seres salvajes y caóticos que no obedecen a ninguna ley humana, merodeando los bordes de los caminos para asustar y desorientar a los viajeros.',
+                lore: 'De la espesura más profunda de los matorrales surge una criatura híbrida de torso humano y patas caprinas. Es un ser salvaje y caótico que no obedece a ninguna ley humana, merodeando los bordes de los caminos para asustar y desorientar a los viajeros. Es el cortejo de Dioniso, el dios del vino y el éxtasis, y su sola presencia anuncia el caos.',
                 art: 'assets/cartas/carta-02-satiro-de-los-bosques.webp',
                 effect: null, 
                 startTurn: (self, player) => { self.atk = 0; let others = player.activeBoard.filter(c => c.uid !== self.uid && c.kind === 'Ser' && !c.dying).length; if (others > 0) { self.atk += others; queueFx({ t: 'buff', side: sideOf(player), uid: self.uid, text: '+' + others + ' ATK', icon: 'fa-arrow-trend-up' }); } } 
             },
             { 
-                id: 'c3', name: 'Minotauro Joven', kind: 'Ser', cost: 3, atk: 2, hp: 4, 
+                id: 'c3', name: 'Minotauro Joven', kind: 'Ser', faction: 'Poseidón', cost: 3, atk: 2, hp: 4, 
                 icon: 'fa-cow', 
                 desc: 'Sin habilidades, pero un muro sólido.', 
-                lore: 'Encerrados en cuevas profundas y laberintos naturales de piedra tosca crecen bestias colosales con cuerpo de hombre y cabeza de toro. Su fuerza bruta es incontrolable y comienzan a salir de sus guaridas atraídos por el olor del ganado humano.',
+                lore: 'Encerrado en una cueva profunda y laberíntica de piedra tosca crece una bestia colosal con cuerpo de hombre y cabeza de toro. Su fuerza bruta es incontrolable y comienza a salir de su guarida atraído por el olor del ganado humano. Fue Poseidón quien envió el toro blanco que engendró a esta criatura, y su sombra se cierne sobre Creta.',
                 art: 'assets/cartas/carta-03-minotauro-joven.webp',
                 effect: null, startTurn: null 
             },
             { 
-                id: 'c4', name: 'Plegaria Arcana', kind: 'Evento', cost: 1, atk: 0, hp: 0, 
+                id: 'c4', name: 'Plegaria Arcana', kind: 'Evento', faction: 'Zeus', cost: 1, atk: 0, hp: 0, 
                 icon: 'fa-hands-praying', 
                 desc: 'Otorga +4 Puntos de Gloria instantáneos.', 
-                lore: 'Ante el terror de la oscuridad, los jefes de las tribus alzan las manos al cielo estrellado y elevan sus primeros cánticos y ofrendas. Esta devoción pura resuena por primera vez en las alturas, atrayendo la atención de fuerzas invisibles.',
+                lore: 'Ante el terror de la oscuridad, los jefes de las tribus alzan las manos al cielo estrellado y elevan sus primeros cánticos y ofrendas. Esta devoción pura resuena por primera vez en las alturas, atrayendo la atención de fuerzas invisibles. Es la primera vez que los mortales invocan a Zeus, el rey de los dioses.',
                 art: 'assets/cartas/carta-04-plegaria-arcana.webp',
                 effect: (p) => { p.score += 4; queueFx({ t: 'gloria', side: sideOf(p), text: '+4 GLORIA', icon: 'fa-hands-praying', num: 4 }); }
             },
             { 
-                id: 'c5', name: 'Niebla del Caos', kind: 'Evento', cost: 2, atk: 0, hp: 0, 
+                id: 'c5', name: 'Niebla del Caos', kind: 'Evento', faction: 'Cronos', cost: 2, atk: 0, hp: 0, 
                 icon: 'fa-cloud', 
                 desc: 'Reduce en -2 el ATK de TODOS los Seres rivales (permanente).', 
-                lore: 'Una densa penumbra inexplorada desciende de los cielos y cubre los valles arcaicos de Grecia. Esta neblina antinatural nubla el juicio de las tribus y debilita los primeros asentamientos humanos, obligándolos a dar sus primeros pasos a ciegas en la oscuridad.',
+                lore: 'Una densa penumbra inexplorada desciende de los cielos y cubre los valles arcaicos de Grecia. Esta neblina antinatural nubla el juicio de las tribus y debilita los primeros asentamientos humanos, obligándolos a dar sus primeros pasos a ciegas en la oscuridad. Es el aliento de Cronos, el titán que devora a sus hijos, filtrándose desde el Tártaro.',
                 art: 'assets/cartas/carta-05-niebla-del-caos.webp',
                 effect: (p, opp) => { queueFx({ t: 'wave', side: sideOf(opp) }); opp.activeBoard.forEach(c => { if (!c.dying && !c.noAtkRed) { let d = colossusShieldFor(opp, 2); if (d > 0) { c.atk = Math.max(0, c.atk - d); queueFx({ t: 'debuff', side: sideOf(opp), uid: c.uid, text: '-' + d + ' ATK', icon: 'fa-cloud', overlay: 'fog', pulse: 'fx-pulse-gray', cls: 'fx-gray' }); } } }); } 
             },
             { 
-                id: 'c6', name: 'El Lamento de la Fuente Seca', kind: 'Ser', cost: 2, atk: 1, hp: 2, 
+                id: 'c6', name: 'Ninfas de las Fuentes Secas', kind: 'Ser', faction: 'Poseidón', cost: 2, atk: 1, hp: 2, 
                 icon: 'fa-water', 
                 desc: 'Al entrar: Reduce en -1 el ATK del Ser rival en la Fila 1 (permanente).', 
-                lore: 'Las protectoras de los manantiales sufren la corrupción de la niebla. Al verse marchitas y sin agua pura, pierden la razón y se convierten en espectros errantes que lloran desconsoladamente, confundiendo con sus cantos a cualquiera que se acerque.',
-                art: 'assets/cartas/carta-06-lamento-fuente-seca.webp',
+                lore: 'Las protectoras de los manantiales sufren la corrupción de la niebla. Al verse marchitas y sin agua pura, pierden la razón y se convierten en espectros errantes que lloran desconsoladamente, confundiendo con sus cantos a cualquiera que se acerque. Son las ninfas de Poseidón, hijas del mar y de los ríos, ahora corrompidas por el Caos.',
+                art: 'assets/cartas/carta-06-ninfas-de-las-fuentes-secas.webp',
                 effect: (p, opp) => { let target = opp.activeBoard[0]; if (target && !target.dying && !target.noAtkRed) { let d = colossusShieldFor(opp, 1); if (d > 0) { target.atk = Math.max(0, target.atk - d); queueFx({ t: 'debuff', side: sideOf(opp), uid: target.uid, text: '-' + d + ' ATK', icon: 'fa-water', overlay: 'tears' }); } } }, startTurn: null 
             },
             { 
-                id: 'c7', name: 'La Embestida de Erimanto', kind: 'Ser', cost: 5, atk: 4, hp: 6, 
+                id: 'c7', name: 'Jabalí de Erimanto', kind: 'Ser', faction: 'Artemisa', cost: 5, atk: 4, hp: 6, 
                 icon: 'fa-hippo', 
                 desc: 'Inicio de turno: Inflige 1 daño al Ser rival de su misma fila y pierde 1 HP propio.', 
-                lore: 'Desde las cumbres heladas desciende una bestia descomunal: un jabalí salvaje de piel acorazada y colmillos afilados que arrasa con los primeros cultivos y siembra el pánico absoluto en las laderas de Arcadia.',
-                art: 'assets/cartas/carta-07-embestida-de-erimanto.webp',
+                lore: 'Desde las cumbres heladas desciende una bestia descomunal: un jabalí salvaje de piel acorazada y colmillos afilados que arrasa con los primeros cultivos y siembra el pánico absoluto en las laderas de Arcadia. Los pastores susurran su nombre con terror, pues no hay lanza ni trampa que pueda detenerlo. Es una de las bestias primigenias que habitan las montañas, un recordatorio de que la naturaleza salvaje aún no ha sido domesticada por los hombres.',
+                art: 'assets/cartas/carta-07-jabali-de-erimanto.webp',
                 effect: null, 
                 startTurn: (self, player, opp) => {
                     let myIndex = player.activeBoard.indexOf(self);
@@ -78,18 +78,18 @@ const ALL_CARDS = [
                 }
             },
             { 
-                id: 'c8', name: 'El Balbuceo del Oráculo Ciego', kind: 'Ser', cost: 2, atk: 1, hp: 1,
+                id: 'c8', name: 'Oráculo Ciego', kind: 'Ser', faction: 'Apolo', cost: 2, atk: 1, hp: 1,
                 icon: 'fa-eye-slash', 
                 desc: 'Al entrar: Tu siguiente Evento cuesta -1 Energía (mínimo 0).', 
-                lore: 'En una cueva donde los vapores de la tierra escapan por las grietas, un anciano inhala los efluvios telúricos. Entra en un profundo trance y comienza a escupir profecías indescifrables sobre un destino escrito con sangre y bronce.',
+                lore: 'En una cueva donde los vapores de la tierra escapan por las grietas, un anciano inhala los efluvios telúricos. Entra en un profundo trance y comienza a escupir profecías indescifrables sobre un destino escrito con sangre y bronce. Es un oráculo de Apolo, el dios de la profecía, y sus palabras son tan oscuras como el futuro que anuncian.',
                 art: 'assets/cartas/carta-08-oraculo-ciego.webp',
                 effect: (p) => { p.pendingEventDiscount = (p.pendingEventDiscount || 0) + 1; queueFx({ t: 'discount', side: sideOf(p), text: '-1' }); }, startTurn: null 
             },
             { 
-                id: 'c9', name: 'Pacto de Sangre en el Altar de Piedra', kind: 'Evento', cost: 3, atk: 0, hp: 0, 
+                id: 'c9', name: 'Pacto de Sangre en el Altar de Piedra', kind: 'Evento', faction: 'Hades', cost: 3, atk: 0, hp: 0, 
                 icon: 'fa-droplet', 
                 desc: 'Destruye el Ser rival con menos HP, otorga +4 Puntos de Gloria y resta 4 HP a tu Ser con más HP. Sin Ser aliado, el ritual no se activa.', 
-                lore: 'Desesperados por detener las malas cosechas y los ataques, los mortales construyen altares toscos de roca y entregan la vida de sus cazadores en un ritual oscuro para apaciguar a las fuerzas que los acechan.',
+                lore: 'Desesperados por detener las malas cosechas y los ataques, los mortales construyen altares toscos de roca y entregan la vida de sus cazadores en un ritual oscuro para apaciguar a las fuerzas que los acechan. Es un pacto con Hades, el dios del inframundo, que acepta la sangre como moneda de cambio.',
                 art: 'assets/cartas/carta-09-pacto-de-sangre.webp',
                 effect: (p, opp) => {
                     // Canon: sin Ser aliado vivo, el ritual no se activa.
@@ -111,10 +111,10 @@ const ALL_CARDS = [
                 } 
             },
             {
-                id: 'c10', name: 'Los Ecos del Bosque de Dodona', kind: 'Evento', cost: 1, atk: 0, hp: 0,
+                id: 'c10', name: 'Ecos del Bosque de Dodona', kind: 'Evento', faction: 'Zeus', cost: 1, atk: 0, hp: 0,
                 icon: 'fa-tree',
                 desc: 'Reduce en -1 el ATK de TODOS los Seres (rivales y aliados), permanentemente.',
-                lore: 'Los robles milenarios de los bosques sagrados guardan secretos antiguos. Cuando los intrusos se adentran sin respeto, las hojas y el viento susurran nombres prohibidos que paralizan la voluntad y confunden las mentes de los enemigos.',
+                lore: 'Los robles milenarios de los bosques sagrados guardan secretos antiguos. Cuando los intrusos se adentran sin respeto, las hojas y el viento susurran nombres prohibidos que paralizan la voluntad y confunden las mentes de los enemigos. Es el santuario oracular más antiguo de Zeus, donde los robles susurran sus profecías y su poder debilita a los incrédulos.',
                 art: 'assets/cartas/carta-10-ecos-de-dodona.webp',
                 effect: (p, opp) => { [p, opp].forEach(owner => { queueFx({ t: 'wave', side: sideOf(owner) }); owner.activeBoard.forEach(c => { if (!c.dying && !c.noAtkRed) { let d = colossusShieldFor(owner, 1); if (d > 0) { c.atk = Math.max(0, c.atk - d); queueFx({ t: 'debuff', side: sideOf(owner), uid: c.uid, text: '-' + d + ' ATK', icon: 'fa-leaf', overlay: 'leaf' }); } } }); }); }
             },
