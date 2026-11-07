@@ -33,6 +33,16 @@ function loadDeck() {
         playerDeck = ALL_CARDS.filter(c => ownedCardIds.includes(c.id)).slice(0, 10);
     }
     if (playerDeck.length > 10) playerDeck = playerDeck.slice(0, 10);
+
+    // Override dev: si el mazo guardado tiene menos de 10 cartas, se rellena
+    // con el resto de cartas disponibles hasta 10. Solo en modo dev.
+    if (isDevMode() && playerDeck.length < 10) {
+        let used = new Set(playerDeck.map(c => c.id));
+        for (let c of ALL_CARDS) {
+            if (playerDeck.length >= 10) break;
+            if (!used.has(c.id)) { playerDeck.push(c); used.add(c.id); }
+        }
+    }
 }
 
         function saveDeck() {

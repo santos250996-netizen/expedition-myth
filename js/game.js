@@ -454,3 +454,38 @@ function gameTick() {
             updateHUD();
             renderBoards();
         }
+
+        // --- API PARA EL PANEL DEV ---
+        // El panel dev (dev.js) lee el estado del combate a través de esta función
+        // para no acoplarse a gameState directamente. Solo devuelve datos; no muta.
+        function devGetStateSnapshot() {
+            let snap = {
+                turn: gameState.turn,
+                isPlaying: gameState.isPlaying,
+                speed: gameState.speed,
+                p1: {
+                    score: gameState.p1.score,
+                    energy: gameState.p1.energy,
+                    deckPointer: gameState.p1.deckPointer,
+                    deckLength: (gameState.p1.deck || []).length,
+                    board: gameState.p1.activeBoard.map(c => ({
+                        id: c.id, name: c.name, atk: c.atk, hp: c.hp,
+                        stunned: !!c.stunned, dying: !!c.dying,
+                        laberintoTurns: c.laberintoTurns || 0
+                    }))
+                },
+                p2: {
+                    score: gameState.p2.score,
+                    energy: gameState.p2.energy,
+                    deckPointer: gameState.p2.deckPointer,
+                    deckLength: (gameState.p2.deck || []).length,
+                    board: gameState.p2.activeBoard.map(c => ({
+                        id: c.id, name: c.name, atk: c.atk, hp: c.hp,
+                        stunned: !!c.stunned, dying: !!c.dying,
+                        laberintoTurns: c.laberintoTurns || 0
+                    }))
+                },
+                chapter: currentChapter ? { id: currentChapter.id, title: currentChapter.title, isEvent: !!currentChapter.isEvent } : null
+            };
+            return snap;
+        }

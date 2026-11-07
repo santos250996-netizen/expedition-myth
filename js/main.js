@@ -79,6 +79,8 @@ function preloadGameArt() {
 }
 
 window.onload = () => {
+    initDevMode();
+
     // Cargar perfil y configuración
     loadProfile();
     renderProfile();
@@ -116,6 +118,11 @@ window.onload = () => {
 
     // Precarga del arte una vez pintada la home (no compite con el primer render)
     setTimeout(preloadGameArt, 250);
+
+    // Modo dev: montar panel y barra de combate si está activo.
+    if (isDevMode() && typeof mountDevUI === 'function') {
+        mountDevUI();
+    }
 };
 
 // --- BOTÓN ATRÁS DE ANDROID (CAPACITOR) ---

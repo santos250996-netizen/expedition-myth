@@ -15,12 +15,47 @@ let gameState = {
     p2: { score: 0, energy: 1, deckPointer: 0, activeBoard: [], lastPlayed: null, extraPoints: 0 }
 };
 
+// --- MODO DESARROLLADOR (DEV) ---
+// Activación: ?dev=1 en la URL escribe nexo_dev_mode=true y activa dev en
+// esta sesión. ?dev=0 lo desactiva y borra el flag. El modo dev es un
+// OVERRIDE EN MEMORIA: getCompletedChapters/getCompletedEvents/ownedCardIds
+// devuelven datos ficticios sin tocar localStorage. Al desactivar, el
+// jugador vuelve a su estado real guardado.
+let devModeActive = false;
+
+function initDevMode() {
+    let params = new URLSearchParams(location.search);
+    let q = params.get('dev');
+    if (q === '1') {
+        devModeActive = true;
+        safeStorageSet('nexo_dev_mode', 'true');
+    } else if (q === '0') {
+        devModeActive = false;
+        safeStorageSet('nexo_dev_mode', 'false');
+    } else {
+        devModeActive = safeStorageGet('nexo_dev_mode') === 'true';
+    }
+    return devModeActive;
+}
+
+function isDevMode() { return devModeActive === true; }
+
+function setDevMode(on) {
+    devModeActive = !!on;
+    safeStorageSet('nexo_dev_mode', devModeActive ? 'true' : 'false');
+}
+
 // --- INVENTARIO DEL JUGADOR ---
 // Cartas que el jugador posee (se llena al inicio con el mazo starter).
 let ownedCardIds = [];
 
 // Al cargar el juego, el jugador solo tiene las cartas del Capítulo 1.0.
+// (En modo dev: todas las cartas del juego, solo en memoria.)
 function initOwnedCards() {
+    if (isDevMode()) {
+        ownedCardIds = ALL_CARDS.map(c => c.id);
+        return;
+    }
     if (ownedCardIds.length === 0) {
         ownedCardIds = ['c1', 'c2', 'c3', 'c4', 'c5', 'c6', 'c7', 'c8', 'c9', 'c10'];
     }
@@ -52,6 +87,9 @@ function saveProfile() {
 // Los eventos se guardan aparte de los capítulos de campaña: completar un
 // evento no desbloquea capítulos y viceversa.
 function getCompletedEvents() {
+    if (isDevMode()) {
+        return CHAPTERS.filter(c => c.isEvent).map(c => c.id);
+    }
     let raw = safeStorageGet('nexo_events_v1');
     if (!raw) return [];
     try { return JSON.parse(raw); } catch(e) { return []; }

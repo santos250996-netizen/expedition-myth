@@ -46,7 +46,12 @@ const CHAPTERS = [
 let currentChapter = null;
 
 // Progreso persistente: ids de capítulos completados.
+// (En modo dev: todos los capítulos de campaña cuentan como completados,
+// solo en memoria; el guardado real no se toca.)
 function getCompletedChapters() {
+    if (isDevMode()) {
+        return CHAPTERS.filter(c => !c.isEvent).map(c => c.id);
+    }
     let raw = safeStorageGet('nexo_chapters_v1');
     if (!raw) return [];
     try { return JSON.parse(raw); } catch(e) { return []; }

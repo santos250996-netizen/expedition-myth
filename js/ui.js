@@ -435,7 +435,7 @@ function renderChapterSelect() {
             let done = isChapterCompleted(ch.id);
             // Un capítulo está desbloqueado si es el primero, si el anterior
             // (en la lista ordenada) ya está completado o si él mismo lo está.
-            let unlocked = (index === 0) || isChapterCompleted(ordered[index - 1].id) || done;
+            let unlocked = isDevMode() || (index === 0) || isChapterCompleted(ordered[index - 1].id) || done;
             let item = document.createElement('div');
             item.className = "active:scale-[0.98] transition-transform cursor-pointer";
             item.onclick = () => {
@@ -483,7 +483,7 @@ function renderChapterSelect() {
             let efrag = document.createDocumentFragment();
             events.forEach(ev => {
                 let done = isEventCompleted(ev.id);
-                let unlocked = !ev.unlockedBy || isChapterCompleted(ev.unlockedBy);
+                let unlocked = isDevMode() || !ev.unlockedBy || isChapterCompleted(ev.unlockedBy);
                 let item = document.createElement('div');
                 item.className = "active:scale-[0.98] transition-transform cursor-pointer";
                 item.onclick = () => {
