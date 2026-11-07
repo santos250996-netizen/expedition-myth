@@ -6,6 +6,10 @@
 // Al tocar la carta: LORE (se oculta todo, arte expandido, lore debajo).
 // Toggle solo tocando la carta. Icono sutil como indicador.
 let cardModalMode = 'combat';
+// Si la carta mostrada tiene keyword (lo decide renderCardModalContent);
+// applyCardModalMode lo consulta para no re-mostrar el bloque en cartas
+// sin keyword (c1) al volver a modo combate.
+let cardModalHasKeyword = false;
 
 function openCardModal(cardId) {
     let card = ALL_CARDS.find(c => c.id === cardId);
@@ -79,9 +83,11 @@ function renderCardModalContent(card) {
     }
     if (keywordExplanation) {
         keywordText.innerHTML = keywordExplanation;
-        keywordBox.classList.remove('hidden');
+        cardModalHasKeyword = true;
+        keywordBox.classList.remove('hidden-view');
     } else {
-        keywordBox.classList.add('hidden');
+        cardModalHasKeyword = false;
+        keywordBox.classList.add('hidden-view');
     }
 }
 
@@ -94,6 +100,11 @@ function applyCardModalMode() {
     // El lore box (debajo del marco) se muestra solo en modo lore.
     let loreBox = document.getElementById('card-modal-lore-box');
     if (loreBox) loreBox.classList.toggle('hidden-view', !isLore);
+
+    // El keyword-box se oculta en modo lore (en combate lo gestiona
+    // renderCardModalContent según si la carta tiene keyword).
+    let keywordBox = document.getElementById('modal-keyword-box');
+    if (keywordBox) keywordBox.classList.toggle('hidden-view', isLore || !cardModalHasKeyword);
 
     // Icono indicador.
     let hint = document.getElementById('modal-card-mode-hint');

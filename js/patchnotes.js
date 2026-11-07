@@ -25,7 +25,7 @@ const PATCH_NOTES = [
             buffs: [],
             nerfs: [],
             fixes: [
-                'FIX: c9 (Pacto de Sangre) y c23 (Ofrenda) respetan noDestroy y stunned',
+                'FIX: c9 (Pacto de Sangre) respeta noDestroy y stunned',
                 'FIX: validación de ownedCardIds en loadDeck (mazos huérfanos se limpian)',
                 'Limpieza: eliminado pulse: fx-shake (dato muerto)'
             ],
