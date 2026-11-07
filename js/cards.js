@@ -20,11 +20,11 @@ const ALL_CARDS = [
                 startTurn: (self, player) => { self.atk = 0; let others = player.activeBoard.filter(c => c.uid !== self.uid && c.kind === 'Ser' && !c.dying).length; if (others > 0) { self.atk += others; queueFx({ t: 'buff', side: sideOf(player), uid: self.uid, text: '+' + others + ' ATK', icon: 'fa-arrow-trend-up' }); } } 
             },
             { 
-                id: 'c3', name: 'Minotauro Joven', kind: 'Ser', faction: 'Poseidón', cost: 3, atk: 2, hp: 4, 
+                id: 'c3', name: 'Asterión, el Minotauro', kind: 'Ser', faction: 'Poseidón', cost: 3, atk: 2, hp: 4, 
                 icon: 'fa-cow', 
                 desc: 'Sin habilidades, pero un muro sólido.', 
-                lore: 'Encerrado en una cueva profunda y laberíntica de piedra tosca crece una bestia colosal con cuerpo de hombre y cabeza de toro. Su fuerza bruta es incontrolable y comienza a salir de su guarida atraído por el olor del ganado humano. Fue Poseidón quien envió el toro blanco que engendró a esta criatura, y su sombra se cierne sobre Creta.',
-                art: 'assets/cartas/carta-03-minotauro-joven.webp',
+                lore: 'Encerrado en un laberinto profundo de piedra tosca crece Asterión, una bestia colosal con cuerpo de hombre y cabeza de toro. Su fuerza bruta es incontrolable y comienza a salir de su guarida atraído por el olor del ganado humano. Fue Poseidón quien envió el toro blanco que engendró a esta criatura, y ahora el nombre de Asterión, el Minotauro, se cierne como una sombra sobre Creta.',
+                art: 'assets/cartas/carta-03-asterion-el-minotauro.webp',
                 effect: null, startTurn: null 
             },
             { 

@@ -38,11 +38,13 @@ ley humana, merodeando los bordes de los caminos para asustar y desorientar a lo
 - Coste: 2 — ATK: 0 — HP: 2
 - Efecto: Inicio de turno: Gana +1 ATK por cada otro Ser aliado en el tablero.
 
-### 3. Minotauro Joven (Ser)
+### 3. Asterión, el Minotauro (Ser)
 
-**Lore**: Encerrados en cuevas profundas y laberintos naturales de piedra tosca crecen
-bestias colosales con cuerpo de hombre y cabeza de toro. Su fuerza bruta es incontrolable
-y comienzan a salir de sus guaridas atraídos por el olor del ganado humano.
+**Lore**: Encerrado en un laberinto profundo de piedra tosca crece Asterión, una bestia
+colosal con cuerpo de hombre y cabeza de toro. Su fuerza bruta es incontrolable y comienza
+a salir de su guarida atraído por el olor del ganado humano. Fue Poseidón quien envió el
+toro blanco que engendró a esta criatura, y ahora el nombre de Asterión, el Minotauro, se
+cierne como una sombra sobre Creta.
 
 - Coste: 3 — ATK: 2 — HP: 4
 - Efecto: Ninguno.
@@ -134,7 +136,7 @@ c7 (−3). La realineación aplicada fue:
 
 | Carta | Estado desviado (pre-`j`) | Canon aplicado en `v20261106k` |
 | --- | --- | --- |
-| c3 Minotauro Joven | 3/4 | 2/4 |
+| c3 Asterión, el Minotauro | 3/4 | 2/4 |
 | c4 Plegaria Arcana | +2 PG | +4 PG |
 | c5 Niebla del Caos | -2 ATK solo a la cima rival | -2 ATK a TODOS los rivales |
 | c6 Lamento de la Fuente Seca | 1/3 | 1/2 |
