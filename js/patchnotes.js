@@ -30,6 +30,28 @@ const PATCH_NOTES = [
         }
     },
     {
+        version: '1.3.1',
+        date: '2026-11-07',
+        title: 'El Lore de Asterión, Restaurado',
+        highlights: [
+            'Lore completo de las 10 cartas del mazo de Asterión',
+            'Facciones corregidas (Pasífae → Afrodita, Dédalo → Hefesto)',
+            'Pasífae ahora buffa a Asterión también en el mazo'
+        ],
+        changes: {
+            new: [],
+            buffs: [],
+            nerfs: [],
+            fixes: [
+                'Restaurado el lore completo (3-4 frases) de a2-a11',
+                'Pasífae ahora es de Afrodita (antes Poseidón)',
+                'Dédalo y Construcción del Laberinto ahora son de Hefesto (antes Atenea)',
+                'Pasífae aplica +1 HP a Asterión en tablero Y en mazo (antes solo tablero)'
+            ],
+            removed: []
+        }
+    },
+    {
         version: '1.3.0',
         date: '2026-11-07',
         title: 'El Toro de Creta y la Rejugabilidad',

@@ -107,7 +107,7 @@ const ALL_CARDS = [
     id: 'a2', name: 'Asterión, Enfurecido', kind: 'Ser', faction: 'Poseidón', cost: 5, atk: 5, hp: 5,
     icon: 'fa-cow',
     desc: 'Embestida 1.',
-    lore: 'Probó la sangre humana y perdió la cordura. Minos ordenó encerrarlo en el laberinto antes de que fuera demasiado tarde.',
+    lore: 'El cachorro se convirtió en una bestia. Asterión probó la sangre humana y algo se rompió en su interior: ya no distinguía entre el hambre y la furia. Minos, aterrado por lo que su propio pecado había engendrado, ordenó a Dédalo construir un laberinto para encerrarlo.',
     art: 'assets/cartas/asterion-a2-enfurecido.webp',
     substory: 'asterion',
     effect: null,
@@ -117,7 +117,7 @@ const ALL_CARDS = [
     id: 'a3', name: 'Asterión, el Señor del Laberinto', kind: 'Ser', faction: 'Poseidón', cost: 7, atk: 6, hp: 4,
     icon: 'fa-maze',
     desc: 'Al entrar: Laberinto 2 (atrapa a un Ser rival aleatorio 2 turnos).',
-    lore: 'Aprendió a moverse por el laberinto como si fuera su propio cuerpo. Los que entran no encuentran la salida; él tampoco la busca.',
+    lore: 'Encerrado en el laberinto de Cnosos, Asterión aprendió a moverse entre sus muros como si fueran una extensión de su propio cuerpo. Conocía cada rincón, cada trampa, cada sombra. Los que osaban entrar en su dominio no encontraban la salida, y la bestia los acechaba desde la oscuridad.',
     art: 'assets/cartas/asterion-a3-senor-laberinto.webp',
     substory: 'asterion',
     effect: (p, opp) => { laberinto(p, opp, 2); },
@@ -127,7 +127,7 @@ const ALL_CARDS = [
     id: 'a4', name: 'El Toro Blanco de Creta', kind: 'Ser', faction: 'Poseidón', cost: 4, atk: 1, hp: 5,
     icon: 'fa-cow',
     desc: 'Bloqueo 2.',
-    lore: 'Regalo de Poseidón a Minos. Minos no lo sacrificó, desatando la maldición que engendraría al Minotauro.',
+    lore: 'Poseidón hizo emerger del mar un toro blanco como la espuma, un regalo sagrado para Minos, rey de Creta. El animal era de una belleza sobrecogedora, y Minos, incapaz de alzar la mano contra él, lo conservó en sus dominios. Pero la afrenta no quedó impune: Poseidón encendió en el corazón de Pasífae una pasión prohibida por el toro.',
     art: 'assets/cartas/asterion-a4-toro-blanco.webp',
     substory: 'asterion',
     effect: null,
@@ -137,7 +137,7 @@ const ALL_CARDS = [
     id: 'a5', name: 'Teseo en el Laberinto', kind: 'Ser', faction: 'Atenea', cost: 5, atk: 4, hp: 4,
     icon: 'fa-scroll',
     desc: 'Al entrar: +2 Gloria por cada aliado en el tablero.',
-    lore: 'Entró con el hilo de Ariadna y sus aliados. Buscaba sobrevivir y liberar Atenas del tributo de sangre.',
+    lore: 'Teseo y sus aliados se adentraron en la oscuridad del laberinto con el hilo de Ariadna como única guía. Asterión los acechaba desde las sombras, y cada paso que daban juntos era un latido de esperanza. Cada vida que lograba escapar de las sombras era una victoria para Atenas.',
     art: 'assets/cartas/asterion-a5-teseo-laberinto.webp',
     substory: 'asterion',
     effect: (p) => {
@@ -150,27 +150,38 @@ const ALL_CARDS = [
     startTurn: null
 },
 {
-    id: 'a6', name: 'Pasífae, la Reina de Creta', kind: 'Ser', faction: 'Poseidón', cost: 2, atk: 0, hp: 3,
+    id: 'a6', name: 'Pasífae, la Reina de Creta', kind: 'Ser', faction: 'Afrodita', cost: 2, atk: 0, hp: 3,
     icon: 'fa-crown',
-    desc: 'Al entrar: +1 HP a todos tus Asterión en el tablero.',
-    lore: 'Víctima del hechizo de Poseidón. Aterrorizada por lo que engendró, se retiró de la corte y no volvió a mirar al cielo.',
+    desc: 'Al entrar: +1 HP a todos tus Asterión (en tablero o en mazo).',
+    lore: 'Pasífae, esposa de Minos, caminaba por los jardines de Cnosos con la mirada perdida, ajena al hechizo que Poseidón había tejido sobre ella. Una pasión prohibida por el toro blanco encendió su corazón, y de esa unión contra natura nació Asterión. Aterrorizada por lo que había engendrado, la reina se retiró a las sombras del palacio, pero su amor de madre aún protege a su hijo, dondequiera que esté.',
     art: 'assets/cartas/asterion-a6-pasifae.webp',
     substory: 'asterion',
     effect: (p) => {
+        // +1 HP a todos los Asterión (en tablero).
         p.activeBoard.forEach(c => {
             if (!c.dying && (c.id === 'c3' || c.id === 'a2' || c.id === 'a3')) {
                 c.hp += 1;
                 queueFx({ t: 'buff', side: sideOf(p), uid: c.uid, text: '+1 HP', icon: 'fa-crown' });
             }
         });
+        // +1 HP a todos los Asterión restantes en el mazo del jugador (no los
+        // ya jugados). Se mutan las cartas del mazo en memoria (copia por
+        // partida), no las plantillas de ALL_CARDS.
+        if (p.deck) {
+            p.deck.forEach(c => {
+                if (c.id === 'c3' || c.id === 'a2' || c.id === 'a3') {
+                    c.hp = (c.hp || 0) + 1;
+                }
+            });
+        }
     },
     startTurn: null
 },
 {
-    id: 'a7', name: 'Dédalo, el Arquitecto', kind: 'Ser', faction: 'Atenea', cost: 3, atk: 1, hp: 4,
+    id: 'a7', name: 'Dédalo, el Arquitecto', kind: 'Ser', faction: 'Hefesto', cost: 3, atk: 1, hp: 4,
     icon: 'fa-compass-drafting',
     desc: 'Al entrar: invoca una Vaca de Madera Hueca (0/1) en tu tablero.',
-    lore: 'Arquitecto del laberinto. Su genio lo condenó a vivir con el peso de su obra y a ver cómo su creación devoraba a los que entraban.',
+    lore: 'Dédalo era el artesano más brillante de Grecia, capaz de construir estructuras imposibles y artilugios que desafiaban a los dioses. Minos le ordenó diseñar un laberinto del que nadie pudiera escapar, y Dédalo obedeció, aunque sabía que estaba creando una prisión para una criatura inocente. Su genio lo condenó a vivir con el peso de su obra, y desde entonces, sus manos nunca volvieron a crear nada que no fuera una jaula.',
     art: 'assets/cartas/asterion-a7-dedalo.webp',
     substory: 'asterion',
     effect: (p) => {
@@ -180,10 +191,10 @@ const ALL_CARDS = [
     startTurn: null
 },
 {
-    id: 'a8', name: 'Vaca de Madera Hueca', kind: 'Token', faction: 'Poseidón', cost: 0, atk: 0, hp: 1,
+    id: 'a8', name: 'Vaca de Madera Hueca', kind: 'Token', faction: 'Hefesto', cost: 0, atk: 0, hp: 1,
     icon: 'fa-horse',
     desc: 'Al ser destruida: invoca un Asterión, el Minotauro.',
-    lore: 'Construida por Dédalo para que Pasífae consumara su pasión prohibida. De su vientre de madera nació la maldición de Creta.',
+    lore: 'Una vaca de madera hueca, construida por Dédalo para que Pasífae pudiera consumar su pasión prohibida por el Toro Blanco. En su interior, la reina se ocultó para engendrar a Asterión. La vaca es el símbolo del engaño y la tragedia que envolvió a la casa de Minos.',
     art: 'assets/cartas/asterion-a8-vaca-madera.webp',
     substory: 'asterion',
     effect: null,
@@ -197,7 +208,7 @@ const ALL_CARDS = [
     id: 'a9', name: 'El Nacimiento del Minotauro', kind: 'Evento', faction: 'Poseidón', cost: 3, atk: 0, hp: 0,
     icon: 'fa-egg',
     desc: 'Invoca un Asterión, el Minotauro en tu tablero.',
-    lore: 'De la unión prohibida nació Asterión, una criatura de cuerpo humano y cabeza de toro. Los dioses callaron; el palacio tembló.',
+    lore: 'En la oscuridad de la noche, Pasífae dio a luz a una criatura de cuerpo humano y cabeza de toro. Los gritos de la reina resonaron en los pasillos del palacio, y los dioses guardaron silencio. Asterión había nacido, y con él, la vergüenza y el castigo divino se instalaron en Creta.',
     art: 'assets/cartas/asterion-a9-nacimiento-minotauro.webp',
     substory: 'asterion',
     effect: (p) => {
@@ -207,10 +218,10 @@ const ALL_CARDS = [
     startTurn: null
 },
 {
-    id: 'a10', name: 'La Construcción del Laberinto', kind: 'Evento', faction: 'Atenea', cost: 4, atk: 0, hp: 0,
+    id: 'a10', name: 'La Construcción del Laberinto', kind: 'Evento', faction: 'Hefesto', cost: 4, atk: 0, hp: 0,
     icon: 'fa-dungeon',
     desc: 'Laberinto 2: atrapa a un Ser rival aleatorio durante 2 turnos.',
-    lore: 'Dédalo trazó pasillos que no llevaban a ninguna parte y puertas que se cerraban sobre sí mismas. El laberinto no era una prisión: era una sentencia.',
+    lore: 'Dédalo, el arquitecto más brillante de Grecia, recibió la orden de Minos: construir una prisión de la que nadie pudiera escapar. Durante meses, sus manos trabajaron la piedra y el bronce, levantando muros infinitos y pasillos sin salida. El Laberinto de Cnosos nació para encerrar a Asterión, pero también se convirtió en la tumba de todos los que osaron entrar en él.',
     art: 'assets/cartas/asterion-a10-construccion-laberinto.webp',
     substory: 'asterion',
     effect: (p, opp) => { laberinto(p, opp, 2); },
@@ -220,7 +231,7 @@ const ALL_CARDS = [
     id: 'a11', name: 'La Muerte del Minotauro', kind: 'Evento', faction: 'Atenea', cost: 2, atk: 0, hp: 0,
     icon: 'fa-skull',
     desc: 'Inflige 4 de daño al Ser rival con más ATK.',
-    lore: 'Teseo alzó el puño y el laberinto quedó en silencio. El hilo de Ariadna marcó el camino de vuelta, pero nadie volvió igual.',
+    lore: 'En el centro del Laberinto, Teseo se enfrentó a Asterión. La bestia rugió y cargó contra él, pero el héroe ateniense esquivó sus embestidas y, con un golpe certero, puso fin a la vida del Minotauro. La sangre de Asterión empapó la piedra del laberinto, y el silencio se instaló en Creta.',
     art: 'assets/cartas/asterion-a11-muerte-minotauro.webp',
     substory: 'asterion',
     effect: (p, opp) => {
