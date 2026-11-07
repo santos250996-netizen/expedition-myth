@@ -101,6 +101,7 @@ window.onload = () => {
         initOwnedCards(); // Inicializar con las cartas del tutorial
     }
 
+    migrateCleanup();
     loadDeck();
     document.getElementById('deck-count-label').innerText = playerDeck.length;
     updateHUD();

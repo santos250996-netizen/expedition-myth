@@ -66,3 +66,71 @@ function markEventCompleted(id) {
         safeStorageSet('nexo_events_v1', JSON.stringify(done));
     }
 }
+
+// --- MIGRACIÓN: limpieza de contenido eliminado ---
+// El juego pasó de 4 capítulos + evento a solo Cap 1 + evento Asterión.
+// Al cargar, se eliminan de localStorage los IDs de cartas y capítulos
+// que ya no existen en ALL_CARDS / CHAPTERS, para que el jugador no vea
+// huecos ni mazos con cartas fantasma.
+function migrateCleanup() {
+    // 1. Cartas poseídas: quitar las que ya no existen en ALL_CARDS.
+    try {
+        let rawOwned = safeStorageGet('nexo_owned_cards');
+        if (rawOwned) {
+            let owned = JSON.parse(rawOwned);
+            if (Array.isArray(owned)) {
+                let validIds = new Set(ALL_CARDS.map(c => c.id));
+                let cleaned = owned.filter(id => validIds.has(id));
+                if (cleaned.length !== owned.length) {
+                    safeStorageSet('nexo_owned_cards', JSON.stringify(cleaned));
+                }
+            }
+        }
+    } catch(e) { console.error('migrateCleanup owned:', e); }
+
+    // 2. Capítulos completados: quitar los que ya no existen en CHAPTERS.
+    try {
+        let rawCh = safeStorageGet('nexo_chapters_v1');
+        if (rawCh) {
+            let done = JSON.parse(rawCh);
+            if (Array.isArray(done)) {
+                let validCh = new Set(CHAPTERS.filter(c => !c.isEvent).map(c => c.id));
+                let cleaned = done.filter(id => validCh.has(id));
+                if (cleaned.length !== done.length) {
+                    safeStorageSet('nexo_chapters_v1', JSON.stringify(cleaned));
+                }
+            }
+        }
+    } catch(e) { console.error('migrateCleanup chapters:', e); }
+
+    // 3. Eventos completados: quitar los que ya no existen.
+    try {
+        let rawEv = safeStorageGet('nexo_events_v1');
+        if (rawEv) {
+            let done = JSON.parse(rawEv);
+            if (Array.isArray(done)) {
+                let validEv = new Set(CHAPTERS.filter(c => c.isEvent).map(c => c.id));
+                let cleaned = done.filter(id => validEv.has(id));
+                if (cleaned.length !== done.length) {
+                    safeStorageSet('nexo_events_v1', JSON.stringify(cleaned));
+                }
+            }
+        }
+    } catch(e) { console.error('migrateCleanup events:', e); }
+
+    // 4. Mazo guardado: loadDeck ya filtra por ownedCardIds, pero si el mazo
+    // tenía cartas borradas y queda vacío, se reconstruye el starter.
+    try {
+        let rawDeck = safeStorageGet('nexo_deck_v1');
+        if (rawDeck) {
+            let savedIds = JSON.parse(rawDeck);
+            if (Array.isArray(savedIds)) {
+                let validIds = new Set(ALL_CARDS.map(c => c.id));
+                let cleaned = savedIds.filter(id => validIds.has(id));
+                if (cleaned.length !== savedIds.length) {
+                    safeStorageSet('nexo_deck_v1', JSON.stringify(cleaned));
+                }
+            }
+        }
+    } catch(e) { console.error('migrateCleanup deck:', e); }
+}

@@ -7,23 +7,23 @@
 //    revalidate: respuesta instantánea desde caché y refresco en segundo
 //    plano. Reabrir el juego no vuelve a descargar ninguna imagen.
 // Para publicar cambios: subir la versión de CACHE (y los ?v= del HTML).
-const CACHE = 'nexo-v20261108c';
+const CACHE = 'nexo-v20261109a';
 
 const PRECACHE = [
     './', './index.html', './manifest.json', './icon.svg',
-    './css/styles.css?v=20261108c',
-    './js/cards.js?v=20261108c',
-    './js/state.js?v=20261108c',
-    './js/fx.js?v=20261108c',
-    './js/deck.js?v=20261108c',
-    './js/chapters.js?v=20261108c',
-    './js/ui.js?v=20261108c',
-    './js/game.js?v=20261108c',
-    './js/main.js?v=20261108c',
+    './css/styles.css?v=20261109a',
+    './js/cards.js?v=20261109a',
+    './js/state.js?v=20261109a',
+    './js/fx.js?v=20261109a',
+    './js/deck.js?v=20261109a',
+    './js/chapters.js?v=20261109a',
+    './js/ui.js?v=20261109a',
+    './js/game.js?v=20261109a',
+    './js/main.js?v=20261109a',
     // Dependencias vendorizadas (antes CDN): Tailwind precompilado,
     // Font Awesome y Google Fonts. Sin ellas offline el juego perdería
     // estilos y tipografía.
-    './css/vendor/tailwind.min.css?v=20261108c',
+    './css/vendor/tailwind.min.css?v=20261109a',
     './css/vendor/all.min.css',
     './css/webfonts/fa-solid-900.woff2',
     './css/webfonts/fa-regular-400.woff2',
@@ -46,36 +46,6 @@ const PRECACHE = [
     './assets/cartas/carta-08-oraculo-ciego.webp',
     './assets/cartas/carta-09-pacto-de-sangre.webp',
     './assets/cartas/carta-10-ecos-de-dodona.webp',
-    './assets/cartas/carta-11-acechador-de-los-matorrales.webp',
-    './assets/cartas/carta-12-despertar-del-titan-menor.webp',
-    './assets/cartas/carta-13-disputa-del-territorio.webp',
-    './assets/cartas/carta-14-canto-embrujado-hondonada.webp',
-    './assets/cartas/carta-15-guardian-fuego-sagrado.webp',
-    './assets/cartas/carta-16-sombra-en-el-pozo.webp',
-    './assets/cartas/carta-17-saqueo-antorcha.webp',
-    './assets/cartas/carta-18-centinela-del-barranco.webp',
-    './assets/cartas/carta-19-derrumbe-rocas-sagradas.webp',
-    './assets/cartas/carta-20-profecia-sangre-derramada.webp',
-    './assets/cartas/carta-21-juramento-lanzas-bronce.webp',
-    './assets/cartas/carta-22-forjador-yunque-oculto.webp',
-    './assets/cartas/carta-23-ofrenda-hecatombe.webp',
-    './assets/cartas/carta-24-coloso-grieta-profunda.webp',
-    './assets/cartas/carta-25-ira-cielo-abierto.webp',
-    './assets/cartas/carta-26-cazador-bestias-colinas.webp',
-    './assets/cartas/carta-27-juicio-rayo-caido.webp',
-    './assets/cartas/carta-28-vigia-muralla-ciclopea.webp',
-    './assets/cartas/carta-29-temblor-raices-ocultas.webp',
-    './assets/cartas/carta-30-despertar-heroe-bronce.webp',
-    './assets/cartas/carta-31-campeon-eclipse.webp',
-    './assets/cartas/carta-32-guardian-templo-delfos.webp',
-    './assets/cartas/carta-33-vidente-ciego-arcadia.webp',
-    './assets/cartas/carta-34-coloso-bronce-olvidado.webp',
-    './assets/cartas/carta-35-heraldo-dioses.webp',
-    './assets/cartas/carta-36-eclipse-zeus.webp',
-    './assets/cartas/carta-37-bendicion-atenea.webp',
-    './assets/cartas/carta-38-juicio-hades.webp',
-    './assets/cartas/carta-39-colera-ares.webp',
-    './assets/cartas/carta-40-traicion-hermes.webp',
     // Artes del mazo de Asterión (subhistoria)
     './assets/cartas/asterion-a2-enfurecido.webp',
     './assets/cartas/asterion-a3-senor-laberinto.webp',
@@ -89,8 +59,6 @@ const PRECACHE = [
     './assets/cartas/asterion-a11-muerte-minotauro.webp',
     // Artes de capítulos
     './assets/capitulos/capitulo-01-el-despertar-en-la-helade.webp',
-    './assets/capitulos/capitulo-1-1-las-grietas-de-la-discordia.webp',
-    './assets/capitulos/capitulo-1-2-el-veredicto-de-la-sangre-y-el-bronce.webp',
     './assets/capitulos/capitulo-1-3-el-eclipse-del-olimpo.webp'
 ];
 
