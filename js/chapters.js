@@ -18,10 +18,10 @@ const CHAPTERS = [
         epilogue: 'La fe de los mortales encendió la primera chispa y el Olimpo respondió: la primera intervención divina marca el amanecer de una nueva era. La Niebla del Caos retrocede por ahora, pero las criaturas siguen acechando entre los bosques antiguos... y la Hélade necesitará héroes para lo que viene.',
         art: 'assets/capitulos/capitulo-01-el-despertar-en-la-helade.webp',
         rival: { name: 'Hélade', sub: 'DESPERTAR' },
-        // Mazo del bot NO espejo: sin Minotauro (c3) ni Embestida (c7),
-        // duplica los dos Seres más débiles y arranca por el Sátiro. Con el
-        // mazo idéntico al del jugador, ambos puntuaban lo mismo todos los
-        // turnos y la partida no acababa nunca.
+        // Mazo del bot: mismo conjunto de 10 cartas únicas que el jugador
+        // puede conseguir, pero en 3 órdenes distintos (aggressive,
+        // defensive, balanced). Elegido al azar en cada combate. Sin
+        // duplicados: 10 cartas únicas por orden.
         botDecks: [
             // Orden interno (no visible al jugador). Mismo conjunto de 10 cartas
             // únicas, distinto arranque. Elegido al azar en cada combate.

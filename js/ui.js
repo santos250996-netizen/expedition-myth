@@ -97,9 +97,13 @@ function applyCardModalMode() {
     let frame = document.querySelector('.card-modal-frame');
     if (frame) frame.classList.toggle('card-modal-lore-mode', isLore);
 
-    // El lore box (debajo del marco) se muestra solo en modo lore.
+    // El lore box (debajo del marco) se muestra solo en modo lore Y si la
+    // carta tiene lore. Si no hay lore, el bloque se queda oculto aunque
+    // estemos en modo lore (evita un bloque vacío).
     let loreBox = document.getElementById('card-modal-lore-box');
-    if (loreBox) loreBox.classList.toggle('hidden-view', !isLore);
+    let activeCard = window._modalActiveCard;
+    let hasLore = activeCard && activeCard.lore && activeCard.lore.trim() !== '';
+    if (loreBox) loreBox.classList.toggle('hidden-view', !isLore || !hasLore);
 
     // El keyword-box se oculta en modo lore (en combate lo gestiona
     // renderCardModalContent según si la carta tiene keyword).
