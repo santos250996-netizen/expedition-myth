@@ -172,3 +172,13 @@ function migrateCleanup() {
         }
     } catch(e) { console.error('migrateCleanup deck:', e); }
 }
+
+// --- VERSIÓN VISTA POR EL JUGADOR (para el banner de notas del parche) ---
+function getLastSeenVersion() {
+    return safeStorageGet('nexo_last_seen_version') || null;
+}
+
+function setLastSeenVersion(v) {
+    if (!v) return;
+    safeStorageSet('nexo_last_seen_version', v);
+}

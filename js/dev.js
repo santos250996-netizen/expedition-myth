@@ -36,6 +36,7 @@ function mountDevUI() {
                     <button onclick="devResetMatch()" class="w-full bg-blue-700 hover:bg-blue-600 text-white font-bold py-2 rounded-lg">Reset partida actual</button>
                     <button onclick="devShowState()" class="w-full bg-purple-700 hover:bg-purple-600 text-white font-bold py-2 rounded-lg">Ver estado del combate</button>
                     <button onclick="devJumpToChapter()" class="w-full bg-cyan-700 hover:bg-cyan-600 text-white font-bold py-2 rounded-lg">Ir a capítulo/evento...</button>
+                    <button onclick="openPatchNotes()" class="w-full bg-emerald-700 hover:bg-emerald-600 text-white font-bold py-2 rounded-lg">Notas del parche</button>
                     <button onclick="devDisable()" class="w-full bg-red-800 hover:bg-red-700 text-white font-bold py-2 rounded-lg">Desactivar modo dev</button>
                 </div>
             </div>

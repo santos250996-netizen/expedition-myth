@@ -84,6 +84,7 @@ window.onload = () => {
     // Cargar perfil y configuración
     loadProfile();
     renderProfile();
+    checkNewVersion();
 
     // --- Cargar estado del tutorial ---
     let savedTutorial = safeStorageGet('nexo_tutorial_v1');

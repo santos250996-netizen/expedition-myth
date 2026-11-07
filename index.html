@@ -12,9 +12,9 @@
          Tailwind va precompilado (solo las clases usadas): el runtime del
          Play CDN recompilaba estilos en cada mutación del DOM y lastraba
          el render. -->
-    <link rel="stylesheet" href="css/vendor/tailwind.min.css?v=20261110a">
+    <link rel="stylesheet" href="css/vendor/tailwind.min.css?v=20261111a">
     <link href="css/vendor/all.min.css" rel="stylesheet">
-    <link rel="stylesheet" href="css/styles.css?v=20261110a">
+    <link rel="stylesheet" href="css/styles.css?v=20261111a">
 </head>
 <body class="bg-black flex justify-center items-center">
 
@@ -31,8 +31,9 @@
             <button id="btn-profile" onclick="switchView('view-profile'); renderProfile();" class="pointer-events-auto w-10 h-10 rounded-full bg-slate-900/80 border border-slate-700 flex items-center justify-center text-slate-300 hover:text-white hover:border-slate-500 transition">
                 <i class="fa-solid fa-user text-lg"></i>
             </button>
-            <button id="btn-settings" onclick="switchView('view-settings');" class="pointer-events-auto w-10 h-10 rounded-full bg-slate-900/80 border border-slate-700 flex items-center justify-center text-slate-300 hover:text-white hover:border-slate-500 transition">
+            <button id="btn-settings" onclick="switchView('view-settings');" class="pointer-events-auto relative w-10 h-10 rounded-full bg-slate-900/80 border border-slate-700 flex items-center justify-center text-slate-300 hover:text-white hover:border-slate-500 transition">
                 <i class="fa-solid fa-gear text-lg"></i>
+                <span id="settings-new-badge" class="hidden absolute -top-0.5 -right-0.5 w-3 h-3 rounded-full bg-red-500 border border-white"></span>
             </button>
         </div>
 
@@ -43,6 +44,9 @@
                     ECOS DEL<br>OLIMPO
                 </h1>
                 <p id="home-chapter-label" class="text-amber-400 font-orbitron text-sm mt-2 z-20">Capítulo 1.0: El Despertar en la Hélade</p>
+                <button id="home-patch-banner" onclick="openPatchNotes()" class="hidden mt-4 z-20 bg-emerald-900/80 border border-emerald-400/60 rounded-full px-4 py-1.5 text-emerald-300 font-orbitron font-bold text-[10px] tracking-wider active:scale-95 transition">
+                    <i class="fa-solid fa-sparkles"></i> <span id="home-patch-banner-label">Nueva versión disponible</span> — Ver notas
+                </button>
             </div>
         </div>
 
@@ -225,6 +229,11 @@
                     <i class="fa-solid fa-circle-info text-blue-400"></i>
                     <span class="text-sm font-bold text-white">Créditos</span>
                 </button>
+                <button onclick="openPatchNotes()" class="w-full bg-slate-900 border border-slate-800 rounded-xl p-3 flex items-center gap-3 active:scale-95">
+                    <i class="fa-solid fa-scroll text-emerald-400"></i>
+                    <span class="text-sm font-bold text-white">Notas del parche</span>
+                    <span id="settings-patch-badge" class="hidden ml-auto bg-red-500 text-white text-[8px] px-1.5 py-0.5 rounded font-bold">NUEVO</span>
+                </button>
                 <!-- Reiniciar Progreso -->
                 <button onclick="confirmResetProgress()" class="w-full bg-red-950/50 border border-red-500/50 rounded-xl p-3 flex items-center gap-3 active:scale-95">
                     <i class="fa-solid fa-trash text-red-400"></i>
@@ -385,6 +394,22 @@
             </div>
         </div>
 
+        <!-- MODAL NOTAS DEL PARCHE -->
+        <div id="patch-notes-modal" class="absolute inset-0 bg-black/90 z-50 flex flex-col items-center justify-center p-4 hidden-view backdrop-blur-sm">
+            <div class="w-full max-w-md max-h-[85vh] bg-slate-950 border-2 border-emerald-500/50 rounded-2xl flex flex-col overflow-hidden">
+                <div class="flex items-center justify-between px-4 py-3 border-b border-slate-800">
+                    <div class="flex items-center gap-2">
+                        <i class="fa-solid fa-scroll text-emerald-400"></i>
+                        <span class="text-emerald-300 font-orbitron font-black text-sm tracking-widest">NOTAS DEL PARCHE</span>
+                    </div>
+                    <button onclick="closePatchNotes()" class="text-slate-400 hover:text-white text-xl">&times;</button>
+                </div>
+                <div id="patch-notes-list" class="flex-1 overflow-y-auto p-3">
+                    <!-- Renderizado JS -->
+                </div>
+            </div>
+        </div>
+
         <!-- NAVEGACIÓN -->
         <!-- TUTORIAL TOAST -->
         <div id="tutorial-toast" class="absolute bottom-20 left-4 right-4 bg-slate-900/95 border-2 border-amber-500 rounded-xl p-3 z-[60] hidden-view shadow-[0_0_20px_rgba(251,191,36,0.3)]">
@@ -433,14 +458,15 @@
     </div>
 
 
-    <script src="js/cards.js?v=20261110a"></script>
-    <script src="js/state.js?v=20261110a"></script>
-    <script src="js/fx.js?v=20261110a"></script>
-    <script src="js/deck.js?v=20261110a"></script>
-    <script src="js/chapters.js?v=20261110a"></script>
-    <script src="js/ui.js?v=20261110a"></script>
-    <script src="js/game.js?v=20261110a"></script>
-    <script src="js/dev.js?v=20261110a"></script>
-<script src="js/main.js?v=20261110a"></script>
+    <script src="js/cards.js?v=20261111a"></script>
+    <script src="js/state.js?v=20261111a"></script>
+    <script src="js/fx.js?v=20261111a"></script>
+    <script src="js/deck.js?v=20261111a"></script>
+    <script src="js/chapters.js?v=20261111a"></script>
+    <script src="js/patchnotes.js?v=20261111a"></script>
+    <script src="js/ui.js?v=20261111a"></script>
+    <script src="js/game.js?v=20261111a"></script>
+    <script src="js/dev.js?v=20261111a"></script>
+<script src="js/main.js?v=20261111a"></script>
 </body>
 </html>

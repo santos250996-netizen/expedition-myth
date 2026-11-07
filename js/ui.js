@@ -764,6 +764,130 @@ function confirmResetProgress() {
         // starter con las cartas del Capítulo 1.0 (el aviso promete perder
         // "mazos" también, no solo cartas).
         safeStorageSet('nexo_deck_v1', '');
+        // Notas del parche: al reiniciar, el banner vuelve a aparecer.
+        safeStorageSet('nexo_last_seen_version', '');
         location.reload(); // Recargar la app para reiniciar todo
     }
+}
+
+// --- NOTAS DEL PARCHE (UI) ---
+// Modal con historial versionado. La versión más reciente se abre por defecto;
+// las anteriores son colapsables. En modo dev se muestra también la sección
+// [DEV]. Al abrir, se marca la versión como vista (banner y badge se apagan).
+
+function openPatchNotes() {
+    let modal = document.getElementById('patch-notes-modal');
+    if (!modal) return;
+    renderPatchNotes();
+    modal.classList.remove('hidden-view');
+    // Marcar la versión más reciente como vista.
+    let latest = (typeof getLatestVersion === 'function') ? getLatestVersion() : null;
+    if (latest) setLastSeenVersion(latest);
+    updatePatchNotesBadge();
+}
+
+function closePatchNotes() {
+    let modal = document.getElementById('patch-notes-modal');
+    if (modal) modal.classList.add('hidden-view');
+}
+
+function renderPatchNotes() {
+    let container = document.getElementById('patch-notes-list');
+    if (!container) return;
+    let notes = (typeof getVisiblePatchNotes === 'function') ? getVisiblePatchNotes() : [];
+    if (!notes.length) {
+        container.innerHTML = '<p class="text-slate-500 text-xs text-center">No hay notas disponibles.</p>';
+        return;
+    }
+    let html = '';
+    notes.forEach((note, idx) => {
+        let isLatest = idx === 0;
+        let devTag = note.dev ? '<span class="bg-red-600 text-white text-[8px] px-1.5 py-0.5 rounded font-bold ml-2">DEV</span>' : '';
+        let changesHtml = '';
+        if (note.changes) {
+            if (note.changes.new && note.changes.new.length) {
+                changesHtml += `<div class="mb-2"><div class="text-emerald-400 font-bold text-[10px] mb-1"><i class="fa-solid fa-plus-circle"></i> NUEVO</div><ul class="text-slate-300 text-[10px] space-y-0.5 ml-3">${note.changes.new.map(x => `<li>• ${x}</li>`).join('')}</ul></div>`;
+            }
+            if (note.changes.buffs && note.changes.buffs.length) {
+                changesHtml += `<div class="mb-2"><div class="text-blue-400 font-bold text-[10px] mb-1"><i class="fa-solid fa-arrow-up"></i> BUFFS</div><ul class="text-slate-300 text-[10px] space-y-0.5 ml-3">${note.changes.buffs.map(x => `<li>• ${x}</li>`).join('')}</ul></div>`;
+            }
+            if (note.changes.nerfs && note.changes.nerfs.length) {
+                changesHtml += `<div class="mb-2"><div class="text-orange-400 font-bold text-[10px] mb-1"><i class="fa-solid fa-arrow-down"></i> NERFS</div><ul class="text-slate-300 text-[10px] space-y-0.5 ml-3">${note.changes.nerfs.map(x => `<li>• ${x}</li>`).join('')}</ul></div>`;
+            }
+            if (note.changes.fixes && note.changes.fixes.length) {
+                changesHtml += `<div class="mb-2"><div class="text-purple-400 font-bold text-[10px] mb-1"><i class="fa-solid fa-wrench"></i> FIXES</div><ul class="text-slate-300 text-[10px] space-y-0.5 ml-3">${note.changes.fixes.map(x => `<li>• ${x}</li>`).join('')}</ul></div>`;
+            }
+            if (note.changes.removed && note.changes.removed.length) {
+                changesHtml += `<div class="mb-2"><div class="text-red-400 font-bold text-[10px] mb-1"><i class="fa-solid fa-trash"></i> ELIMINADO</div><ul class="text-slate-300 text-[10px] space-y-0.5 ml-3">${note.changes.removed.map(x => `<li>• ${x}</li>`).join('')}</ul></div>`;
+            }
+        }
+        let highlightsHtml = '';
+        if (note.highlights && note.highlights.length) {
+            highlightsHtml = `<div class="mb-2 bg-slate-800/60 rounded p-2"><div class="text-amber-300 font-bold text-[10px] mb-1"><i class="fa-solid fa-star"></i> DESTACADO</div><ul class="text-amber-100/80 text-[10px] space-y-0.5 ml-3">${note.highlights.map(x => `<li>• ${x}</li>`).join('')}</ul></div>`;
+        }
+        let bodyId = 'patch-body-' + idx;
+        let arrow = isLatest ? '▼' : '▶';
+        html += `
+            <div class="bg-slate-900 border border-slate-700 rounded-lg mb-2 overflow-hidden">
+                <button onclick="togglePatchBody(${idx})" class="w-full flex items-center justify-between px-3 py-2 active:bg-slate-800">
+                    <div class="text-left">
+                        <div class="text-white font-orbitron font-bold text-xs">v${note.version}${devTag} — ${note.title}</div>
+                        <div class="text-slate-500 text-[9px]">${note.date}</div>
+                    </div>
+                    <span id="patch-arrow-${idx}" class="text-slate-400 text-[10px]">${arrow}</span>
+                </button>
+                <div id="${bodyId}" class="px-3 pb-3 ${isLatest ? '' : 'hidden'}">
+                    ${highlightsHtml}
+                    ${changesHtml}
+                </div>
+            </div>
+        `;
+    });
+    container.innerHTML = html;
+}
+
+function togglePatchBody(idx) {
+    let body = document.getElementById('patch-body-' + idx);
+    let arrow = document.getElementById('patch-arrow-' + idx);
+    if (!body) return;
+    let hidden = body.classList.toggle('hidden');
+    if (arrow) arrow.innerText = hidden ? '▶' : '▼';
+}
+
+// Actualiza el badge del botón de Opciones y el banner de la home según si
+// el jugador ya vio la versión más reciente.
+function updatePatchNotesBadge() {
+    let latest = (typeof getLatestVersion === 'function') ? getLatestVersion() : null;
+    let seen = getLastSeenVersion();
+    let hasNew = latest && latest !== seen;
+
+    let badge = document.getElementById('settings-new-badge');
+    if (badge) badge.classList.toggle('hidden', !hasNew);
+
+    let patchBtnBadge = document.getElementById('settings-patch-badge');
+    if (patchBtnBadge) patchBtnBadge.classList.toggle('hidden', !hasNew);
+
+    let banner = document.getElementById('home-patch-banner');
+    if (banner) {
+        if (hasNew) {
+            let label = document.getElementById('home-patch-banner-label');
+            if (label) label.innerText = 'v' + latest + ' disponible';
+            banner.classList.remove('hidden');
+        } else {
+            banner.classList.add('hidden');
+        }
+    }
+}
+
+// Llamada al arrancar: actualiza badge y banner. En modo dev, no muestra el
+// banner (para no molestar en testeo), pero el botón de Opciones sigue activo.
+function checkNewVersion() {
+    if (typeof isDevMode === 'function' && isDevMode()) {
+        let banner = document.getElementById('home-patch-banner');
+        if (banner) banner.classList.add('hidden');
+        let badge = document.getElementById('settings-new-badge');
+        if (badge) badge.classList.add('hidden');
+        return;
+    }
+    updatePatchNotesBadge();
 }

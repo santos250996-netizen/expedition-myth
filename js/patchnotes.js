@@ -1,0 +1,105 @@
+// --- NOTAS DEL PARCHE (PATCH NOTES) ---
+// Historial versionado de cambios del juego. Cada entrada es una versión.
+// La más reciente va PRIMERO (índice 0). El banner de la home y el badge de
+// Opciones se activan si nexo_last_seen_version < PATCH_NOTES[0].version.
+// El formato de cambios es categorizado: new, buffs, nerfs, fixes, removed.
+// En modo dev, además, se muestran las versiones con dev:true (sección [DEV]).
+
+const PATCH_NOTES = [
+    {
+        version: '1.2.0-dev',
+        date: '2026-11-07',
+        title: '[DEV] Modo desarrollador',
+        dev: true, // solo visible en modo dev
+        highlights: [
+            'Panel dev flotante para testear sin rejugar todo',
+            'Override en memoria: no contamina el guardado real',
+            'Barra extra en combate con atajos de debug'
+        ],
+        changes: {
+            new: [
+                'Panel dev (activación: ?dev=1 en la URL)',
+                'Botón flotante DEV con toggles de desbloqueo',
+                'Barra de combate dev (saltar turno, estado, forzar drop, reset)',
+                'Función devForceReward, devResetMatch, devShowState, devJumpToChapter'
+            ],
+            buffs: [],
+            nerfs: [],
+            fixes: [],
+            removed: []
+        }
+    },
+    {
+        version: '1.1.0',
+        date: '2026-11-07',
+        title: 'El Laberinto de Creta',
+        highlights: [
+            'Nuevo evento: El Laberinto de Creta (Asterión)',
+            'Nueva keyword: Laberinto X',
+            'Recompensa al perder: 15% (antes solo al ganar)'
+        ],
+        changes: {
+            new: [
+                'Evento: El Laberinto de Creta (subhistoria de Asterión)',
+                'Keyword: Laberinto X (atrapa a un Ser rival X turnos)',
+                'Carta: Asterión, Enfurecido (5/5, Embestida 1)',
+                'Carta: Asterión, el Señor del Laberinto (6/4, Laberinto 2)',
+                'Carta: El Toro Blanco de Creta (1/5, Bloqueo 2)',
+                'Carta: Teseo en el Laberinto (4/4, +2 Gloria por aliado)',
+                'Carta: Pasífae, la Reina de Creta (0/3, +1 HP a tus Asterión)',
+                'Carta: Dédalo, el Arquitecto (1/4, invoca Vaca de Madera Hueca)',
+                'Token: Vaca de Madera Hueca (0/1, al morir invoca Asterión)',
+                'Evento: El Nacimiento del Minotauro (invoca Asterión)',
+                'Evento: La Construcción del Laberinto (Laberinto 2)',
+                'Evento: La Muerte del Minotauro (4 daño al rival con más ATK)'
+            ],
+            buffs: [],
+            nerfs: [],
+            fixes: [
+                'Recompensa al perder: 15% de drop en Cap 2+ y eventos (antes solo al ganar)'
+            ],
+            removed: [
+                'Capítulos 2, 3 y 4 (temporalmente, para reorganización del contenido)',
+                'Cartas c11–c40 (se conservan los artes en el repo, fuera del PRECACHE)'
+            ]
+        }
+    },
+    {
+        version: '1.0.0',
+        date: '2026-10-01',
+        title: 'Lanzamiento inicial',
+        highlights: [
+            'Capítulo 1: El Despertar en la Hélade',
+            'Combate automático por turnos simultáneos',
+            'Deckbuilder con drag & drop y táctil'
+        ],
+        changes: {
+            new: [
+                'Capítulo 1 (c1–c10)',
+                'Combate: energía acumulativa, Gloria, fin por ±50 o mazo agotado',
+                'Keywords: Embestida, Enfurecer, Bloqueo',
+                'Tutorial en 6 pasos',
+                'Perfil con avatar y nombre',
+                'Opciones: música, efectos, créditos, reiniciar progreso',
+                'Sistema de recompensas: 33% al ganar (Cap 2+)'
+            ],
+            buffs: [],
+            nerfs: [],
+            fixes: [],
+            removed: []
+        }
+    }
+];
+
+// Devuelve la versión más reciente (índice 0). En modo dev, incluye las
+// versiones dev:true; en modo normal, las filtra.
+function getLatestVersion() {
+    let visible = PATCH_NOTES.filter(p => !p.dev || (typeof isDevMode === 'function' && isDevMode()));
+    return visible.length > 0 ? visible[0].version : null;
+}
+
+// Devuelve el array de notas visibles según el modo.
+function getVisiblePatchNotes() {
+    if (typeof isDevMode === 'function' && isDevMode()) return PATCH_NOTES;
+    return PATCH_NOTES.filter(p => !p.dev);
+}
