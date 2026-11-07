@@ -23,7 +23,7 @@ const ALL_CARDS = [
                 id: 'c3', name: 'Asterión, el Minotauro', kind: 'Ser', faction: 'Poseidón', cost: 3, atk: 2, hp: 4, 
                 icon: 'fa-cow', 
                 desc: 'Sin habilidades, pero un muro sólido.', 
-                lore: 'Encerrado en un laberinto profundo de piedra tosca crece Asterión, una bestia colosal con cuerpo de hombre y cabeza de toro. Su fuerza bruta es incontrolable y comienza a salir de su guarida atraído por el olor del ganado humano. Fue Poseidón quien envió el toro blanco que engendró a esta criatura, y ahora el nombre de Asterión, el Minotauro, se cierne como una sombra sobre Creta.',
+                lore: 'De la unión prohibida entre Pasífae y el toro blanco nació Asterión, una criatura de cuerpo humano y cabeza de toro. Creció entre los muros del palacio de Cnosos, y aunque al principio no era más que un cachorro asustado, su fuerza bruta y su naturaleza salvaje comenzaron a manifestarse. La corte lo miraba con temor, y los susurros sobre la maldición de Poseidón no tardaron en recorrer los pasillos.',
                 art: 'assets/cartas/carta-03-asterion-el-minotauro.webp',
                 effect: null, startTurn: null 
             },
@@ -52,29 +52,14 @@ const ALL_CARDS = [
                 effect: (p, opp) => { let target = opp.activeBoard[0]; if (target && !target.dying && !target.noAtkRed) { let d = colossusShieldFor(opp, 1); if (d > 0) { target.atk = Math.max(0, target.atk - d); queueFx({ t: 'debuff', side: sideOf(opp), uid: target.uid, text: '-' + d + ' ATK', icon: 'fa-water', overlay: 'tears' }); } } }, startTurn: null 
             },
             { 
-                id: 'c7', name: 'Jabalí de Erimanto', kind: 'Ser', faction: 'Artemisa', cost: 5, atk: 4, hp: 6, 
+                id: 'c7', name: 'Jabalí de Erimanto', kind: 'Ser', cost: 5, atk: 4, hp: 6, faction: 'Artemisa',
                 icon: 'fa-hippo', 
-                desc: 'Inicio de turno: Inflige 1 daño al Ser rival de su misma fila y pierde 1 HP propio.', 
+                desc: 'Embestida 1.', 
                 lore: 'Desde las cumbres heladas desciende una bestia descomunal: un jabalí salvaje de piel acorazada y colmillos afilados que arrasa con los primeros cultivos y siembra el pánico absoluto en las laderas de Arcadia. Los pastores susurran su nombre con terror, pues no hay lanza ni trampa que pueda detenerlo. Es una de las bestias primigenias que habitan las montañas, un recordatorio de que la naturaleza salvaje aún no ha sido domesticada por los hombres.',
                 art: 'assets/cartas/carta-07-jabali-de-erimanto.webp',
                 effect: null, 
                 startTurn: (self, player, opp) => {
-                    let myIndex = player.activeBoard.indexOf(self);
-                    let target = opp.activeBoard[myIndex];
-                    // Solo se activa si hay un rival VIVO en su misma fila:
-                    // sin objetivo no hay embestida ni desgaste propio.
-                    if (target && !target.dying) {
-                        // El daño del choque se ENCOLA: gameTick lo aplica
-                        // después de leer ambos tableros (turno compartido —
-                        // ninguna Embestida golpea antes que otra).
-                        gameState.clashQueue.push({ target: target, side: sideOf(opp) });
-                        queueFx({ t: 'clash', side: sideOf(player), uidA: self.uid, uidB: target.uid });
-                        // El autodaño SOLO ocurre si hubo embestida; si el
-                        // desgaste remata al jabalí, killCard lo retira en
-                        // el acto (muerte inmediata con disolución).
-                        self.hp -= 1;
-                        if (self.hp <= 0) { self.hp = 0; killCard(self, sideOf(player)); }
-                    }
+                    embestida(self, player, opp, 1);
                 }
             },
             { 

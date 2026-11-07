@@ -40,11 +40,11 @@ ley humana, merodeando los bordes de los caminos para asustar y desorientar a lo
 
 ### 3. Asterión, el Minotauro (Ser)
 
-**Lore**: Encerrado en un laberinto profundo de piedra tosca crece Asterión, una bestia
-colosal con cuerpo de hombre y cabeza de toro. Su fuerza bruta es incontrolable y comienza
-a salir de su guarida atraído por el olor del ganado humano. Fue Poseidón quien envió el
-toro blanco que engendró a esta criatura, y ahora el nombre de Asterión, el Minotauro, se
-cierne como una sombra sobre Creta.
+**Lore**: De la unión prohibida entre Pasífae y el toro blanco nació Asterión, una
+criatura de cuerpo humano y cabeza de toro. Creció entre los muros del palacio de
+Cnosos, y aunque al principio no era más que un cachorro asustado, su fuerza bruta y
+su naturaleza salvaje comenzaron a manifestarse. La corte lo miraba con temor, y los
+susurros sobre la maldición de Poseidón no tardaron en recorrer los pasillos.
 
 - Coste: 3 — ATK: 2 — HP: 4
 - Efecto: Ninguno.
@@ -77,14 +77,15 @@ lloran desconsoladamente, confundiendo con sus cantos a cualquiera que se acerqu
 - Coste: 2 — ATK: 1 — HP: 2
 - Efecto: Al entrar: Reduce en -1 el ATK del Ser rival en la Fila 1 (permanente).
 
-### 7. La Embestida de Erimanto (Ser)
+### 7. Jabalí de Erimanto (Ser)
 
 **Lore**: Desde las cumbres heladas desciende una bestia descomunal: un jabalí salvaje
 de piel acorazada y colmillos afilados que arrasa con los primeros cultivos y siembra
 el pánico absoluto en las laderas de Arcadia.
 
 - Coste: 5 — ATK: 4 — HP: 6
-- Efecto: Inicio de turno: Inflige 1 daño al Ser rival de su misma fila. Pierde 1 HP propio.
+- Efecto: Embestida 1 — Consume 1 ATK y 1 HP para infligir 1 de daño al Ser rival de
+  su misma fila. Si no puede pagar el coste o no hay rival enfrente, no se activa.
 
 ### 8. El Balbuceo del Oráculo Ciego (Ser)
 

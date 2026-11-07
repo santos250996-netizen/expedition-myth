@@ -51,6 +51,34 @@ function dealDamage(target, amount, side) {
     if (target.damageReact) target.damageReact(target);
 }
 
+// --- KEYWORD: EMBESTIDA X ---
+// Consume X ATK y X HP de la carta para infligir X de daño al Ser rival de
+// su misma fila. Si no puede pagar el coste (ATK < X o HP < X) o no hay
+// rival vivo enfrente, no se activa. El daño sale por dealDamage (canónico:
+// reacciones al daño y muerte inmediata); si el coste remata a la carta,
+// queda dying con FX de sacrificio y la red de seguridad del tick siguiente
+// la retira del tablero.
+function embestida(self, player, opp, X) {
+    let myIndex = player.activeBoard.indexOf(self);
+    let target = opp.activeBoard[myIndex];
+    
+    if (!target || target.dying) return;
+    if (self.atk < X || self.hp < X) return;
+    
+    self.atk -= X;
+    self.hp -= X;
+    
+    dealDamage(target, X, sideOf(opp));
+    
+    queueFx({ t: 'clash', side: sideOf(player), uidA: self.uid, uidB: target.uid });
+    
+    if (self.hp <= 0) { 
+        self.hp = 0; 
+        self.dying = true; 
+        queueFx({ t: 'sacrifice', side: sideOf(player), uid: self.uid });
+    }
+}
+
 // Lado del jugador dueño de una carta en tablero (para FX de reacciones que
 // se disparan sin contexto de jugador, como el buff del Titán).
 function ownerSideOf(card) {

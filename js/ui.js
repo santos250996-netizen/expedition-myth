@@ -15,33 +15,53 @@ function openCardModal(cardId) {
     document.getElementById('modal-card-name').innerText = card.name;
     document.getElementById('modal-card-desc').innerText = card.desc;
     document.getElementById('modal-card-lore').innerText = card.lore;
-    document.getElementById('modal-card-faction').innerText = 'Facción · ' + card.faction;
 
-    // Configurar el Tipo (SER o EVENTO)
-    let kindBadge = document.getElementById('modal-card-kind');
-    kindBadge.innerText = card.kind.toUpperCase();
+    // Facción
+    let factionEl = document.getElementById('modal-card-faction');
+    if (factionEl) {
+        factionEl.innerText = card.faction ? card.faction.toUpperCase() : 'NEUTRAL';
+    }
 
+    // Tipo (SER / EVENTO)
     let typeIcon = document.getElementById('modal-card-type-icon');
     let typeText = document.getElementById('modal-card-type');
-
+    
     if (card.kind === 'Ser') {
-        kindBadge.className = "text-[9px] bg-blue-900/80 text-blue-200 px-1.5 py-0.5 rounded border border-blue-600 backdrop-blur-sm";
         typeIcon.className = "fa-solid fa-shield-halved text-[8px] text-blue-400";
         typeText.innerText = "SER";
-        typeText.className = "text-blue-400 text-[8px] font-bold uppercase tracking-wider";
-
+        typeText.className = "bg-blue-600 text-white text-[8px] px-1 rounded font-bold uppercase";
         document.getElementById('modal-card-atk').innerText = card.atk;
         document.getElementById('modal-card-hp').innerText = card.hp;
         document.getElementById('modal-card-atk').style.display = 'flex';
         document.getElementById('modal-card-hp').style.display = 'flex';
     } else {
-        kindBadge.className = "text-[9px] bg-amber-900/80 text-amber-200 px-1.5 py-0.5 rounded border border-amber-600 backdrop-blur-sm";
         typeIcon.className = "fa-solid fa-bolt text-[8px] text-amber-400";
         typeText.innerText = "EVENTO";
-        typeText.className = "text-amber-400 text-[8px] font-bold uppercase tracking-wider";
-
+        typeText.className = "bg-amber-600 text-white text-[8px] px-1 rounded font-bold uppercase";
         document.getElementById('modal-card-atk').style.display = 'none';
         document.getElementById('modal-card-hp').style.display = 'none';
+    }
+
+    // Explicación de la keyword
+    let keywordBox = document.getElementById('modal-keyword-box');
+    let keywordText = document.getElementById('modal-keyword-text');
+    let keywordExplanation = '';
+
+    if (card.desc.includes('Embestida')) {
+        keywordExplanation = "<strong>Embestida X:</strong> Consume X ATK y HP para infligir X de daño al Ser rival de su misma fila.";
+    } else if (card.desc.includes('Laberinto')) {
+        keywordExplanation = "<strong>Laberinto X:</strong> Atrapa a un Ser rival aleatorio X turnos. Mientras esté atrapado, su ATK y HP son 0 y no puede ser afectado por nada.";
+    } else if (card.desc.includes('Bloqueo')) {
+        keywordExplanation = "<strong>Bloqueo X:</strong> Amortigua hasta X puntos de reducción (ATK o HP) sobre tus cartas. Al agotarse, el efecto se desactiva.";
+    } else if (card.desc.includes('Enfurecer')) {
+        keywordExplanation = "<strong>Enfurecer X:</strong> Cada vez que esta carta recibe daño, gana +X ATK permanentemente.";
+    }
+
+    if (keywordExplanation) {
+        keywordText.innerHTML = keywordExplanation;
+        keywordBox.classList.remove('hidden');
+    } else {
+        keywordBox.classList.add('hidden');
     }
 
     document.getElementById('card-modal').classList.remove('hidden-view');
