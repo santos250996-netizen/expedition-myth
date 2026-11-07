@@ -469,7 +469,7 @@ const ALL_CARDS = [
     icon: 'fa-cow',
     desc: 'Embestida 1.',
     lore: 'Probó la sangre humana y perdió la cordura. Minos ordenó encerrarlo en el laberinto antes de que fuera demasiado tarde.',
-    art: '', // TODO: arte
+    art: 'assets/cartas/asterion-a2-enfurecido.webp',
     substory: 'asterion',
     effect: null,
     startTurn: (self, player, opp) => { embestida(self, player, opp, 1); }
@@ -479,7 +479,7 @@ const ALL_CARDS = [
     icon: 'fa-maze',
     desc: 'Al entrar: Laberinto 2 (atrapa a un Ser rival aleatorio 2 turnos).',
     lore: 'Aprendió a moverse por el laberinto como si fuera su propio cuerpo. Los que entran no encuentran la salida; él tampoco la busca.',
-    art: '', // TODO: arte
+    art: 'assets/cartas/asterion-a3-senor-laberinto.webp',
     substory: 'asterion',
     effect: (p, opp) => { laberinto(p, opp, 2); },
     startTurn: null
@@ -489,7 +489,7 @@ const ALL_CARDS = [
     icon: 'fa-cow',
     desc: 'Bloqueo 2.',
     lore: 'Regalo de Poseidón a Minos. Minos no lo sacrificó, desatando la maldición que engendraría al Minotauro.',
-    art: '', // TODO: arte
+    art: 'assets/cartas/asterion-a4-toro-blanco.webp',
     substory: 'asterion',
     effect: null,
     startTurn: null
@@ -499,7 +499,7 @@ const ALL_CARDS = [
     icon: 'fa-scroll',
     desc: 'Al entrar: +2 Gloria por cada aliado en el tablero.',
     lore: 'Entró con el hilo de Ariadna y sus aliados. Buscaba sobrevivir y liberar Atenas del tributo de sangre.',
-    art: '', // TODO: arte
+    art: 'assets/cartas/asterion-a5-teseo-laberinto.webp',
     substory: 'asterion',
     effect: (p) => {
         let n = 2 * p.activeBoard.filter(c => !c.dying && !c.stunned).length;
@@ -515,7 +515,7 @@ const ALL_CARDS = [
     icon: 'fa-crown',
     desc: 'Al entrar: +1 HP a todos tus Asterión en el tablero.',
     lore: 'Víctima del hechizo de Poseidón. Aterrorizada por lo que engendró, se retiró de la corte y no volvió a mirar al cielo.',
-    art: '', // TODO: arte
+    art: 'assets/cartas/asterion-a6-pasifae.webp',
     substory: 'asterion',
     effect: (p) => {
         p.activeBoard.forEach(c => {
@@ -532,7 +532,7 @@ const ALL_CARDS = [
     icon: 'fa-compass-drafting',
     desc: 'Al entrar: invoca una Vaca de Madera Hueca (0/1) en tu tablero.',
     lore: 'Arquitecto del laberinto. Su genio lo condenó a vivir con el peso de su obra y a ver cómo su creación devoraba a los que entraban.',
-    art: '', // TODO: arte
+    art: 'assets/cartas/asterion-a7-dedalo.webp',
     substory: 'asterion',
     effect: (p) => {
         let tpl = ALL_CARDS.find(c => c.id === 'a8');
@@ -545,7 +545,7 @@ const ALL_CARDS = [
     icon: 'fa-horse',
     desc: 'Al ser destruida: invoca un Asterión, el Minotauro.',
     lore: 'Construida por Dédalo para que Pasífae consumara su pasión prohibida. De su vientre de madera nació la maldición de Creta.',
-    art: '', // TODO: arte
+    art: 'assets/cartas/asterion-a8-vaca-madera.webp',
     substory: 'asterion',
     effect: null,
     startTurn: null,
@@ -559,7 +559,7 @@ const ALL_CARDS = [
     icon: 'fa-egg',
     desc: 'Invoca un Asterión, el Minotauro en tu tablero.',
     lore: 'De la unión prohibida nació Asterión, una criatura de cuerpo humano y cabeza de toro. Los dioses callaron; el palacio tembló.',
-    art: '', // TODO: arte
+    art: 'assets/cartas/asterion-a9-nacimiento-minotauro.webp',
     substory: 'asterion',
     effect: (p) => {
         let tpl = ALL_CARDS.find(c => c.id === 'c3');
@@ -572,7 +572,7 @@ const ALL_CARDS = [
     icon: 'fa-dungeon',
     desc: 'Laberinto 2: atrapa a un Ser rival aleatorio durante 2 turnos.',
     lore: 'Dédalo trazó pasillos que no llevaban a ninguna parte y puertas que se cerraban sobre sí mismas. El laberinto no era una prisión: era una sentencia.',
-    art: '', // TODO: arte
+    art: 'assets/cartas/asterion-a10-construccion-laberinto.webp',
     substory: 'asterion',
     effect: (p, opp) => { laberinto(p, opp, 2); },
     startTurn: null
@@ -582,7 +582,7 @@ const ALL_CARDS = [
     icon: 'fa-skull',
     desc: 'Inflige 4 de daño al Ser rival con más ATK.',
     lore: 'Teseo alzó el puño y el laberinto quedó en silencio. El hilo de Ariadna marcó el camino de vuelta, pero nadie volvió igual.',
-    art: '', // TODO: arte
+    art: 'assets/cartas/asterion-a11-muerte-minotauro.webp',
     substory: 'asterion',
     effect: (p, opp) => {
         let alive = opp.activeBoard.filter(c => !c.dying && !c.stunned);
