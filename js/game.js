@@ -99,7 +99,7 @@ function laberinto(player, opp, X) {
     target._savedHp = target.hp;
     target.atk = 0;
     target.hp = 0;
-    queueFx({ t: 'debuff', side: sideOf(opp), uid: target.uid, text: 'LABERINTO ' + X, icon: 'fa-maze', overlay: 'fog', pulse: 'fx-pulse-gray' });
+    queueFx({ t: 'laberinto', side: sideOf(opp), uid: target.uid });
 }
 
 // --- INVOCACIÓN DE CARTAS ---
@@ -118,7 +118,7 @@ function summonCard(player, cardTemplate) {
     };
     player.activeBoard.unshift(inst);
     gameState.justDeployed.push(inst.uid);
-    queueFx({ t: 'buff', side: sideOf(player), uid: inst.uid, text: 'INVOCADO', icon: 'fa-wand-sparkles' });
+    queueFx({ t: 'summon', side: sideOf(player), uid: inst.uid });
 }
 
 // Lado del jugador dueño de una carta en tablero (para FX de reacciones que
@@ -219,7 +219,7 @@ function gameTick() {
                             c.hp = c._savedHp || 0;
                             c._savedAtk = undefined;
                             c._savedHp = undefined;
-                            queueFx({ t: 'buff', side: sideOf(owner), uid: c.uid, text: 'LIBERADO', icon: 'fa-unlock' });
+                            queueFx({ t: 'liberado', side: sideOf(owner), uid: c.uid });
                         }
                     }
                 });
@@ -448,8 +448,14 @@ function gameTick() {
             // Copias de mazo por partida (DESPUÉS de re-crear p1/p2): el robo
             // de Hermes (c40) y cualquier mutación juegan sobre la copia, no
             // sobre el mazo guardado del jugador.
-            gameState.p1.deck = [...playerDeck];
-            gameState.p2.deck = [...rivalDeck];
+            // Copia PROFUNDA de las cartas (no solo del array): cada partida tiene
+            // sus propias instancias. Así los efectos que mutan stats de cartas en
+            // el mazo (Pasífae a6: +1 HP a Asterión en mazo) no contaminan las
+            // plantillas de ALL_CARDS ni las copias del rival. Las funciones
+            // (effect, startTurn, onDeath, damageReact) se copian por referencia:
+            // son inmutables y deben compartirse.
+            gameState.p1.deck = playerDeck.map(c => ({ ...c }));
+            gameState.p2.deck = rivalDeck.map(c => ({ ...c }));
             document.getElementById('pause-overlay').classList.add('hidden-view');
             updateHUD();
             renderBoards();

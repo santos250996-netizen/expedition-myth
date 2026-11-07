@@ -7,25 +7,29 @@
 
 const PATCH_NOTES = [
     {
-        version: '1.2.0-dev',
+        version: '1.4.0',
         date: '2026-11-07',
-        title: '[DEV] Modo desarrollador',
-        dev: true, // solo visible en modo dev
+        title: 'Efectos Visuales y Recompensas',
         highlights: [
-            'Panel dev flotante para testear sin rejugar todo',
-            'Override en memoria: no contamina el guardado real',
-            'Barra extra en combate con atajos de debug'
+            'Efectos visuales más claros: flashes de color por tipo de efecto',
+            'El Laberinto ahora se siente: la carta se encoge y oscurece',
+            'La recompensa se muestra como carta flotante con arte y stats'
         ],
         changes: {
             new: [
-                'Panel dev (activación: ?dev=1 en la URL)',
-                'Botón flotante DEV con toggles de desbloqueo',
-                'Barra de combate dev (saltar turno, estado, forzar drop, reset)',
-                'Función devForceReward, devResetMatch, devShowState, devJumpToChapter'
+                'Flash de color por tipo de efecto (daño rojo, buff verde, debuff morado, gloria dorado, invocación azul)',
+                'Micro-pausa dramática en los FX (solo visual, no pausa el tick)',
+                'Laberinto: la carta atrapada se encoge y oscurece con icono de laberinto',
+                'Embestida: flash rojo doble + sacudida fuerte',
+                'Invocación: la carta cae con rebote',
+                'Modal de recompensa con carta flotante (arte, nombre, tipo, coste, stats)',
+                'La carta de recompensa es tocable para ver el detalle'
             ],
             buffs: [],
             nerfs: [],
-            fixes: [],
+            fixes: [
+                'FIX: resetMatch copia los objetos de las cartas (Pasífae ya no contamina ALL_CARDS ni al rival)'
+            ],
             removed: []
         }
     },
@@ -72,6 +76,29 @@ const PATCH_NOTES = [
                 'El bot del Cap 1 ya no se llama "Caos" (ahora "Hélade")',
                 'Eliminados los duplicados de c1/c2 en el mazo del Cap 1 (ahora 10 cartas únicas)'
             ],
+            removed: []
+        }
+    },
+    {
+        version: '1.2.0-dev',
+        date: '2026-11-07',
+        title: '[DEV] Modo desarrollador',
+        dev: true, // solo visible en modo dev
+        highlights: [
+            'Panel dev flotante para testear sin rejugar todo',
+            'Override en memoria: no contamina el guardado real',
+            'Barra extra en combate con atajos de debug'
+        ],
+        changes: {
+            new: [
+                'Panel dev (activación: ?dev=1 en la URL)',
+                'Botón flotante DEV con toggles de desbloqueo',
+                'Barra de combate dev (saltar turno, estado, forzar drop, reset)',
+                'Función devForceReward, devResetMatch, devShowState, devJumpToChapter'
+            ],
+            buffs: [],
+            nerfs: [],
+            fixes: [],
             removed: []
         }
     },

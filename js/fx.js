@@ -145,52 +145,133 @@
 
         // Materializa la cola: un único punto por tipo para mantener
         // consistencia visual (colores: verde=buff, rojo=daño, dorado=gloria,
-        // gris=niebla/debuff neutro).
+        // azul=invocación, morado=debuff, gris=laberinto).
         function playQueuedFx() {
             if (!Array.isArray(gameState.fxQueue)) return;
-            gameState.fxQueue.forEach(fx => {
-                try {
-                    switch (fx.t) {
-                        case 'cast':
-                            fxEventCast(fx.card, fx.side);
-                            break;
-                        case 'gloria':
-                            fxGloriaBeam(fx.side, 'fx-beam-soft');
-                            fxFloatOver(fx.side, fx.uid, fx.text, 'fx-gold', fx.icon);
-                            fxScorePop(fx.side, fx.num);
-                            break;
-                        case 'buff':
-                            fxClassOnCard(fx.uid, 'fx-pulse-green');
-                            fxFloatOver(fx.side, fx.uid, fx.text, 'fx-green', fx.icon);
-                            break;
-                        case 'debuff':
-                            fxClassOnCard(fx.uid, fx.pulse || 'fx-pulse-gray');
-                            if (fx.overlay === 'fog') fxOverlayOnCard(fx.uid, 'fx-fog-ov');
-                            if (fx.overlay === 'tears') fxOverlayOnCard(fx.uid, 'fx-tears-ov');
-                            if (fx.overlay === 'leaf') fxOverlayOnCard(fx.uid, 'fx-leaf-ov');
-                            if (fx.overlay === 'hit') fxOverlayOnCard(fx.uid, 'fx-hit-ov');
-                            fxFloatOver(fx.side, fx.uid, fx.text, fx.cls || 'fx-red', fx.icon);
-                            break;
-                        case 'clash':
-                            fxClassOnCard(fx.uidA, fx.side === 'p1' ? 'fx-clash-r' : 'fx-clash-l');
-                            fxOverlayOnCard(fx.uidA, 'fx-hit-ov');
-                            fxOverlayOnCard(fx.uidB, 'fx-hit-ov');
-                            fxClassOnCard(fx.uidB, 'fx-shake');
-                            fxFloatOver(fx.side, fx.uidB, '-1 HP', 'fx-red', 'fa-heart-crack');
-                            fxFloatOver(fx.side, fx.uidA, '-1 HP', 'fx-red', 'fa-heart-crack');
-                            break;
-                        case 'sacrifice':
-                            fxOverlayOnCard(fx.uid, 'fx-blood-ov');
-                            fxClassOnCard(fx.uid, 'fx-shake');
-                            break;
-                        case 'wave':
-                            fxLeafWave(fx.side);
-                            break;
-                        case 'discount':
-                            fxDiscountPop(fx.side, fx.text || '−1');
-                            break;
-                    }
-                } catch (e) { console.error('fx:', e); }
+            gameState.fxQueue.forEach((fx, i) => {
+                // Micro-pausa dramática: cada FX se materializa con un pequeño retardo
+                // incremental (solo visual, no pausa el tick). Se acorta con --fx-k.
+                let delay = Math.round(i * 60 * fxK());
+                setTimeout(() => {
+                    try {
+                        switch (fx.t) {
+                            case 'cast':
+                                fxEventCast(fx.card, fx.side);
+                                break;
+                            case 'gloria':
+                                fxGloriaBeam(fx.side, 'fx-beam-soft');
+                                fxFlash(fx.uid, 'gold');
+                                fxFloatOver(fx.side, fx.uid, fx.text, 'fx-gold fx-float-big', fx.icon);
+                                fxScorePop(fx.side, fx.num);
+                                break;
+                            case 'buff':
+                                fxFlash(fx.uid, 'green');
+                                fxFloatOver(fx.side, fx.uid, fx.text, 'fx-green fx-float-big', fx.icon);
+                                break;
+                            case 'debuff':
+                                fxFlash(fx.uid, 'purple');
+                                if (fx.overlay === 'fog') fxOverlayOnCard(fx.uid, 'fx-fog-ov');
+                                if (fx.overlay === 'tears') fxOverlayOnCard(fx.uid, 'fx-tears-ov');
+                                if (fx.overlay === 'leaf') fxOverlayOnCard(fx.uid, 'fx-leaf-ov');
+                                if (fx.overlay === 'hit') fxOverlayOnCard(fx.uid, 'fx-hit-ov');
+                                fxFloatOver(fx.side, fx.uid, fx.text, (fx.cls || 'fx-red') + ' fx-float-big', fx.icon);
+                                break;
+                            case 'clash':
+                                // Embestida: flash rojo en ambas cartas + sacudida fuerte.
+                                fxFlash(fx.uidA, 'red');
+                                fxFlash(fx.uidB, 'red');
+                                fxShakeHard(fx.uidB);
+                                fxOverlayOnCard(fx.uidA, 'fx-hit-ov');
+                                fxOverlayOnCard(fx.uidB, 'fx-hit-ov');
+                                fxFloatOver(fx.side, fx.uidB, '-1 HP', 'fx-red fx-float-big', 'fa-heart-crack');
+                                fxFloatOver(fx.side, fx.uidA, '-1 HP', 'fx-red fx-float-big', 'fa-heart-crack');
+                                break;
+                            case 'sacrifice':
+                                fxFlash(fx.uid, 'red');
+                                fxOverlayOnCard(fx.uid, 'fx-blood-ov');
+                                fxShakeHard(fx.uid);
+                                break;
+                            case 'wave':
+                                fxLeafWave(fx.side);
+                                // Flash rojo en todas las cartas del tablero afectado.
+                                let board = boardEl(fx.side);
+                                if (board) board.querySelectorAll('[data-uid]').forEach(el => {
+                                    let uid = el.dataset.uid;
+                                    if (uid) fxFlash(uid, 'red');
+                                });
+                                break;
+                            case 'discount':
+                                fxDiscountPop(fx.side, fx.text || '−1');
+                                break;
+                            case 'laberinto':
+                                // Atrapar: encoge + oscurece + icono. SIN texto.
+                                fxLaberintoTrap(fx.uid);
+                                break;
+                            case 'liberado':
+                                // Liberar: vuelve a tamaño + flash verde.
+                                fxLaberintoRelease(fx.uid);
+                                break;
+                            case 'summon':
+                                // Invocación: la carta cae con rebote + flash azul.
+                                fxDropIn(fx.uid);
+                                fxFlash(fx.uid, 'blue');
+                                fxFloatOver(fx.side, fx.uid, 'INVOCADO', 'fx-blue fx-float-big', 'fa-wand-sparkles');
+                                break;
+                        }
+                    } catch (e) { console.error('fx:', e); }
+                }, delay);
             });
             gameState.fxQueue = [];
+        }
+
+        // --- HELPERS FX MEJORADOS ---
+        // Flash de color sobre la carta (sin texto). Colores por tipo de efecto.
+        function fxFlash(uid, color) {
+            let el = cardElByUid(uid);
+            if (!el) return;
+            let cls = 'fx-flash-' + color;
+            el.classList.remove('fx-flash-red','fx-flash-green','fx-flash-purple','fx-flash-gold','fx-flash-blue','fx-flash-gray');
+            void el.offsetWidth;
+            el.classList.add(cls);
+            setTimeout(() => el.classList.remove(cls), fxDurationMs(0.7));
+        }
+
+        // Laberinto: encoge + oscurece + icono grande (sin texto). Se queda así
+        // mientras dure el atrapamiento (la clase no se quita hasta fxLiberado).
+        function fxLaberintoTrap(uid) {
+            let el = cardElByUid(uid);
+            if (!el) return;
+            el.classList.add('fx-lab');
+            let icon = document.createElement('div');
+            icon.className = 'fx-lab-icon';
+            icon.innerHTML = '<i class="fa-solid fa-maze"></i>';
+            el.appendChild(icon);
+            fxFlash(uid, 'gray');
+        }
+
+        // Laberinto liberado: vuelve a tamaño + flash verde + quita icono.
+        function fxLaberintoRelease(uid) {
+            let el = cardElByUid(uid);
+            if (!el) return;
+            el.classList.remove('fx-lab');
+            el.classList.add('fx-liberado');
+            let icon = el.querySelector('.fx-lab-icon');
+            if (icon) icon.remove();
+            setTimeout(() => el.classList.remove('fx-liberado'), fxDurationMs(0.7));
+        }
+
+        // Invocación: la carta cae desde arriba con rebote.
+        function fxDropIn(uid) {
+            let el = cardElByUid(uid);
+            if (!el) return;
+            el.classList.add('fx-drop-in');
+            setTimeout(() => el.classList.remove('fx-drop-in'), fxDurationMs(0.6));
+        }
+
+        // Sacudida fuerte para Embestida.
+        function fxShakeHard(uid) {
+            let el = cardElByUid(uid);
+            if (!el) return;
+            el.classList.add('fx-shake-hard');
+            setTimeout(() => el.classList.remove('fx-shake-hard'), fxDurationMs(0.5));
         }

@@ -320,15 +320,16 @@ function showGameOver() {
     // Cap 1 (tutorial): sin recompensa. Empate: sin recompensa.
     let rewardChance = won ? 0.33 : (p2Score > p1Score ? 0.15 : 0);
     let canReward = currentChapter && !isTutorial && rewardChance > 0;
+    let rewardCardId = null;
     if (canReward && Math.random() < rewardChance) {
-        let deckSource = currentChapter.botDecks && currentChapter.botDecks[0]
-            ? currentChapter.botDecks[0]
-            : (currentChapter.botDeck || []);
-        let cardsToGive = deckSource.filter(id => !ownedCardIds.includes(id));
+        let cardsToGive = currentChapter.botDecks && currentChapter.botDecks[0]
+            ? currentChapter.botDecks[0].filter(id => !ownedCardIds.includes(id))
+            : (currentChapter.botDeck || []).filter(id => !ownedCardIds.includes(id));
         if (cardsToGive.length > 0) {
             let newCardId = cardsToGive[Math.floor(Math.random() * cardsToGive.length)];
             ownedCardIds.push(newCardId);
             safeStorageSet('nexo_owned_cards', JSON.stringify(ownedCardIds));
+            rewardCardId = newCardId;
             let cardData = ALL_CARDS.find(c => c.id === newCardId);
             let rewardText = (won ? '¡Has obtenido una nueva carta: ' : 'A pesar de la derrota, has obtenido: ') + (cardData ? cardData.name : newCardId) + '!';
             if (progressDone) {
@@ -339,6 +340,8 @@ function showGameOver() {
             }
         }
     }
+    // Carta de recompensa flotante (arte + nombre + tipo + coste + stats).
+    renderRewardCard(rewardCardId);
 
     if (navigator.vibrate) navigator.vibrate(p1Score >= p2Score ? [30, 40, 60] : 50);
 
@@ -354,7 +357,50 @@ function showGameOver() {
     document.getElementById('gameover-modal').classList.remove('hidden-view');
 }
 
-function closeGameOverModal() { document.getElementById('gameover-modal').classList.add('hidden-view'); }
+// --- CARTA DE RECOMPENSA EN EL MODAL DE GAMEOVER ---
+// Muestra la carta obtenida con arte, nombre, tipo, coste y stats.
+// Animación fade+scale. Tocable para abrir el detalle (openCardModal).
+function renderRewardCard(cardId) {
+    let container = document.getElementById('gameover-reward-card');
+    if (!container) return;
+    if (!cardId) { container.innerHTML = ''; container.classList.add('hidden-view'); return; }
+    let card = ALL_CARDS.find(c => c.id === cardId);
+    if (!card) { container.innerHTML = ''; container.classList.add('hidden-view'); return; }
+
+    let typeLabel = card.kind === 'Ser' ? 'SER' : (card.kind === 'Token' ? 'TOKEN' : 'EVENTO');
+    let typeColor = card.kind === 'Ser' ? 'bg-blue-600' : (card.kind === 'Token' ? 'bg-emerald-600' : 'bg-amber-600');
+    let statsHtml = '';
+    if (card.kind === 'Ser' || card.kind === 'Token') {
+        statsHtml = `<div class="flex gap-1 mt-1">
+            <span class="w-5 h-5 rounded-full bg-blue-950 border border-cyan-400 flex items-center justify-center text-white font-bold text-[9px]">${card.atk}</span>
+            <span class="w-5 h-5 rounded-full bg-red-950 border border-red-400 flex items-center justify-center text-white font-bold text-[9px]">${card.hp}</span>
+        </div>`;
+    }
+    container.innerHTML = `
+        <div class="flex flex-col items-center gap-2">
+            <div class="text-[9px] font-orbitron font-bold tracking-widest text-amber-300">¡NUEVA CARTA OBTENIDA!</div>
+            <div class="fx-reward-card relative w-24 h-32 rounded-lg overflow-hidden border-2 border-amber-400 shadow-[0_0_20px_rgba(251,191,36,0.6)] cursor-pointer active:scale-95 transition-transform"
+                 onclick="openCardModal('${card.id}')">
+                <div class="absolute inset-0 bg-cover bg-center" style="background-image:url('${card.art}')"></div>
+                <div class="absolute inset-0 bg-gradient-to-t from-black/85 via-black/20 to-black/40"></div>
+                <div class="absolute top-1 left-1 w-5 h-5 rounded-full bg-cyan-200 text-cyan-900 text-[10px] font-bold flex items-center justify-center border border-white">${card.cost}</div>
+                <div class="absolute top-1 right-1 ${typeColor} text-white text-[7px] px-1 rounded font-bold">${typeLabel}</div>
+                <div class="absolute bottom-1 left-1 right-1">
+                    <div class="text-white font-orbitron font-bold text-[9px] leading-tight truncate drop-shadow-md">${card.name}</div>
+                    <div class="text-amber-300 text-[8px] font-bold uppercase">${card.faction || 'Neutral'}</div>
+                    ${statsHtml}
+                </div>
+            </div>
+        </div>
+    `;
+    container.classList.remove('hidden-view');
+}
+
+function closeGameOverModal() {
+    document.getElementById('gameover-modal').classList.add('hidden-view');
+    let rc = document.getElementById('gameover-reward-card');
+    if (rc) { rc.innerHTML = ''; rc.classList.add('hidden-view'); }
+}
 function closeGameOverAndRestart() { closeGameOverModal(); resetMatch(); startGame(); }
 
 // --- FONDO GLOBAL POR CAPÍTULO ---

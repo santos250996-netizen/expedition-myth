@@ -596,3 +596,116 @@ main,
 #intro-lore {
     scrollbar-width: none;
 }
+
+/* --- FX MEJORADOS: flashes, encogimiento, caída, liberación --- */
+/* Micro-pausa dramática: los FX duran un poco más pero NO pausan el tick.
+   La velocidad de partida (--fx-k) los acorta proporcionalmente. */
+
+@keyframes fxFlashRed {
+    0%   { box-shadow: 0 0 0 0 rgba(239,68,68,0); }
+    30%  { box-shadow: 0 0 20px 6px rgba(239,68,68,0.9); }
+    100% { box-shadow: 0 0 0 0 rgba(239,68,68,0); }
+}
+@keyframes fxFlashGreen {
+    0%   { box-shadow: 0 0 0 0 rgba(34,197,94,0); }
+    30%  { box-shadow: 0 0 20px 6px rgba(34,197,94,0.9); }
+    100% { box-shadow: 0 0 0 0 rgba(34,197,94,0); }
+}
+@keyframes fxFlashPurple {
+    0%   { box-shadow: 0 0 0 0 rgba(168,85,247,0); }
+    30%  { box-shadow: 0 0 20px 6px rgba(168,85,247,0.9); }
+    100% { box-shadow: 0 0 0 0 rgba(168,85,247,0); }
+}
+@keyframes fxFlashGold {
+    0%   { box-shadow: 0 0 0 0 rgba(251,191,36,0); }
+    30%  { box-shadow: 0 0 20px 6px rgba(251,191,36,0.9); }
+    100% { box-shadow: 0 0 0 0 rgba(251,191,36,0); }
+}
+@keyframes fxFlashBlue {
+    0%   { box-shadow: 0 0 0 0 rgba(96,165,250,0); }
+    30%  { box-shadow: 0 0 20px 6px rgba(96,165,250,0.9); }
+    100% { box-shadow: 0 0 0 0 rgba(96,165,250,0); }
+}
+@keyframes fxFlashGray {
+    0%   { box-shadow: 0 0 0 0 rgba(148,163,184,0); }
+    30%  { box-shadow: 0 0 20px 6px rgba(148,163,184,0.9); }
+    100% { box-shadow: 0 0 0 0 rgba(148,163,184,0); }
+}
+.fx-flash-red    { animation: fxFlashRed    calc(0.6s * var(--fx-k, 1)) ease-out; }
+.fx-flash-green  { animation: fxFlashGreen  calc(0.6s * var(--fx-k, 1)) ease-out; }
+.fx-flash-purple { animation: fxFlashPurple calc(0.6s * var(--fx-k, 1)) ease-out; }
+.fx-flash-gold   { animation: fxFlashGold   calc(0.6s * var(--fx-k, 1)) ease-out; }
+.fx-flash-blue   { animation: fxFlashBlue   calc(0.6s * var(--fx-k, 1)) ease-out; }
+.fx-flash-gray   { animation: fxFlashGray   calc(0.6s * var(--fx-k, 1)) ease-out; }
+
+/* Laberinto: la carta se encoge y oscurece. Sin texto. */
+@keyframes fxLaberinto {
+    0%   { transform: scale(1) rotate(0deg); filter: brightness(1); }
+    40%  { transform: scale(0.82) rotate(-3deg); filter: brightness(0.35) grayscale(0.7); }
+    100% { transform: scale(0.82) rotate(-3deg); filter: brightness(0.35) grayscale(0.7); }
+}
+.fx-lab { animation: fxLaberinto calc(0.7s * var(--fx-k, 1)) ease-out forwards; }
+
+/* Laberinto liberado: vuelve a tamaño normal con flash verde. */
+@keyframes fxLiberado {
+    0%   { transform: scale(0.82) rotate(-3deg); filter: brightness(0.35) grayscale(0.7); }
+    50%  { transform: scale(1.08) rotate(0deg); filter: brightness(1.3) grayscale(0); }
+    100% { transform: scale(1) rotate(0deg); filter: brightness(1) grayscale(0); }
+}
+.fx-liberado { animation: fxLiberado calc(0.6s * var(--fx-k, 1)) ease-out forwards; }
+
+/* Icono grande de laberinto sobre la carta atrapada (sin texto). */
+.fx-lab-icon {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 28px;
+    color: rgba(203,213,225,0.85);
+    text-shadow: 0 0 8px rgba(0,0,0,0.9);
+    pointer-events: none;
+    z-index: 20;
+    animation: fxLabIconPulse calc(1.2s * var(--fx-k, 1)) ease-in-out infinite;
+}
+@keyframes fxLabIconPulse {
+    0%, 100% { opacity: 0.55; transform: scale(1); }
+    50%      { opacity: 0.95; transform: scale(1.15); }
+}
+
+/* Invocación: la carta cae desde arriba con rebote. */
+@keyframes fxDropIn {
+    0%   { transform: translateY(-40px) scale(0.8); opacity: 0; }
+    60%  { transform: translateY(6px) scale(1.05); opacity: 1; }
+    80%  { transform: translateY(-3px) scale(0.98); }
+    100% { transform: translateY(0) scale(1); opacity: 1; }
+}
+.fx-drop-in { animation: fxDropIn calc(0.5s * var(--fx-k, 1)) ease-out; }
+
+/* Embestida: sacudida más fuerte que la actual. */
+@keyframes fxShakeHard {
+    0%, 100% { transform: translateX(0); }
+    20% { transform: translateX(-4px) rotate(-1deg); }
+    40% { transform: translateX(4px) rotate(1deg); }
+    60% { transform: translateX(-3px); }
+    80% { transform: translateX(3px); }
+}
+.fx-shake-hard { animation: fxShakeHard calc(0.4s * var(--fx-k, 1)) ease-out; }
+
+/* Texto flotante grande (para buff/debuff/gloria/daño, NO para Laberinto). */
+.fx-float-big {
+    font-size: 16px !important;
+    font-weight: 900 !important;
+    padding: 4px 8px !important;
+    text-shadow: 0 0 6px rgba(0,0,0,0.95), 0 0 12px currentColor;
+}
+
+/* Carta de recompensa en el modal de gameover. */
+@keyframes fxRewardIn {
+    0%   { transform: scale(0.6); opacity: 0; }
+    70%  { transform: scale(1.06); opacity: 1; }
+    100% { transform: scale(1); opacity: 1; }
+}
+.fx-reward-card { animation: fxRewardIn calc(0.5s * var(--fx-k, 1)) ease-out; }
+
+/* --- FIN FX MEJORADOS --- */
