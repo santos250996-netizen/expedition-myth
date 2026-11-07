@@ -81,11 +81,19 @@ function devForceReward(win) {
     let deckSource = currentChapter.botDecks && currentChapter.botDecks[0]
         ? currentChapter.botDecks[0]
         : (currentChapter.botDeck || []);
-    let cardsToGive = deckSource.filter(id => !ownedCardIds.includes(id));
-    if (cardsToGive.length === 0) { alert('No hay cartas del bot que falten en tu colección.'); return; }
-    let newCardId = cardsToGive[Math.floor(Math.random() * cardsToGive.length)];
+    // En modo dev, ownedCardIds contiene TODAS las cartas (override), así que
+    // filtrar por !ownedCardIds dejaría el array vacío. Para testear el modal
+    // de recompensa, se elige una carta al azar del botDeck sin filtrar.
+    if (deckSource.length === 0) { alert('El botDeck está vacío.'); return; }
+    let newCardId = deckSource[Math.floor(Math.random() * deckSource.length)];
     if (!ownedCardIds.includes(newCardId)) ownedCardIds.push(newCardId);
     let cardData = ALL_CARDS.find(c => c.id === newCardId);
+    // Renderizar el modal de recompensa (mismo que showGameOver usa).
+    if (typeof renderRewardCard === 'function') {
+        renderRewardCard(newCardId);
+        let rc = document.getElementById('gameover-reward-card');
+        if (rc) rc.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+    }
     alert('Recompensa forzada (' + (win ? 'ganar' : 'perder') + '): ' + (cardData ? cardData.name : newCardId));
 }
 

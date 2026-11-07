@@ -272,6 +272,23 @@ function updateCardElement(el, card) {
     if (badgeVal && badgeVal.innerText !== '+' + displayAtk) badgeVal.innerText = '+' + displayAtk;
     let badge = el.querySelector('.glory-badge');
     if (badge) badge.classList.toggle('glory-dim', !!card.stunned || !!card.dying);
+
+    // Laberinto persistente: el render reconstruye el DOM en cada tick, así
+    // que el FX transitorio (fx-lab) se perdería. Se deriva del estado
+    // lógico (card.stunned) y se reaplica en cada render.
+    if (card.stunned) {
+        if (!cardEl.classList.contains('fx-lab')) cardEl.classList.add('fx-lab');
+        if (!cardEl.querySelector('.fx-lab-icon')) {
+            let icon = document.createElement('div');
+            icon.className = 'fx-lab-icon';
+            icon.innerHTML = '<i class="fa-solid fa-maze"></i>';
+            cardEl.appendChild(icon);
+        }
+    } else {
+        cardEl.classList.remove('fx-lab');
+        let icon = cardEl.querySelector('.fx-lab-icon');
+        if (icon) icon.remove();
+    }
 }
 
 function flashStat(badge, rose) {
