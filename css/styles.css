@@ -559,3 +559,42 @@ nav.absolute.bottom-0 {
     cursor: not-allowed;
     pointer-events: none;
 }
+
+/* --- SCROLLBARS OCULTAS (juego móvil) --- */
+/* El scroll sigue funcionando (rueda, arrastre táctil, teclado), pero el
+   indicador visual desaparece. Aplica a TODAS las vistas y al body. */
+html, body {
+    scrollbar-width: none;        /* Firefox */
+    -ms-overflow-style: none;     /* IE/Edge legacy */
+}
+html::-webkit-scrollbar,
+body::-webkit-scrollbar,
+.view-section::-webkit-scrollbar,
+.view-section *::-webkit-scrollbar,
+#p1-board::-webkit-scrollbar,
+#p2-board::-webkit-scrollbar,
+#deck-list-container::-webkit-scrollbar,
+#collection-container::-webkit-scrollbar,
+#chapters-list::-webkit-scrollbar,
+#events-list::-webkit-scrollbar,
+#patch-notes-list::-webkit-scrollbar,
+#intro-lore::-webkit-scrollbar,
+main::-webkit-scrollbar,
+main *::-webkit-scrollbar {
+    display: none;                /* Chrome/Safari/WebView Android */
+    width: 0;
+    height: 0;
+}
+/* Firefox: ocultar también en contenedores con overflow. */
+.view-section,
+main,
+#p1-board,
+#p2-board,
+#deck-list-container,
+#collection-container,
+#chapters-list,
+#events-list,
+#patch-notes-list,
+#intro-lore {
+    scrollbar-width: none;
+}
