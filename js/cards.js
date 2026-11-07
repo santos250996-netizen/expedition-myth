@@ -23,7 +23,7 @@ const ALL_CARDS = [
                 id: 'c3', name: 'Asterión, el Minotauro', kind: 'Ser', faction: 'Poseidón', cost: 3, atk: 2, hp: 4, 
                 icon: 'fa-cow', 
                 desc: 'Sin habilidades, pero un muro sólido.', 
-                lore: 'De la unión prohibida entre Pasífae y el toro blanco nació Asterión, una criatura de cuerpo humano y cabeza de toro. Creció entre los muros del palacio de Cnosos, y aunque al principio no era más que un cachorro asustado, su fuerza bruta y su naturaleza salvaje comenzaron a manifestarse. La corte lo miraba con temor, y los susurros sobre la maldición de Poseidón no tardaron en recorrer los pasillos.',
+                lore: 'De la unión prohibida entre Pasífae y el toro blanco nació Asterión, una criatura de cuerpo humano y cabeza de toro. Creció entre los muros del palacio de Cnosos, y aunque al principio no era más que un cachorro asustado, su fuerza bruta y su naturaleza salvaje comenzaron a manifestarse. La corte lo miraba con temor, y los susurros sobre la maldición de Poseidón no tardaron en recorrer los pasillos. Algunos dicen que el laberinto de Creta aún lo espera.',
                 art: 'assets/cartas/carta-03-asterion-el-minotauro.webp',
                 effect: null, startTurn: null 
             },

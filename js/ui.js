@@ -321,7 +321,10 @@ function showGameOver() {
     let rewardChance = won ? 0.33 : (p2Score > p1Score ? 0.15 : 0);
     let canReward = currentChapter && !isTutorial && rewardChance > 0;
     if (canReward && Math.random() < rewardChance) {
-        let cardsToGive = currentChapter.botDeck.filter(id => !ownedCardIds.includes(id));
+        let deckSource = currentChapter.botDecks && currentChapter.botDecks[0]
+            ? currentChapter.botDecks[0]
+            : (currentChapter.botDeck || []);
+        let cardsToGive = deckSource.filter(id => !ownedCardIds.includes(id));
         if (cardsToGive.length > 0) {
             let newCardId = cardsToGive[Math.floor(Math.random() * cardsToGive.length)];
             ownedCardIds.push(newCardId);
@@ -457,7 +460,7 @@ function renderChapterSelect() {
                     <div class="absolute bottom-2 left-3 right-3">
                         <div class="text-white font-orbitron font-black text-base leading-tight">${ch.title}</div>
                         <div class="text-[10px] text-slate-300 font-bold mt-0.5">
-                            <i class="fa-solid fa-user-ninja text-fuchsia-300"></i> Rival: ${ch.rival.name} · ${ch.botDeck.length} cartas
+                            <i class="fa-solid fa-user-ninja text-fuchsia-300"></i> Rival: ${ch.rival.name} · ${(ch.botDecks && ch.botDecks[0] ? ch.botDecks[0].length : (ch.botDeck ? ch.botDeck.length : 0))} cartas
                         </div>
                     </div>
                 </div>
@@ -505,7 +508,7 @@ function renderChapterSelect() {
                         <div class="absolute bottom-2 left-3 right-3">
                             <div class="text-white font-orbitron font-black text-base leading-tight">${ev.title}</div>
                             <div class="text-[10px] text-slate-300 font-bold mt-0.5">
-                                <i class="fa-solid fa-user-ninja text-emerald-300"></i> Rival: ${ev.rival.name} · ${ev.botDeck.length} cartas
+                                <i class="fa-solid fa-user-ninja text-emerald-300"></i> Rival: ${ev.rival.name} · ${(ev.botDecks && ev.botDecks[0] ? ev.botDecks[0].length : (ev.botDeck ? ev.botDeck.length : 0))} cartas
                             </div>
                         </div>
                     </div>

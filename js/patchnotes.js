@@ -30,6 +30,30 @@ const PATCH_NOTES = [
         }
     },
     {
+        version: '1.3.0',
+        date: '2026-11-07',
+        title: 'El Toro de Creta y la Rejugabilidad',
+        highlights: [
+            'Conexión narrativa entre el Capítulo 1 y el evento Asterión',
+            '3 órdenes de mazo por bot (elegidos al azar)',
+            'El bot del Capítulo 1 ahora se llama Hélade'
+        ],
+        changes: {
+            new: [
+                'Beat "El Toro de Creta" en la intro del Capítulo 1',
+                '3 órdenes de mazo para el Cap 1 (Hélade) y el evento Asterión',
+                'Regla de diseño: todo capítulo nuevo tendrá 3 órdenes de mazo'
+            ],
+            buffs: [],
+            nerfs: [],
+            fixes: [
+                'El bot del Cap 1 ya no se llama "Caos" (ahora "Hélade")',
+                'Eliminados los duplicados de c1/c2 en el mazo del Cap 1 (ahora 10 cartas únicas)'
+            ],
+            removed: []
+        }
+    },
+    {
         version: '1.1.0',
         date: '2026-11-07',
         title: 'El Laberinto de Creta',

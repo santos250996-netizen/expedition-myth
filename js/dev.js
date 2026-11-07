@@ -78,7 +78,10 @@ function toggleDevPanel() {
 
 function devForceReward(win) {
     if (!currentChapter) { alert('No hay capítulo activo.'); return; }
-    let cardsToGive = currentChapter.botDeck.filter(id => !ownedCardIds.includes(id));
+    let deckSource = currentChapter.botDecks && currentChapter.botDecks[0]
+        ? currentChapter.botDecks[0]
+        : (currentChapter.botDeck || []);
+    let cardsToGive = deckSource.filter(id => !ownedCardIds.includes(id));
     if (cardsToGive.length === 0) { alert('No hay cartas del bot que falten en tu colección.'); return; }
     let newCardId = cardsToGive[Math.floor(Math.random() * cardsToGive.length)];
     if (!ownedCardIds.includes(newCardId)) ownedCardIds.push(newCardId);

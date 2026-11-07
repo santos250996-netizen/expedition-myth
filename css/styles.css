@@ -458,7 +458,7 @@ body {
     .fx-gloria-beam, .fx-leaf, .animate-deploy, .animate-dissolve,
     .fx-pulse-green, .fx-pulse-gray, .fx-clash-r, .fx-clash-l, .fx-shake,
     .oracle-aura, .stat-up, .stat-down, .turn-pulse, .tutorial-glow,
-    #intro-tap-hint span, #tutorial-toast-tap { animation: none !important; }
+    #tutorial-toast-tap { animation: none !important; }
     .fx-float, .fx-overlay, .fx-event-cast, .fx-gloria-beam, .fx-leaf { opacity: 0 !important; }
 }
 
@@ -527,8 +527,6 @@ nav.absolute.bottom-0 {
 #intro-chapter-subtitle, #intro-beats { transition: filter 0.4s ease, opacity 0.4s ease; }
 #view-chapter-intro.lore-revealed #intro-chapter-subtitle,
 #view-chapter-intro.lore-revealed #intro-beats { filter: blur(3px); opacity: 0.55; }
-#intro-tap-hint { transition: opacity 0.3s ease; }
-#view-chapter-intro.lore-revealed #intro-tap-hint { opacity: 0; }
 
 /* --- TUTORIAL EN COMBATE: pausa didáctica hasta el tap --- */
 #tutorial-toast-tap { display: none; }
