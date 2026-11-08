@@ -245,19 +245,43 @@ function toggleCardModalMode() {
 }
 
 function closeCardModal() {
-    // Aplicar la fase marcada (si hay) al cerrar.
+    let inCombat = !document.getElementById('view-game').classList.contains('hidden-view');
+    // Aplicar la fase marcada (si hay) al cerrar. En combate pide
+    // confirmación si la fase cambia; en el resto de vistas se aplica sin
+    // preguntar. El mazo guarda la fase real: la entrada de la fase anterior
+    // se sustituye por la nueva.
     if (markedPhaseId) {
         let family = getFamilyFor(markedPhaseId);
         if (family) {
             let baseId = family[0];
+            let currentSelected = getSelectedPhase(baseId);
             let resolved = resolvePhase(baseId, markedPhaseId);
-            setSelectedPhase(baseId, resolved);
+            let applyChange = () => {
+                setSelectedPhase(baseId, resolved);
+                let oldPhaseCard = ALL_CARDS.find(c => c.id === currentSelected);
+                let newPhaseCard = ALL_CARDS.find(c => c.id === resolved);
+                if (oldPhaseCard && newPhaseCard) {
+                    let idx = playerDeck.findIndex(c => c.id === currentSelected);
+                    if (idx > -1) playerDeck[idx] = newPhaseCard;
+                    saveDeck();
+                }
+            };
+            if (inCombat && resolved !== currentSelected) {
+                if (confirm('La carta se cambiará el próximo combate. ¿Estás seguro?')) applyChange();
+            } else {
+                applyChange();
+            }
         }
         markedPhaseId = null;
     }
     document.getElementById('card-modal').classList.add('hidden-view');
     cardModalMode = 'combat';
     window._modalActiveCard = null;
+    // Refresco en vivo del deckbuilder tras aplicar una fase.
+    if (!document.getElementById('view-deckbuilder').classList.contains('hidden-view')) {
+        renderDeckEditor();
+        renderCollection();
+    }
     // FIX: reanudar solo si esta modal fue quien pausó el juego.
     if (modalAutoPaused) {
         modalAutoPaused = false;

@@ -155,25 +155,22 @@ function loadDeck() {
             let card = ALL_CARDS.find(c => c.id === cardId);
             if (!card) return;
             if (navigator.vibrate) navigator.vibrate(15);
-            // SISTEMA DE FASES: la familia ocupa un hueco (no se pueden tener
-            // dos fases de la misma familia en el mazo a la vez).
-            let familyOfAdded = getFamilyFor(cardId);
-            let familyIds = familyOfAdded ? familyOfAdded : [cardId];
-            if (playerDeck.some(c => familyIds.includes(c.id))) return;
-            if (playerDeck.length >= 10) { alert("El mazo está lleno (10/10)."); return; }
-            playerDeck.push(card);
-            // Si la carta pertenece a una familia, guardar la fase seleccionada
-            // (solo si esa fase está desbloqueada; si no, se queda la base).
-            if (familyOfAdded) {
-                let selectedPhase = getSelectedPhase(familyOfAdded[0]);
+            // SISTEMA DE FASES: si la carta pertenece a una familia, se añade
+            // la fase seleccionada (solo si está desbloqueada; protege contra
+            // selecciones legacy de fases bloqueadas). La familia ocupa un
+            // hueco: no coexisten dos fases de la misma familia en el mazo.
+            let family = getFamilyFor(cardId);
+            if (family) {
+                if (playerDeck.some(c => family.includes(c.id))) return;
+                let selectedPhase = getSelectedPhase(family[0]);
                 if (ownedCardIds.includes(selectedPhase)) {
-                    let idx = playerDeck.findIndex(c => c.id === card.id);
-                    if (idx > -1) {
-                        let phaseCard = ALL_CARDS.find(c => c.id === selectedPhase);
-                        if (phaseCard) playerDeck[idx] = phaseCard;
-                    }
+                    let phaseCard = ALL_CARDS.find(c => c.id === selectedPhase);
+                    if (phaseCard) card = phaseCard;
                 }
             }
+            if (playerDeck.some(c => c.id === card.id)) return;
+            if (playerDeck.length >= 10) { alert("El mazo está lleno (10/10)."); return; }
+            playerDeck.push(card);
             saveDeck(); renderDeckEditor(); renderCollection();
         }
 
@@ -209,16 +206,7 @@ function loadDeck() {
             }
 
             playerDeck.forEach((card, idx) => {
-                // SISTEMA DE FASES: si la carta pertenece a una familia, mostrar
-                // la fase seleccionada (solo si está desbloqueada).
-                let family = getFamilyFor(card.id);
-                let displayCard = card;
-                if (family) {
-                    let selectedPhase = getSelectedPhase(family[0]);
-                    if (ownedCardIds.includes(selectedPhase)) {
-                        displayCard = ALL_CARDS.find(c => c.id === selectedPhase) || card;
-                    }
-                }
+                let displayCard = card; // ya es la fase real: el mazo guarda la fase seleccionada
                 let item = document.createElement('div');
                 item.className = "relative rounded-lg overflow-hidden border border-slate-700 cursor-grab hover:border-blue-500 transition-colors h-14";
                 item.draggable = true;
