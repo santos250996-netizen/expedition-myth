@@ -640,7 +640,11 @@ function renderChapterSelect() {
             let efrag = document.createDocumentFragment();
             events.forEach(ev => {
                 let done = isEventCompleted(ev.id);
-                let unlocked = isDevMode() || !ev.unlockedBy || isChapterCompleted(ev.unlockedBy);
+                // El desbloqueo mira el registro correcto: si lo referenciado
+                // es un evento, su victoria se guarda en nexo_events_v1
+                // (markEventCompleted); si es capítulo, en nexo_chapters_v1.
+                let src = ev.unlockedBy ? CHAPTERS.find(c => c.id === ev.unlockedBy) : null;
+                let unlocked = isDevMode() || !ev.unlockedBy || (src && src.isEvent ? isEventCompleted(ev.unlockedBy) : isChapterCompleted(ev.unlockedBy));
                 let item = document.createElement('div');
                 item.className = "active:scale-[0.98] transition-transform cursor-pointer";
                 item.onclick = () => {
