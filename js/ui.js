@@ -15,6 +15,7 @@ function openCardModal(cardId) {
     let card = ALL_CARDS.find(c => c.id === cardId);
     if (!card) return;
     if (navigator.vibrate) navigator.vibrate(15);
+    markedPhaseId = null;
 
     // FIX: al abrir el detalle en combate se pausaba y al cerrar nunca se reanudaba.
     modalAutoPaused = false;
@@ -35,11 +36,13 @@ function openCardModal(cardId) {
 // facción, keyword, lore). NO decide qué se ve; eso lo hace applyCardModalMode.
 // SISTEMA DE FASES: si la carta pertenece a una familia, muestra la fase
 // seleccionada, el selector de fases (marca visual) y su caja de misión.
-function renderCardModalContent(card) {
-    // Si la carta pertenece a una familia, mostrar la fase seleccionada.
+function renderCardModalContent(card, showAsPassed) {
+    // Si la carta pertenece a una familia, mostrar la fase seleccionada...
+    // salvo que nos pasen una carta explícita (previsualización de fase:
+    // markPhase), que se muestra tal cual aunque esté bloqueada.
     let family = getFamilyFor(card.id);
     let displayCard = card;
-    if (family) {
+    if (family && !showAsPassed) {
         let baseId = family[0];
         let selectedPhaseId = getSelectedPhase(baseId);
         displayCard = ALL_CARDS.find(c => c.id === selectedPhaseId) || card;
@@ -168,27 +171,38 @@ function renderCardModalContent(card) {
     }
 }
 
-// Marca una fase visualmente (no la aplica hasta cerrar el modal).
-// Solo marca si está desbloqueada.
+// Marca una fase y la previsualiza EN VIVO (aunque esté bloqueada).
+// Al cerrar el modal, se aplica la fase seleccionada (si está desbloqueada;
+// si no, la anterior desbloqueada).
 let markedPhaseId = null;
 
 function markPhase(baseId, phaseId) {
-    if (!ownedCardIds.includes(phaseId)) {
-        // Bloqueada: no se marca.
-        return;
-    }
+    // Previsualizar la fase tocada (aunque esté bloqueada).
     markedPhaseId = phaseId;
-    // Actualizar el estilo de los botones del selector.
-    let phaseSelector = document.getElementById('modal-phase-selector');
-    if (phaseSelector) {
-        let family = CARD_FAMILIES[baseId];
-        let buttons = phaseSelector.querySelectorAll('button');
-        buttons.forEach((btn, idx) => {
-            let isMarked = (family[idx] === phaseId);
-            btn.className = isMarked
-                ? 'px-2 py-1 rounded text-[10px] font-bold bg-amber-600 text-white ring-2 ring-amber-300'
-                : 'px-2 py-1 rounded text-[10px] font-bold ' + (ownedCardIds.includes(family[idx]) ? 'bg-slate-700 text-slate-200' : 'bg-slate-800 text-slate-500');
-        });
+    let card = ALL_CARDS.find(c => c.id === phaseId);
+    if (card) {
+        // Renderizar la carta completa (arte, stats, efecto, lore, misión).
+        // showAsPassed=true: se muestra la fase tocada, no la fase guardada.
+        renderCardModalContent(card, true);
+        // La carta activa pasa a ser la previsualizada (el modo lore lee de
+        // aquí) y se re-aplica el modo actual del modal.
+        window._modalActiveCard = card;
+        applyCardModalMode();
+        // Actualizar el estilo de los botones del selector (marcar el tocado).
+        let phaseSelector = document.getElementById('modal-phase-selector');
+        if (phaseSelector) {
+            let family = CARD_FAMILIES[baseId];
+            let buttons = phaseSelector.querySelectorAll('button');
+            buttons.forEach((btn, idx) => {
+                let isMarked = (family[idx] === phaseId);
+                let isUnlocked = ownedCardIds.includes(family[idx]);
+                if (isMarked) {
+                    btn.className = 'px-2 py-1 rounded text-[10px] font-bold bg-amber-600 text-white ring-2 ring-amber-300';
+                } else {
+                    btn.className = 'px-2 py-1 rounded text-[10px] font-bold ' + (isUnlocked ? 'bg-slate-700 text-slate-200' : 'bg-slate-800 text-slate-500');
+                }
+            });
+        }
     }
 }
 
