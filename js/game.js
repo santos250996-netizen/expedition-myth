@@ -600,3 +600,27 @@ function bloqueoAbsorb(card, amount) {
     }
     return amount - absorbed;
 }
+
+// --- MECÁNICA: INVOCAR VÁSTAGO ---
+// Busca un Vástago aleatorio en ALL_CARDS (subtype === 'Vástago') y lo invoca
+// en el tablero del jugador. Si no hay Vástagos disponibles, no hace nada.
+// Usado por Equidna (e2) al inicio de cada turno.
+function invocarVastago(player) {
+    let vastagos = ALL_CARDS.filter(c => c.subtype === 'Vástago');
+    if (!vastagos.length) return;
+    let chosen = vastagos[Math.floor(Math.random() * vastagos.length)];
+    summonCard(player, chosen);
+}
+
+// --- MECÁNICA: DESTRUIR SER DE COSTE ALTO ---
+// Destruye un Ser rival con coste >= minCost. Si hay varios, elige el de
+// mayor coste. Si no hay ninguno, no hace nada.
+// Usado por Heracles (e3) al entrar.
+function destruirSerCosteAlto(opponent, minCost) {
+    let targets = opponent.activeBoard.filter(c => !c.dying && c.cost >= minCost && !c.noDestroy);
+    if (!targets.length) return false;
+    let target = targets.reduce((max, c) => c.cost > max.cost ? c : max, targets[0]);
+    target.dying = true;
+    queueFx({ t: 'sacrifice', side: sideOf(opponent), uid: target.uid });
+    return true;
+}

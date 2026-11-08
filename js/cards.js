@@ -429,6 +429,38 @@ const ALL_CARDS = [
         petrificar(p, opp, 2);
     },
     startTurn: null
+},
+{
+    id: 'e1', name: 'León de Nemea', kind: 'Ser', subtype: 'Vástago', faction: 'Hera', cost: 5, atk: 2, hp: 4,
+    icon: 'fa-paw',
+    desc: 'Bloqueo 4.',
+    lore: 'En los bosques entre Nemea y Cleone, en la Argólide, vive una bestia que no es un animal. Su pelaje dorado brilla como el oro bajo la luna, y su piel es tan dura que ninguna lanza, espada o flecha puede rasgarla. Es el hijo de Tifón y Equidna, engendrado por la sangre de los monstruos, pero fue Hera quien lo crió en los montes de Nemea y lo dejó crecer para castigar a los mortales que olvidaron rendirle culto. Los pastores han aprendido a no cruzar los límites del bosque, y los rebaños desaparecen uno a uno sin que nadie encuentre rastro. No es un depredador: es un castigo divino.',
+    art: '', // TODO: arte
+    effect: null, startTurn: null, bloqueo: 4
+},
+{
+    id: 'e2', name: 'Equidna, la Madre de Monstruos', kind: 'Ser', faction: 'Equidna', cost: 7, atk: 0, hp: 4,
+    icon: 'fa-snake',
+    desc: 'Al inicio de cada turno, mientras sea la última carta de tu columna, invoca un Vástago aleatorio.',
+    lore: 'En una cueva de la Argólide, entre rocas húmedas y sombras, vive Equidna: mitad mujer, mitad serpiente. Su cuerpo se arrastra por la piedra con un susurro húmedo, y sus ojos brillan en la oscuridad como ascuas. Su voz hiela la sangre de quien la escucha. No lucha, no caza, no huye: pare. Y cada cría que sale de su vientre es un nuevo terror para Grecia.',
+    art: '', // TODO: arte
+    effect: null,
+    startTurn: (self, player, opp) => {
+        if (player.activeBoard[player.activeBoard.length - 1] !== self) return;
+        if (self.dying) return;
+        invocarVastago(player);
+    }
+},
+{
+    id: 'e3', name: 'Heracles, el Héroe', kind: 'Ser', faction: 'Zeus', cost: 8, atk: 3, hp: 5,
+    icon: 'fa-user-shield',
+    desc: 'Al entrar: destruye un Ser rival con coste ≥ 5.',
+    lore: 'Heracles es un hombre de hombros anchos y músculos tensos como cuerdas de arco. Su piel curtida por el sol y el polvo de los caminos, y su mirada lleva el peso de las doce pruebas que Euristeo le impuso. Hijo de Zeus y de una mortal, cargó desde niño con la envidia de Hera, que lo persiguió incluso antes de nacer. No lucha por gloria: lucha por redención. Y cada monstruo que cae bajo su maza es un paso más hacia el Olimpo.',
+    art: '', // TODO: arte
+    effect: (p, opp) => {
+        destruirSerCosteAlto(opp, 5);
+    },
+    startTurn: null
 }
         ];
 

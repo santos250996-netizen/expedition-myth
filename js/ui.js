@@ -46,7 +46,14 @@ function renderCardModalContent(card) {
     let typeIcon = document.getElementById('modal-card-type-icon');
     let typeText = document.getElementById('modal-card-type');
     let statsBox = document.querySelector('.card-stats-box');
-    if (card.kind === 'Ser') {
+    if (card.kind === 'Ser' && card.subtype === 'Vástago') {
+        typeIcon.className = "fa-solid fa-paw text-[8px] text-amber-400";
+        typeText.innerText = "VÁSTAGO";
+        typeText.className = "bg-amber-600 text-white text-[8px] px-1 rounded font-bold uppercase";
+        document.getElementById('modal-card-atk').innerText = card.atk;
+        document.getElementById('modal-card-hp').innerText = card.hp;
+        if (statsBox) statsBox.style.display = 'flex';
+    } else if (card.kind === 'Ser') {
         typeIcon.className = "fa-solid fa-shield-halved text-[8px] text-blue-400";
         typeText.innerText = "SER";
         typeText.className = "bg-blue-600 text-white text-[8px] px-1 rounded font-bold uppercase";
@@ -85,6 +92,8 @@ function renderCardModalContent(card) {
         keywordExplanation = "<strong>Petrificar X:</strong> Convierte a un Ser rival aleatorio en piedra X turnos. Mientras esté petrificado, no puntúa (no suma su ATK a la Gloria), pero sigue atacando y recibiendo daño con normalidad.";
     } else if (card.desc && card.desc.includes('Reflejo')) {
         keywordExplanation = "<strong>Reflejo X:</strong> Inmune al próximo efecto rival que targetee a esta carta. El efecto se refleja y se aplica a una carta aleatoria del rival.";
+    } else if (card.subtype === 'Vástago') {
+        keywordExplanation = "<strong>Vástago:</strong> Ser invocado por Equidna, la Madre de Monstruos. Los Vástagos son hijos de Equidna y se comportan como Seres normales (atacan, reciben daño, puntúan).";
     }
     if (keywordExplanation) {
         keywordText.innerHTML = keywordExplanation;
