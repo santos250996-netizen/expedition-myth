@@ -33,39 +33,52 @@ function openCardModal(cardId) {
 
 // Renderiza el contenido del modal (arte, coste, nombre, tipo, stats, desc,
 // facción, keyword, lore). NO decide qué se ve; eso lo hace applyCardModalMode.
+// SISTEMA DE FASES: si la carta pertenece a una familia, muestra la fase
+// seleccionada y el selector de fases (con misiones de las bloqueadas).
 function renderCardModalContent(card) {
-    document.getElementById('modal-card-art').style.backgroundImage = `url('${card.art}')`;
-    document.getElementById('modal-card-cost').innerText = card.cost;
-    document.getElementById('modal-card-name').innerText = card.name;
-    document.getElementById('modal-card-desc').innerText = card.desc;
-    document.getElementById('modal-card-lore').innerText = card.lore || '';
+    // Si la carta pertenece a una familia, usar el selector de fases.
+    let family = getFamilyFor(card.id);
+    let displayCard = card;
+    if (family) {
+        // Mostrar la fase seleccionada (o la base si no hay selección).
+        let baseId = family[0];
+        let selectedPhaseId = getSelectedPhase(baseId);
+        displayCard = ALL_CARDS.find(c => c.id === selectedPhaseId) || card;
+    }
+
+    // Renderizar el displayCard (arte, coste, nombre, stats, desc).
+    document.getElementById('modal-card-art').style.backgroundImage = `url('${displayCard.art}')`;
+    document.getElementById('modal-card-cost').innerText = displayCard.cost;
+    document.getElementById('modal-card-name').innerText = displayCard.name;
+    document.getElementById('modal-card-desc').innerText = displayCard.desc;
+    document.getElementById('modal-card-lore').innerText = displayCard.lore || '';
 
     let factionEl = document.getElementById('modal-card-faction');
-    if (factionEl) factionEl.innerText = card.faction ? card.faction.toUpperCase() : 'NEUTRAL';
+    if (factionEl) factionEl.innerText = displayCard.faction ? displayCard.faction.toUpperCase() : 'NEUTRAL';
 
     let typeIcon = document.getElementById('modal-card-type-icon');
     let typeText = document.getElementById('modal-card-type');
     let statsBox = document.querySelector('.card-stats-box');
-    if (card.kind === 'Ser' && card.subtype === 'Vástago') {
+    if (displayCard.kind === 'Ser' && displayCard.subtype === 'Vástago') {
         typeIcon.className = "fa-solid fa-paw text-[8px] text-amber-400";
         typeText.innerText = "VÁSTAGO";
         typeText.className = "bg-amber-600 text-white text-[8px] px-1 rounded font-bold uppercase";
-        document.getElementById('modal-card-atk').innerText = card.atk;
-        document.getElementById('modal-card-hp').innerText = card.hp;
+        document.getElementById('modal-card-atk').innerText = displayCard.atk;
+        document.getElementById('modal-card-hp').innerText = displayCard.hp;
         if (statsBox) statsBox.style.display = 'flex';
-    } else if (card.kind === 'Ser') {
+    } else if (displayCard.kind === 'Ser') {
         typeIcon.className = "fa-solid fa-shield-halved text-[8px] text-blue-400";
         typeText.innerText = "SER";
         typeText.className = "bg-blue-600 text-white text-[8px] px-1 rounded font-bold uppercase";
-        document.getElementById('modal-card-atk').innerText = card.atk;
-        document.getElementById('modal-card-hp').innerText = card.hp;
+        document.getElementById('modal-card-atk').innerText = displayCard.atk;
+        document.getElementById('modal-card-hp').innerText = displayCard.hp;
         if (statsBox) statsBox.style.display = 'flex';
-    } else if (card.kind === 'Token') {
+    } else if (displayCard.kind === 'Token') {
         typeIcon.className = "fa-solid fa-shield-halved text-[8px] text-emerald-400";
         typeText.innerText = "TOKEN";
         typeText.className = "bg-emerald-600 text-white text-[8px] px-1 rounded font-bold uppercase";
-        document.getElementById('modal-card-atk').innerText = card.atk;
-        document.getElementById('modal-card-hp').innerText = card.hp;
+        document.getElementById('modal-card-atk').innerText = displayCard.atk;
+        document.getElementById('modal-card-hp').innerText = displayCard.hp;
         if (statsBox) statsBox.style.display = 'flex';
     } else {
         typeIcon.className = "fa-solid fa-bolt text-[8px] text-amber-400";
@@ -76,23 +89,23 @@ function renderCardModalContent(card) {
         if (statsBox) statsBox.style.display = 'none';
     }
 
-    // Keyword.
+    // Keyword (usa displayCard.desc).
     let keywordBox = document.getElementById('modal-keyword-box');
     let keywordText = document.getElementById('modal-keyword-text');
     let keywordExplanation = '';
-    if (card.desc && card.desc.includes('Embestida')) {
+    if (displayCard.desc && displayCard.desc.includes('Embestida')) {
         keywordExplanation = "<strong>Embestida X:</strong> Consume X ATK y HP para infligir X de daño al Ser rival de su misma fila.";
-    } else if (card.desc && card.desc.includes('Laberinto')) {
+    } else if (displayCard.desc && displayCard.desc.includes('Laberinto')) {
         keywordExplanation = "<strong>Laberinto X:</strong> Atrapa a un Ser rival aleatorio X turnos. Mientras esté atrapado, su ATK y HP son 0 y no puede ser afectado por nada.";
-    } else if (card.desc && card.desc.includes('Bloqueo')) {
+    } else if (displayCard.desc && displayCard.desc.includes('Bloqueo')) {
         keywordExplanation = "<strong>Bloqueo X:</strong> Amortigua hasta X puntos de reducción (ATK o HP) sobre tus cartas. Al agotarse, el efecto se desactiva.";
-    } else if (card.desc && card.desc.includes('Enfurecer')) {
+    } else if (displayCard.desc && displayCard.desc.includes('Enfurecer')) {
         keywordExplanation = "<strong>Enfurecer X:</strong> Cada vez que esta carta recibe daño, gana +X ATK permanentemente.";
-    } else if (card.desc && card.desc.includes('Petrificar')) {
+    } else if (displayCard.desc && displayCard.desc.includes('Petrificar')) {
         keywordExplanation = "<strong>Petrificar X:</strong> Convierte a un Ser rival aleatorio en piedra X turnos. Mientras esté petrificado, no puntúa (no suma su ATK a la Gloria), pero sigue atacando y recibiendo daño con normalidad.";
-    } else if (card.desc && card.desc.includes('Reflejo')) {
+    } else if (displayCard.desc && displayCard.desc.includes('Reflejo')) {
         keywordExplanation = "<strong>Reflejo X:</strong> Inmune al próximo efecto rival que targetee a esta carta. El efecto se refleja y se aplica a una carta aleatoria del rival.";
-    } else if (card.subtype === 'Vástago') {
+    } else if (displayCard.subtype === 'Vástago') {
         keywordExplanation = "<strong>Vástago:</strong> Ser invocado por Equidna, la Madre de Monstruos. Los Vástagos son hijos de Equidna y se comportan como Seres normales (atacan, reciben daño, puntúan).";
     }
     if (keywordExplanation) {
@@ -102,6 +115,82 @@ function renderCardModalContent(card) {
     } else {
         cardModalHasKeyword = false;
         keywordBox.classList.add('hidden-view');
+    }
+
+    // SELECTOR DE FASES (solo si la carta pertenece a una familia).
+    let phaseSelector = document.getElementById('modal-phase-selector');
+    if (phaseSelector) {
+        if (family) {
+            let html = '<div class="text-[8px] font-orbitron font-bold uppercase tracking-[0.2em] text-amber-300 text-center mb-1">FASES</div>';
+            html += '<div class="flex gap-1 justify-center">';
+            family.forEach((phaseId, idx) => {
+                let phaseCard = ALL_CARDS.find(c => c.id === phaseId);
+                let isUnlocked = ownedCardIds.includes(phaseId);
+                let isSelected = (getSelectedPhase(family[0]) === phaseId);
+                let mission = getMissionFor(phaseId);
+                let progress = getProgressFor(phaseId);
+                let current = 0;
+                if (mission) {
+                    if (mission.type === 'wins') current = progress.wins || 0;
+                    if (mission.type === 'laberinto_received') current = progress.laberintoReceived || 0;
+                }
+                let completed = mission ? (current >= mission.count) : true;
+                let label = ['I', 'II', 'III'][idx];
+                let color = isSelected ? 'bg-amber-600 text-white' : (isUnlocked ? 'bg-slate-700 text-slate-200' : 'bg-slate-800 text-slate-500');
+                let lockIcon = isUnlocked ? '' : ' 🔒';
+                html += `<button onclick="selectPhase('${family[0]}','${phaseId}')" class="px-2 py-1 rounded text-[10px] font-bold ${color}">${label}${lockIcon}</button>`;
+            });
+            html += '</div>';
+            // Mostrar la misión de la fase seleccionada (si está bloqueada):
+            // la suya propia o, si no tiene, la de la fase anterior que la
+            // desbloquea (ej. a3 muestra la misión de a2).
+            let selectedId = getSelectedPhase(family[0]);
+            let missionInfo = getMissionDisplayFor(selectedId);
+            if (missionInfo) {
+                let mission = missionInfo.mission;
+                let progress = getProgressFor(missionInfo.owner);
+                let current = 0;
+                if (mission.type === 'wins') current = progress.wins || 0;
+                if (mission.type === 'laberinto_received') current = progress.laberintoReceived || 0;
+                let completed = current >= mission.count;
+                let pct = Math.min(100, (current / mission.count) * 100);
+                let nextCard = ALL_CARDS.find(c => c.id === mission.nextCardId);
+                html += `<div class="mt-2 pt-2 border-t border-slate-700">`;
+                html += `<p class="text-[9px] text-slate-300 leading-tight text-center mb-1">${mission.description}</p>`;
+                html += `<div class="w-full h-1.5 bg-slate-800 rounded-full overflow-hidden mb-1"><div class="h-full ${completed ? 'bg-emerald-500' : 'bg-purple-500'}" style="width:${pct}%"></div></div>`;
+                html += `<p class="text-[8px] text-center ${completed ? 'text-emerald-400' : 'text-slate-400'}">${current}/${mission.count} ${completed ? '— ¡COMPLETADA!' : ''}</p>`;
+                html += `</div>`;
+            }
+            phaseSelector.innerHTML = html;
+            phaseSelector.classList.remove('hidden-view');
+        } else {
+            phaseSelector.classList.add('hidden-view');
+        }
+    }
+}
+
+// SISTEMA DE FASES: selecciona una fase de una familia y re-renderiza el
+// modal. Si la fase está bloqueada, solo la previsualiza (misión visible).
+function selectPhase(baseId, phaseId) {
+    // Si la fase está bloqueada, no hacer nada (solo mostrar misión).
+    if (!ownedCardIds.includes(phaseId)) {
+        // Mostrar la misión de esa fase en el modal (actualizar selección temporal).
+        setSelectedPhase(baseId, phaseId);
+        let card = ALL_CARDS.find(c => c.id === phaseId);
+        if (card) {
+            window._modalActiveCard = card;
+            renderCardModalContent(card);
+            applyCardModalMode();
+        }
+        return;
+    }
+    // Si está desbloqueada, seleccionar y renderizar.
+    setSelectedPhase(baseId, phaseId);
+    let card = ALL_CARDS.find(c => c.id === phaseId);
+    if (card) {
+        window._modalActiveCard = card;
+        renderCardModalContent(card);
+        applyCardModalMode();
     }
 }
 
@@ -537,6 +626,26 @@ function showGameOver() {
         } else {
             setTimeout(() => showTutorialMessage("Has perdido", "Ve al Deckbuilder (Mazos) y prueba a ordenar tus cartas de otra manera."), 1000);
         }
+    }
+
+    // --- SISTEMA DE FASES: misiones de "wins" al ganar con cartas en tablero ---
+    if (won) {
+        let uniqueCardIds = new Set(gameState.p1.activeBoard.map(c => c.id));
+        uniqueCardIds.forEach(cardId => {
+            let mission = getMissionFor(cardId);
+            if (mission && mission.type === 'wins') {
+                let progress = getProgressFor(cardId);
+                let newWins = (progress.wins || 0) + 1;
+                updateProgressFor(cardId, { wins: newWins });
+                if (newWins >= mission.count) {
+                    let unlocked = unlockNextCard(cardId);
+                    if (unlocked) {
+                        let nextCard = ALL_CARDS.find(c => c.id === mission.nextCardId);
+                        showTutorialMessage("¡Misión completada!", "Has desbloqueado: " + (nextCard ? nextCard.name : mission.nextCardId));
+                    }
+                }
+            }
+        });
     }
 
     document.getElementById('gameover-modal').classList.remove('hidden-view');

@@ -112,6 +112,22 @@ function laberinto(player, opp, X) {
     target.atk = 0;
     target.hp = 0;
     queueFx({ t: 'laberinto', side: sideOf(opp), uid: target.uid });
+
+    // SISTEMA DE FASES: trackear la misión "laberinto_received" de la carta
+    // atrapada (ej. a2 Asterión Enfurecido recibe Laberinto → desbloquea a3).
+    let mission = getMissionFor(target.id);
+    if (mission && mission.type === 'laberinto_received') {
+        let progress = getProgressFor(target.id);
+        let newCount = (progress.laberintoReceived || 0) + 1;
+        updateProgressFor(target.id, { laberintoReceived: newCount });
+        if (newCount >= mission.count) {
+            let unlocked = unlockNextCard(target.id);
+            if (unlocked) {
+                let nextCard = ALL_CARDS.find(c => c.id === mission.nextCardId);
+                showTutorialMessage("¡Misión completada!", "Has desbloqueado: " + (nextCard ? nextCard.name : mission.nextCardId));
+            }
+        }
+    }
 }
 
 // --- INVOCACIÓN DE CARTAS ---

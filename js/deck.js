@@ -155,14 +155,33 @@ function loadDeck() {
             let card = ALL_CARDS.find(c => c.id === cardId);
             if (!card) return;
             if (navigator.vibrate) navigator.vibrate(15);
-            if (playerDeck.some(c => c.id === cardId)) return;
+            // SISTEMA DE FASES: la familia ocupa un hueco (no se pueden tener
+            // dos fases de la misma familia en el mazo a la vez).
+            let familyOfAdded = getFamilyFor(cardId);
+            let familyIds = familyOfAdded ? familyOfAdded : [cardId];
+            if (playerDeck.some(c => familyIds.includes(c.id))) return;
             if (playerDeck.length >= 10) { alert("El mazo está lleno (10/10)."); return; }
             playerDeck.push(card);
+            // Si la carta pertenece a una familia, guardar la fase seleccionada
+            // (solo si esa fase está desbloqueada; si no, se queda la base).
+            if (familyOfAdded) {
+                let selectedPhase = getSelectedPhase(familyOfAdded[0]);
+                if (ownedCardIds.includes(selectedPhase)) {
+                    let idx = playerDeck.findIndex(c => c.id === card.id);
+                    if (idx > -1) {
+                        let phaseCard = ALL_CARDS.find(c => c.id === selectedPhase);
+                        if (phaseCard) playerDeck[idx] = phaseCard;
+                    }
+                }
+            }
             saveDeck(); renderDeckEditor(); renderCollection();
         }
 
         function removeCardFromDeck(cardId) {
-            let idx = playerDeck.findIndex(c => c.id === cardId);
+            // SISTEMA DE FASES: quitar una carta de familia quita cualquier fase.
+            let family = getFamilyFor(cardId);
+            let targetIds = family ? family : [cardId];
+            let idx = playerDeck.findIndex(c => targetIds.includes(c.id));
             if (idx > -1) {
                 if (navigator.vibrate) navigator.vibrate(15);
                 playerDeck.splice(idx, 1);
@@ -190,6 +209,16 @@ function loadDeck() {
             }
 
             playerDeck.forEach((card, idx) => {
+                // SISTEMA DE FASES: si la carta pertenece a una familia, mostrar
+                // la fase seleccionada (solo si está desbloqueada).
+                let family = getFamilyFor(card.id);
+                let displayCard = card;
+                if (family) {
+                    let selectedPhase = getSelectedPhase(family[0]);
+                    if (ownedCardIds.includes(selectedPhase)) {
+                        displayCard = ALL_CARDS.find(c => c.id === selectedPhase) || card;
+                    }
+                }
                 let item = document.createElement('div');
                 item.className = "relative rounded-lg overflow-hidden border border-slate-700 cursor-grab hover:border-blue-500 transition-colors h-14";
                 item.draggable = true;
@@ -201,15 +230,15 @@ function loadDeck() {
                 item.onclick = () => openCardModal(card.id);
 
                 item.innerHTML = `
-                    <div class="absolute inset-0 bg-cover bg-center" style="background-image: url('${card.art}');"></div>
+                    <div class="absolute inset-0 bg-cover bg-center" style="background-image: url('${displayCard.art}');"></div>
                     <div class="absolute inset-0 bg-gradient-to-r from-black/80 via-black/40 to-transparent"></div>
-                    <div class="absolute top-1 left-1 w-5 h-5 rounded-full bg-cyan-200 text-cyan-900 text-[10px] font-bold flex items-center justify-center border border-white">${card.cost}</div>
+                    <div class="absolute top-1 left-1 w-5 h-5 rounded-full bg-cyan-200 text-cyan-900 text-[10px] font-bold flex items-center justify-center border border-white">${displayCard.cost}</div>
                     <div class="absolute bottom-1 left-2 right-9 flex justify-between items-end">
-                        <span class="text-[10px] text-white font-bold truncate drop-shadow-md">${card.name}</span>
+                        <span class="text-[10px] text-white font-bold truncate drop-shadow-md">${displayCard.name}</span>
                         <div class="flex gap-1">
-                            ${card.kind === 'Ser' ? `
-                                <span class="w-4 h-4 rounded-full bg-blue-900/90 border border-blue-400 text-white text-[8px] flex items-center justify-center">${card.atk}</span>
-                                <span class="w-4 h-4 rounded-full bg-red-900/90 border border-red-400 text-white text-[8px] flex items-center justify-center">${card.hp}</span>
+                            ${displayCard.kind === 'Ser' ? `
+                                <span class="w-4 h-4 rounded-full bg-blue-900/90 border border-blue-400 text-white text-[8px] flex items-center justify-center">${displayCard.atk}</span>
+                                <span class="w-4 h-4 rounded-full bg-red-900/90 border border-red-400 text-white text-[8px] flex items-center justify-center">${displayCard.hp}</span>
                             ` : ''}
                         </div>
                     </div>
@@ -235,9 +264,15 @@ function loadDeck() {
             let seenRaw = safeStorageGet('nexo_seen_cards_v1');
             let seenCards = seenRaw ? (JSON.parse(seenRaw) || []) : [];
             // Solo cartas que el jugador POSEE y que no estén ya en el mazo.
-            let availableCards = ALL_CARDS.filter(card =>
-                ownedCardIds.includes(card.id) && !playerDeck.some(d => d.id === card.id)
-            );
+            // SISTEMA DE FASES: la colección muestra solo la carta base de cada
+            // familia; las fases desbloqueadas no aparecen como cartas sueltas.
+            let availableCards = ALL_CARDS.filter(card => {
+                if (!ownedCardIds.includes(card.id)) return false;
+                let family = getFamilyFor(card.id);
+                if (family && family[0] !== card.id) return false;
+                if (playerDeck.some(d => family && family.includes(d.id))) return false;
+                return true;
+            });
 
             if (availableCards.length === 0) {
                 container.innerHTML = `<div class="text-center text-slate-500 text-xs p-4">Gana combates en la Campaña para obtener nuevas cartas.</div>`;

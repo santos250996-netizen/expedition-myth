@@ -182,3 +182,112 @@ function setLastSeenVersion(v) {
     if (!v) return;
     safeStorageSet('nexo_last_seen_version', v);
 }
+
+// --- SISTEMA DE FASES (ASTERIÓN) ---
+// Cada "familia" de cartas tiene una carta base y fases desbloqueables.
+// Estructura de familias: { baseId: [fase1Id, fase2Id, fase3Id] }
+const CARD_FAMILIES = {
+    c3: ['c3', 'a2', 'a3'] // Asterión: Minotauro → Enfurecido → Señor del Laberinto
+};
+
+// Misiones de cada fase (la que desbloquea la siguiente).
+const CARD_MISSIONS = {
+    c3: {
+        nextCardId: 'a2',
+        type: 'wins',
+        count: 3,
+        description: 'Gana 3 combates con Asterión, el Minotauro en el tablero.'
+    },
+    a2: {
+        nextCardId: 'a3',
+        type: 'laberinto_received',
+        count: 1,
+        description: 'Recibe el efecto Laberinto con Asterión, Enfurecido en el tablero.'
+    }
+};
+
+// Progreso de misiones: { [cardId]: { wins, laberintoReceived, completed } }
+function getCardProgress() {
+    let raw = safeStorageGet('nexo_card_progress_v1');
+    if (!raw) return {};
+    try { return JSON.parse(raw) || {}; } catch(e) { return {}; }
+}
+
+function saveCardProgress(progress) {
+    safeStorageSet('nexo_card_progress_v1', JSON.stringify(progress));
+}
+
+function getProgressFor(cardId) {
+    let progress = getCardProgress();
+    return progress[cardId] || { wins: 0, laberintoReceived: 0, completed: false };
+}
+
+function updateProgressFor(cardId, updates) {
+    let progress = getCardProgress();
+    if (!progress[cardId]) progress[cardId] = { wins: 0, laberintoReceived: 0, completed: false };
+    Object.assign(progress[cardId], updates);
+    saveCardProgress(progress);
+    return progress[cardId];
+}
+
+function getMissionFor(cardId) {
+    return CARD_MISSIONS[cardId] || null;
+}
+
+// Misión a MOSTRAR para una fase: la suya propia o, si no tiene (ej. a3),
+// la de la fase anterior que la desbloquea (la que tiene nextCardId === cardId).
+function getMissionDisplayFor(cardId) {
+    let own = getMissionFor(cardId);
+    if (own) return { mission: own, owner: cardId };
+    for (let key in CARD_MISSIONS) {
+        if (CARD_MISSIONS[key].nextCardId === cardId) return { mission: CARD_MISSIONS[key], owner: key };
+    }
+    return null;
+}
+
+function isMissionCompleted(cardId) {
+    let mission = getMissionFor(cardId);
+    if (!mission) return false;
+    let progress = getProgressFor(cardId);
+    if (mission.type === 'wins') return progress.wins >= mission.count;
+    if (mission.type === 'laberinto_received') return progress.laberintoReceived >= mission.count;
+    return false;
+}
+
+function unlockNextCard(cardId) {
+    let mission = getMissionFor(cardId);
+    if (!mission) return false;
+    if (ownedCardIds.includes(mission.nextCardId)) return false;
+    ownedCardIds.push(mission.nextCardId);
+    safeStorageSet('nexo_owned_cards', JSON.stringify(ownedCardIds));
+    updateProgressFor(cardId, { completed: true });
+    return true;
+}
+
+// Devuelve la familia de una carta (o null si no tiene).
+function getFamilyFor(cardId) {
+    for (let baseId in CARD_FAMILIES) {
+        if (CARD_FAMILIES[baseId].includes(cardId)) return CARD_FAMILIES[baseId];
+    }
+    return null;
+}
+
+// Devuelve la fase seleccionada por el jugador para una familia.
+// Estructura: { [baseId]: faseId } (ej. { c3: 'a2' })
+function getSelectedPhase(baseId) {
+    let raw = safeStorageGet('nexo_selected_phases_v1');
+    if (!raw) return baseId;
+    try {
+        let parsed = JSON.parse(raw) || {};
+        return parsed[baseId] || baseId;
+    } catch(e) { return baseId; }
+}
+
+function setSelectedPhase(baseId, phaseId) {
+    let raw = safeStorageGet('nexo_selected_phases_v1');
+    let parsed = {};
+    if (raw) { try { parsed = JSON.parse(raw) || {}; } catch(e) {} }
+    parsed[baseId] = phaseId;
+    safeStorageSet('nexo_selected_phases_v1', JSON.stringify(parsed));
+}
+
