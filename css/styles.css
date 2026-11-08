@@ -932,3 +932,7 @@ main,
 .max-h-\[90vh\] { max-height: 90vh; }
 .max-h-\[15vh\] { max-height: 15vh; }
 .max-h-\[28vh\] { max-height: 28vh; }
+
+/* FIX: z-[90] (valor arbitrario) tampoco existe en el build estático; esta
+   regla pone el modal dev de mazos de bots por encima del resto (z-50/70). */
+#dev-botdecks-modal { z-index: 90; }

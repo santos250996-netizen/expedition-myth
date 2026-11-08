@@ -620,7 +620,7 @@ function destruirSerCosteAlto(opponent, minCost) {
     let targets = opponent.activeBoard.filter(c => !c.dying && c.cost >= minCost && !c.noDestroy);
     if (!targets.length) return false;
     let target = targets.reduce((max, c) => c.cost > max.cost ? c : max, targets[0]);
-    target.dying = true;
+    killCard(target, sideOf(opponent));
     queueFx({ t: 'sacrifice', side: sideOf(opponent), uid: target.uid });
     return true;
 }

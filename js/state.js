@@ -182,3 +182,16 @@ function setLastSeenVersion(v) {
     if (!v) return;
     safeStorageSet('nexo_last_seen_version', v);
 }
+
+// --- MODO DEV: MAZOS DE BOTS EDITABLES ---
+function getDevBotDecks() {
+    let raw = safeStorageGet('nexo_dev_botdecks_v1');
+    if (!raw) return {};
+    try { return JSON.parse(raw) || {}; } catch(e) { return {}; }
+}
+
+function saveDevBotDecks(decks) {
+    safeStorageSet('nexo_dev_botdecks_v1', JSON.stringify(decks));
+}
+
+let devSelectedBotDeck = null;

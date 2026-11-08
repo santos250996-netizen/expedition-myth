@@ -107,6 +107,20 @@ function markChapterCompleted(id) {
 // solo tiene botDeck (string[]), se usa ese como único orden (compatibilidad).
 function getChapterBotDeck() {
     if (!currentChapter) return ALL_CARDS;
+    if (isDevMode() && devSelectedBotDeck) {
+        return devSelectedBotDeck.map(id => ALL_CARDS.find(c => c.id === id)).filter(c => c !== undefined);
+    }
+    if (isDevMode()) {
+        let devDecks = getDevBotDecks();
+        let chapterDecks = devDecks[currentChapter.id];
+        if (chapterDecks) {
+            let orderNames = Object.keys(chapterDecks);
+            if (orderNames.length > 0) {
+                let chosenOrder = orderNames[Math.floor(Math.random() * orderNames.length)];
+                return chapterDecks[chosenOrder].map(id => ALL_CARDS.find(c => c.id === id)).filter(c => c !== undefined);
+            }
+        }
+    }
     let orders = currentChapter.botDecks;
     if (!orders && currentChapter.botDeck) orders = [currentChapter.botDeck];
     if (!orders || orders.length === 0) return ALL_CARDS;

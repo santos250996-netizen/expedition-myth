@@ -103,7 +103,7 @@ const ALL_CARDS = [
                     let alive = opp.activeBoard.filter(c => !c.dying && !c.noDestroy && !c.stunned);
                     if (alive.length > 0) {
                         let weakest = alive.reduce((min, c) => c.hp < min.hp ? c : min, alive[0]);
-                        weakest.dying = true;
+                        killCard(weakest, sideOf(opp));
                         queueFx({ t: 'sacrifice', side: sideOf(opp), uid: weakest.uid });
                     }
                     // Drawback: tu Ser con más HP paga 4 HP (puede morir).
