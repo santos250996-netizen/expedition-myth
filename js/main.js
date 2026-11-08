@@ -11,6 +11,7 @@ function switchView(viewId) {
     }
     document.querySelectorAll('.view-section').forEach(el => el.classList.add('hidden-view'));
     document.getElementById(viewId).classList.remove('hidden-view');
+    if (navigator.vibrate) navigator.vibrate(8);
     // Fondo de capítulo en cada cambio de pantalla: combate → capítulo
     // en juego; resto de UIs → capítulo más avanzado del jugador.
     updateGlobalBackground(viewId);

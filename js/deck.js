@@ -154,6 +154,7 @@ function loadDeck() {
         function addCardToDeck(cardId) {
             let card = ALL_CARDS.find(c => c.id === cardId);
             if (!card) return;
+            if (navigator.vibrate) navigator.vibrate(15);
             if (playerDeck.some(c => c.id === cardId)) return;
             if (playerDeck.length >= 10) { alert("El mazo está lleno (10/10)."); return; }
             playerDeck.push(card);
@@ -163,6 +164,7 @@ function loadDeck() {
         function removeCardFromDeck(cardId) {
             let idx = playerDeck.findIndex(c => c.id === cardId);
             if (idx > -1) {
+                if (navigator.vibrate) navigator.vibrate(15);
                 playerDeck.splice(idx, 1);
                 saveDeck(); renderDeckEditor(); renderCollection();
             }
@@ -228,6 +230,10 @@ function loadDeck() {
         function renderCollection() {
             let container = document.getElementById('collection-container');
             container.innerHTML = '';
+            // Cartas recién obtenidas (no vistas aún en el deckbuilder).
+            // Se guarda en localStorage como nexo_seen_cards_v1 (array de ids).
+            let seenRaw = safeStorageGet('nexo_seen_cards_v1');
+            let seenCards = seenRaw ? (JSON.parse(seenRaw) || []) : [];
             // Solo cartas que el jugador POSEE y que no estén ya en el mazo.
             let availableCards = ALL_CARDS.filter(card =>
                 ownedCardIds.includes(card.id) && !playerDeck.some(d => d.id === card.id)
@@ -250,9 +256,11 @@ function loadDeck() {
                 el.ondragover = (e) => { e.preventDefault(); el.classList.add('border-cyan-400'); };
                 el.ondragleave = (e) => { el.classList.remove('border-cyan-400'); };
                 el.onclick = () => openCardModal(card.id);
+                let isNew = !seenCards.includes(card.id);
 
                 el.innerHTML = `
                     <div class="absolute inset-0 bg-cover bg-center" style="background-image: url('${card.art}');"></div>
+                    ${isNew ? '<div class="new-card-dot"></div>' : ''}
                     <div class="absolute inset-0 bg-gradient-to-r from-black/80 via-black/40 to-transparent"></div>
                     <div class="absolute top-1 left-1 w-5 h-5 rounded-full bg-cyan-200 text-cyan-900 text-[10px] font-bold flex items-center justify-center border border-white">${card.cost}</div>
                     <div class="absolute bottom-1 left-2 right-9 flex justify-between items-end">
@@ -271,4 +279,8 @@ function loadDeck() {
                 el.querySelector('.add-btn').onclick = (e) => { e.stopPropagation(); addCardToDeck(card.id); };
                 container.appendChild(el);
             });
+            // Marcar todas las cartas mostradas como vistas.
+            let allIds = availableCards.map(c => c.id);
+            let updatedSeen = [...new Set([...seenCards, ...allIds])];
+            safeStorageSet('nexo_seen_cards_v1', JSON.stringify(updatedSeen));
         }

@@ -745,3 +745,94 @@ main,
 }
 
 /* --- FIN MODAL DE CARTA: MODO LORE --- */
+
+/* --- UX MEJORADO: transiciones, logo, pulso, deploy, charge, nuevo --- */
+
+/* 1. Transición fade entre vistas. */
+.view-section {
+    transition: opacity 0.25s ease;
+}
+.view-section.hidden-view {
+    opacity: 0;
+    pointer-events: none;
+}
+.view-section:not(.hidden-view) {
+    opacity: 1;
+}
+
+/* 2. Logo animado al cargar la home (fade + scale). */
+@keyframes fxLogoIn {
+    0%   { opacity: 0; transform: scale(0.85); letter-spacing: 0.05em; }
+    100% { opacity: 1; transform: scale(1); letter-spacing: 0.1em; }
+}
+#view-home h1 {
+    animation: fxLogoIn calc(0.8s * var(--fx-k, 1)) ease-out;
+}
+
+/* 3. Pulso suave del botón COMENZAR COMBATE. */
+@keyframes fxBtnPulse {
+    0%, 100% { box-shadow: 0 0 15px rgba(59,130,246,0.5); transform: scale(1); }
+    50%      { box-shadow: 0 0 25px rgba(59,130,246,0.9); transform: scale(1.02); }
+}
+#intro-actions button:first-child {
+    animation: fxBtnPulse 2s ease-in-out infinite;
+}
+
+/* 4. Cartas al entrar al tablero: scale + bounce (mejora animate-deploy). */
+@keyframes fxDeploy {
+    0%   { transform: translateY(-20px) scale(0.7); opacity: 0; }
+    60%  { transform: translateY(4px) scale(1.06); opacity: 1; }
+    80%  { transform: translateY(-2px) scale(0.98); }
+    100% { transform: translateY(0) scale(1); opacity: 1; }
+}
+.animate-deploy {
+    animation: fxDeploy calc(0.45s * var(--fx-k, 1)) ease-out;
+}
+
+/* 7. Embestida: la carta atacante se desplaza hacia la víctima y vuelve. */
+@keyframes fxChargeRight {
+    0%   { transform: translateX(0); }
+    40%  { transform: translateX(10px) scale(1.05); }
+    70%  { transform: translateX(-3px); }
+    100% { transform: translateX(0); }
+}
+@keyframes fxChargeLeft {
+    0%   { transform: translateX(0); }
+    40%  { transform: translateX(-10px) scale(1.05); }
+    70% { transform: translateX(3px); }
+    100% { transform: translateX(0); }
+}
+.fx-charge-right { animation: fxChargeRight calc(0.4s * var(--fx-k, 1)) ease-out; }
+.fx-charge-left  { animation: fxChargeLeft  calc(0.4s * var(--fx-k, 1)) ease-out; }
+
+/* 6. Indicador "nuevo" en cartas del deckbuilder y badge en recompensa. */
+.new-card-dot {
+    position: absolute;
+    top: -4px;
+    right: -4px;
+    width: 10px;
+    height: 10px;
+    border-radius: 9999px;
+    background: #ef4444;
+    border: 1.5px solid #fff;
+    box-shadow: 0 0 6px rgba(239,68,68,0.8);
+    z-index: 30;
+    pointer-events: none;
+}
+.reward-new-badge {
+    position: absolute;
+    top: 4px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: #ef4444;
+    color: #fff;
+    font-size: 7px;
+    font-weight: 900;
+    padding: 1px 4px;
+    border-radius: 3px;
+    letter-spacing: 0.1em;
+    z-index: 30;
+    pointer-events: none;
+}
+
+/* --- FIN UX MEJORADO --- */

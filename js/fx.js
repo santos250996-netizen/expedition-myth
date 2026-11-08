@@ -177,7 +177,11 @@
                                 fxFloatOver(fx.side, fx.uid, fx.text, (fx.cls || 'fx-red') + ' fx-float-big', fx.icon);
                                 break;
                             case 'clash':
-                                // Embestida: flash rojo en ambas cartas + sacudida fuerte.
+                                // Embestida: la carta atacante se desplaza hacia
+                                // la víctima (charge) + flash rojo en ambas +
+                                // sacudida fuerte + overlay de impacto + texto.
+                                let chargeCls = fx.side === 'p1' ? 'fx-charge-right' : 'fx-charge-left';
+                                fxClassOnCard(fx.uidA, chargeCls);
                                 fxFlash(fx.uidA, 'red');
                                 fxFlash(fx.uidB, 'red');
                                 fxShakeHard(fx.uidB);

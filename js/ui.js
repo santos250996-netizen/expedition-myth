@@ -14,6 +14,7 @@ let cardModalHasKeyword = false;
 function openCardModal(cardId) {
     let card = ALL_CARDS.find(c => c.id === cardId);
     if (!card) return;
+    if (navigator.vibrate) navigator.vibrate(15);
 
     // FIX: al abrir el detalle en combate se pausaba y al cerrar nunca se reanudaba.
     modalAutoPaused = false;
@@ -450,6 +451,7 @@ function renderRewardCard(cardId) {
             <div class="text-[9px] font-orbitron font-bold tracking-widest text-amber-300">¡NUEVA CARTA OBTENIDA!</div>
             <div class="fx-reward-card relative w-24 h-32 rounded-lg overflow-hidden border-2 border-amber-400 shadow-[0_0_20px_rgba(251,191,36,0.6)] cursor-pointer active:scale-95 transition-transform"
                  onclick="openCardModal('${card.id}')">
+                <div class="reward-new-badge">NUEVA</div>
                 <div class="absolute inset-0 bg-cover bg-center" style="background-image:url('${card.art}')"></div>
                 <div class="absolute inset-0 bg-gradient-to-t from-black/85 via-black/20 to-black/40"></div>
                 <div class="absolute top-1 left-1 w-5 h-5 rounded-full bg-cyan-200 text-cyan-900 text-[10px] font-bold flex items-center justify-center border border-white">${card.cost}</div>
@@ -463,6 +465,7 @@ function renderRewardCard(cardId) {
         </div>
     `;
     container.classList.remove('hidden-view');
+    if (navigator.vibrate) navigator.vibrate([30, 40, 60]);
 }
 
 function closeGameOverModal() {
@@ -690,6 +693,7 @@ function revealChapterActions() {
 function launchChapterCombat() {
     if (!currentChapter) { openChapters(); return; }
     if (playerDeck.length === 0) { alert("¡Tu mazo está vacío!"); return; }
+    if (navigator.vibrate) navigator.vibrate([20, 30, 40]);
 
     rivalDeck = getChapterBotDeck();
     document.getElementById('rival-name').innerText = currentChapter.rival.name;

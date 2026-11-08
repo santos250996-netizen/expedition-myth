@@ -7,6 +7,34 @@
 
 const PATCH_NOTES = [
     {
+        version: '1.6.0',
+        date: '2026-11-07',
+        title: 'Pulido de UX y Embestida',
+        highlights: [
+            'Transiciones suaves entre pantallas',
+            'Logo animado y botón COMENZAR COMBATE con pulso',
+            'Embestida restaurada: la carta arremete hacia el rival',
+            'Indicador de cartas nuevas en el deckbuilder'
+        ],
+        changes: {
+            new: [
+                'Transición fade al cambiar de vista',
+                'Animación de entrada del logo (fade + scale)',
+                'Pulso suave en el botón COMENZAR COMBATE',
+                'Mejora de animate-deploy (cartas entran con bounce)',
+                'Feedback táctil en acciones clave (tocar carta, mazo, combate, recompensa)',
+                'Puntito rojo en cartas nuevas del deckbuilder',
+                'Badge NUEVA en la carta de recompensa'
+            ],
+            buffs: [],
+            nerfs: [],
+            fixes: [
+                'FIX: Embestida restaurada (la carta atacante se desplaza hacia la víctima)'
+            ],
+            removed: []
+        }
+    },
+    {
         version: '1.5.0',
         date: '2026-11-07',
         title: 'Modal de Carta Profesional',
