@@ -12,9 +12,9 @@
          Tailwind va precompilado (solo las clases usadas): el runtime del
          Play CDN recompilaba estilos en cada mutación del DOM y lastraba
          el render. -->
-    <link rel="stylesheet" href="css/vendor/tailwind.min.css?v=20261118d">
+    <link rel="stylesheet" href="css/vendor/tailwind.min.css?v=20261118e">
     <link href="css/vendor/all.min.css" rel="stylesheet">
-    <link rel="stylesheet" href="css/styles.css?v=20261118d">
+    <link rel="stylesheet" href="css/styles.css?v=20261118e">
 </head>
 <body class="bg-black flex justify-center items-center">
 
@@ -377,21 +377,21 @@
         </div>
 
         <!-- FIN DE PARTIDA -->
-        <div id="gameover-modal" class="absolute inset-0 bg-black/90 z-50 flex flex-col items-center justify-center p-6 hidden-view backdrop-blur-sm">
-            <div class="text-center w-full max-w-xs">
+        <div id="gameover-modal" class="absolute inset-0 bg-black/90 z-50 flex flex-col items-center justify-center p-4 hidden-view backdrop-blur-sm">
+            <div class="text-center w-full max-w-xs max-h-[90vh] overflow-y-auto">
                 <h2 id="gameover-title" class="text-3xl font-orbitron font-black text-amber-400 mb-2 glow-text-blue">¡VICTORIA!</h2>
-                <div class="bg-slate-900 border border-slate-700 rounded-xl p-4 mb-3">
-                    <p class="text-slate-400 text-sm mb-2">Puntuación Final</p>
-                    <div class="flex justify-between text-xl font-bold font-orbitron">
+                <div class="bg-slate-900 border border-slate-700 rounded-xl p-3 mb-2">
+                    <p class="text-slate-400 text-xs mb-1">Puntuación Final</p>
+                    <div class="flex justify-between text-lg font-bold font-orbitron">
                         <span class="text-cyan-400">Tú: <span id="final-p1">0</span></span>
                         <span class="text-fuchsia-400">Rival: <span id="final-p2">0</span></span>
                     </div>
                 </div>
-                <div id="gameover-epilogue" class="hidden bg-slate-900/70 border border-amber-500/40 rounded-xl p-3 mb-2 max-h-[18vh] overflow-y-auto">
+                <div id="gameover-epilogue" class="hidden bg-slate-900/70 border border-amber-500/40 rounded-xl p-2 mb-2 max-h-[15vh] overflow-y-auto">
                     <p class="text-[9px] text-amber-300 font-orbitron font-bold tracking-widest mb-1 text-center">AVANCE DE LA HISTORIA</p>
                     <p id="gameover-epilogue-text" class="text-[11px] text-amber-100/90 italic leading-snug text-center"></p>
                 </div>
-                <div id="gameover-reward-card" class="hidden-view mb-2 max-h-[32vh] overflow-y-auto"></div>
+                <div id="gameover-reward-card" class="hidden-view mb-2 max-h-[28vh] overflow-y-auto"></div>
                 <button onclick="closeGameOverAndRestart()" class="w-full bg-blue-600 py-2.5 rounded-xl font-bold text-white mb-2 shadow-lg active:scale-95 transition">Jugar de nuevo</button>
                 <button onclick="openDeckbuilderFromGameover()" class="w-full bg-emerald-700 py-2.5 rounded-xl font-bold text-white mb-2 shadow-lg active:scale-95 transition">Editar mazo</button>
                 <button onclick="switchView('view-home'); closeGameOverModal();" class="w-full bg-slate-800 py-2.5 rounded-xl font-bold text-slate-300 active:scale-95 transition">Volver al menú</button>
@@ -462,15 +462,15 @@
     </div>
 
 
-    <script src="js/cards.js?v=20261118d"></script>
-    <script src="js/state.js?v=20261118d"></script>
-    <script src="js/fx.js?v=20261118d"></script>
-    <script src="js/deck.js?v=20261118d"></script>
-    <script src="js/chapters.js?v=20261118d"></script>
-    <script src="js/patchnotes.js?v=20261118d"></script>
-    <script src="js/ui.js?v=20261118d"></script>
-    <script src="js/game.js?v=20261118d"></script>
-    <script src="js/dev.js?v=20261118d"></script>
-<script src="js/main.js?v=20261118d"></script>
+    <script src="js/cards.js?v=20261118e"></script>
+    <script src="js/state.js?v=20261118e"></script>
+    <script src="js/fx.js?v=20261118e"></script>
+    <script src="js/deck.js?v=20261118e"></script>
+    <script src="js/chapters.js?v=20261118e"></script>
+    <script src="js/patchnotes.js?v=20261118e"></script>
+    <script src="js/ui.js?v=20261118e"></script>
+    <script src="js/game.js?v=20261118e"></script>
+    <script src="js/dev.js?v=20261118e"></script>
+<script src="js/main.js?v=20261118e"></script>
 </body>
 </html>

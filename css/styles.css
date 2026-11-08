@@ -925,3 +925,10 @@ main,
    (solo z-10/20/40/50). Esta regla garantiza el modal de carta por encima
    del modal de gameover (z-50). */
 #card-modal { z-index: 70; }
+
+/* FIX: los max-h-[Nvh] (valores arbitrarios) tampoco existen en el build
+   estático. Sin estas reglas el wrapper del gameover no tiene tope y el
+   contenido se sale por abajo en vez de hacer scroll. */
+.max-h-\[90vh\] { max-height: 90vh; }
+.max-h-\[15vh\] { max-height: 15vh; }
+.max-h-\[28vh\] { max-height: 28vh; }
