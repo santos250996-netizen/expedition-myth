@@ -300,9 +300,10 @@ function createCardElement(card, theme, animate) {
     // fuera del marco, cuánta gloria suma al final del turno (su ATK
     // efectivo). Los Eventos no puntúan por turno → sin badge.
     if (card.kind === 'Ser') {
+        let noScore = card.dying || card.stunned || (card.petrifiedTurns > 0);
         let badge = document.createElement('div');
-        badge.className = 'glory-badge ' + (isBlue ? 'side-left' : 'side-right') + (card.dying ? ' glory-dim' : '');
-        badge.innerHTML = `<i class="fa-solid fa-bolt"></i><span class="glory-badge-val">+${displayAtk}</span>`;
+        badge.className = 'glory-badge ' + (isBlue ? 'side-left' : 'side-right') + (noScore ? ' glory-dim' : '');
+        badge.innerHTML = `<i class="fa-solid fa-bolt"></i><span class="glory-badge-val">+${noScore ? 0 : displayAtk}</span>`;
         wrap.appendChild(badge);
     }
     return wrap;
@@ -329,10 +330,12 @@ function updateCardElement(el, card) {
     }
     // El badge de gloria refleja el ATK efectivo y se atenúa si el Ser no
     // puntúa este turno (aturdido o muriendo).
+    let noScore = card.dying || card.stunned || (card.petrifiedTurns > 0);
     let badgeVal = el.querySelector('.glory-badge-val');
-    if (badgeVal && badgeVal.innerText !== '+' + displayAtk) badgeVal.innerText = '+' + displayAtk;
+    let expectedBadge = '+' + (noScore ? 0 : displayAtk);
+    if (badgeVal && badgeVal.innerText !== expectedBadge) badgeVal.innerText = expectedBadge;
     let badge = el.querySelector('.glory-badge');
-    if (badge) badge.classList.toggle('glory-dim', !!card.stunned || !!card.dying);
+    if (badge) badge.classList.toggle('glory-dim', noScore);
 
     // Laberinto persistente: el render reconstruye el DOM en cada tick, así
     // que el FX transitorio (fx-lab) se perdería. Se deriva del estado
@@ -368,15 +371,16 @@ function updateCardElement(el, card) {
         if (icon) icon.remove();
     }
 
-    // Reflejo persistente: glow azul + icono escudo.
+    // Reflejo persistente: glow azul + icono escudo con contador.
     if (card.reflectCharges > 0) {
         if (!cardEl.classList.contains('fx-reflejo')) cardEl.classList.add('fx-reflejo');
-        if (!cardEl.querySelector('.fx-reflejo-icon')) {
-            let icon = document.createElement('div');
+        let icon = cardEl.querySelector('.fx-reflejo-icon');
+        if (!icon) {
+            icon = document.createElement('div');
             icon.className = 'fx-reflejo-icon';
-            icon.innerHTML = '<i class="fa-solid fa-shield-halved"></i>';
             cardEl.appendChild(icon);
         }
+        icon.innerHTML = '<i class="fa-solid fa-shield-halved"></i> ' + card.reflectCharges;
     } else {
         cardEl.classList.remove('fx-reflejo');
         let icon = cardEl.querySelector('.fx-reflejo-icon');
@@ -429,15 +433,16 @@ function updateCardElement(el, card) {
         if (icon) icon.remove();
     }
 
-    // Bloqueo persistente: glow dorado + icono escudo.
+    // Bloqueo persistente: glow dorado + icono escudo con contador.
     if (card.bloqueo > 0) {
         if (!cardEl.classList.contains('fx-bloqueo')) cardEl.classList.add('fx-bloqueo');
-        if (!cardEl.querySelector('.fx-bloqueo-icon')) {
-            let icon = document.createElement('div');
+        let icon = cardEl.querySelector('.fx-bloqueo-icon');
+        if (!icon) {
+            icon = document.createElement('div');
             icon.className = 'fx-bloqueo-icon';
-            icon.innerHTML = '<i class="fa-solid fa-shield"></i>';
             cardEl.appendChild(icon);
         }
+        icon.innerHTML = '<i class="fa-solid fa-shield"></i> ' + card.bloqueo;
     } else {
         cardEl.classList.remove('fx-bloqueo');
         let icon = cardEl.querySelector('.fx-bloqueo-icon');
@@ -1128,4 +1133,11 @@ function checkNewVersion() {
         return;
     }
     updatePatchNotesBadge();
+}
+
+// Abre el deckbuilder desde el modal de gameover.
+function openDeckbuilderFromGameover() {
+    closeGameOverModal();
+    switchView('view-deckbuilder');
+    setTimeout(() => { renderDeckEditor(); renderCollection(); }, 50);
 }

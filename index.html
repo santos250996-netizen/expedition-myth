@@ -12,9 +12,9 @@
          Tailwind va precompilado (solo las clases usadas): el runtime del
          Play CDN recompilaba estilos en cada mutación del DOM y lastraba
          el render. -->
-    <link rel="stylesheet" href="css/vendor/tailwind.min.css?v=20261118b">
+    <link rel="stylesheet" href="css/vendor/tailwind.min.css?v=20261118d">
     <link href="css/vendor/all.min.css" rel="stylesheet">
-    <link rel="stylesheet" href="css/styles.css?v=20261118b">
+    <link rel="stylesheet" href="css/styles.css?v=20261118d">
 </head>
 <body class="bg-black flex justify-center items-center">
 
@@ -330,7 +330,7 @@
         </div>
 
         <!-- MODAL DE CARTA (2 modos: combate / lore) -->
-        <div id="card-modal" class="absolute inset-0 bg-black/80 z-50 flex flex-col items-center justify-center p-4 hidden-view">
+        <div id="card-modal" class="absolute inset-0 bg-black/80 z-[70] flex flex-col items-center justify-center p-4 hidden-view">
             <div class="card-modal-frame" onclick="toggleCardModalMode()">
                 <div id="modal-card-art" class="card-art-bg"></div>
                 <div class="card-gradient-top"></div>
@@ -387,13 +387,14 @@
                         <span class="text-fuchsia-400">Rival: <span id="final-p2">0</span></span>
                     </div>
                 </div>
-                <div id="gameover-epilogue" class="hidden bg-slate-900/70 border border-amber-500/40 rounded-xl p-3 mb-6">
+                <div id="gameover-epilogue" class="hidden bg-slate-900/70 border border-amber-500/40 rounded-xl p-3 mb-2 max-h-[18vh] overflow-y-auto">
                     <p class="text-[9px] text-amber-300 font-orbitron font-bold tracking-widest mb-1 text-center">AVANCE DE LA HISTORIA</p>
                     <p id="gameover-epilogue-text" class="text-[11px] text-amber-100/90 italic leading-snug text-center"></p>
                 </div>
-                <div id="gameover-reward-card" class="hidden-view mb-4"></div>
-                <button onclick="closeGameOverAndRestart()" class="w-full bg-blue-600 py-3 rounded-xl font-bold text-white mb-3 shadow-lg active:scale-95 transition">Jugar de nuevo</button>
-                <button onclick="switchView('view-home'); closeGameOverModal();" class="w-full bg-slate-800 py-3 rounded-xl font-bold text-slate-300 active:scale-95 transition">Volver al menú</button>
+                <div id="gameover-reward-card" class="hidden-view mb-2 max-h-[32vh] overflow-y-auto"></div>
+                <button onclick="closeGameOverAndRestart()" class="w-full bg-blue-600 py-2.5 rounded-xl font-bold text-white mb-2 shadow-lg active:scale-95 transition">Jugar de nuevo</button>
+                <button onclick="openDeckbuilderFromGameover()" class="w-full bg-emerald-700 py-2.5 rounded-xl font-bold text-white mb-2 shadow-lg active:scale-95 transition">Editar mazo</button>
+                <button onclick="switchView('view-home'); closeGameOverModal();" class="w-full bg-slate-800 py-2.5 rounded-xl font-bold text-slate-300 active:scale-95 transition">Volver al menú</button>
             </div>
         </div>
 
@@ -461,15 +462,15 @@
     </div>
 
 
-    <script src="js/cards.js?v=20261118b"></script>
-    <script src="js/state.js?v=20261118b"></script>
-    <script src="js/fx.js?v=20261118b"></script>
-    <script src="js/deck.js?v=20261118b"></script>
-    <script src="js/chapters.js?v=20261118b"></script>
-    <script src="js/patchnotes.js?v=20261118b"></script>
-    <script src="js/ui.js?v=20261118b"></script>
-    <script src="js/game.js?v=20261118b"></script>
-    <script src="js/dev.js?v=20261118b"></script>
-<script src="js/main.js?v=20261118b"></script>
+    <script src="js/cards.js?v=20261118d"></script>
+    <script src="js/state.js?v=20261118d"></script>
+    <script src="js/fx.js?v=20261118d"></script>
+    <script src="js/deck.js?v=20261118d"></script>
+    <script src="js/chapters.js?v=20261118d"></script>
+    <script src="js/patchnotes.js?v=20261118d"></script>
+    <script src="js/ui.js?v=20261118d"></script>
+    <script src="js/game.js?v=20261118d"></script>
+    <script src="js/dev.js?v=20261118d"></script>
+<script src="js/main.js?v=20261118d"></script>
 </body>
 </html>

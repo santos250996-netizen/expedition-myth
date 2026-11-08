@@ -56,7 +56,10 @@ function dealDamage(target, amount, side, sourcePlayer) {
             queueFx({ t: 'debuff', side: sideOf(sourcePlayer), uid: reflectedTarget.uid, text: '-' + amount + ' HP', icon: 'fa-heart-crack', overlay: 'hit' });
         })) return;
     }
-    target.hp -= amount;
+    // Bloqueo: absorbe parte del daño (reducción de HP).
+    let dmg = bloqueoAbsorb(target, amount);
+    if (dmg <= 0) return;
+    target.hp -= dmg;
     if (target.hp <= 0) {
         target.hp = 0;
         killCard(target, side || ownerSideOf(target));
@@ -161,7 +164,9 @@ function colossusShieldFor(owner, amount) {
 // del Coloso (c24) la amortigua si está activa.
 function applyHpReduction(owner, target, amount, fxIcon) {
     if (!target || target.dying || target.stunned) return;
-    let left = colossusShieldFor(owner, amount);
+    let left = bloqueoAbsorb(target, amount);
+    if (left <= 0) return;
+    left = colossusShieldFor(owner, left);
     if (left <= 0) return;
     target.hp -= left;
     queueFx({ t: 'debuff', side: sideOf(owner), uid: target.uid, text: '-' + left + ' HP', icon: fxIcon || 'fa-heart-crack', cls: 'fx-gray' });
@@ -219,37 +224,6 @@ function gameTick() {
             gameState.p1.energy += 1;
             gameState.p2.energy += 1;
 
-            // Decremento de Laberinto: se hace ANTES de pendingStrikes y startTurn,
-            // para que los que despiertan este tick ya participen en el turno normal.
-            [gameState.p1, gameState.p2].forEach(owner => {
-                owner.activeBoard.forEach(c => {
-                    if (c.stunned && !c.dying) {
-                        c.laberintoTurns = (c.laberintoTurns || 0) - 1;
-                        if (c.laberintoTurns <= 0) {
-                            c.stunned = false;
-                            c.laberintoTurns = 0;
-                            c.atk = c._savedAtk || 0;
-                            c.hp = c._savedHp || 0;
-                            c._savedAtk = undefined;
-                            c._savedHp = undefined;
-                            queueFx({ t: 'liberado', side: sideOf(owner), uid: c.uid });
-                        }
-                    }
-                });
-            });
-
-            // Decremento de Petrificar: solo el contador. No toca stats.
-            [gameState.p1, gameState.p2].forEach(owner => {
-                owner.activeBoard.forEach(c => {
-                    if (c.petrifiedTurns > 0 && !c.dying) {
-                        c.petrifiedTurns = (c.petrifiedTurns || 0) - 1;
-                        if (c.petrifiedTurns <= 0) {
-                            c.petrifiedTurns = 0;
-                            queueFx({ t: 'liberado', side: sideOf(owner), uid: c.uid });
-                        }
-                    }
-                });
-            });
             // Reset de temp y expiración de HP temporal: solo no-stunned.
             // Reflejo e inmunidad son "este turno" (b5/b7): expiran aquí igual
             // que el ATK temporal, antes de que el nuevo turno resuelva.
@@ -310,6 +284,33 @@ function gameTick() {
             gameState.justDeployed = [gameState.p1.lastPlayed, gameState.p2.lastPlayed]
                 .filter(c => c && c.kind === 'Ser')
                 .map(c => c.uid);
+
+            // Decremento de Laberinto y Petrificar AL FINAL del tick: así el
+            // render del tick siguiente ya ve el valor correcto (evita que el
+            // icono dure un turno más).
+            [gameState.p1, gameState.p2].forEach(owner => {
+                owner.activeBoard.forEach(c => {
+                    if (c.stunned && !c.dying) {
+                        c.laberintoTurns = (c.laberintoTurns || 0) - 1;
+                        if (c.laberintoTurns <= 0) {
+                            c.stunned = false;
+                            c.laberintoTurns = 0;
+                            c.atk = c._savedAtk || 0;
+                            c.hp = c._savedHp || 0;
+                            c._savedAtk = undefined;
+                            c._savedHp = undefined;
+                            queueFx({ t: 'liberado', side: sideOf(owner), uid: c.uid });
+                        }
+                    }
+                    if (c.petrifiedTurns > 0 && !c.dying) {
+                        c.petrifiedTurns = (c.petrifiedTurns || 0) - 1;
+                        if (c.petrifiedTurns <= 0) {
+                            c.petrifiedTurns = 0;
+                            queueFx({ t: 'liberado', side: sideOf(owner), uid: c.uid });
+                        }
+                    }
+                });
+            });
 
             updateHUD();
             renderBoards();
@@ -533,8 +534,7 @@ function petrificar(player, opp, X) {
     let targets = opp.activeBoard.filter(c => !c.dying && !(c.petrifiedTurns > 0));
     if (!targets.length) return;
     let target = targets[Math.floor(Math.random() * targets.length)];
-    // Reflejo: si el target tiene Reflejo, se refleja la petrificación.
-    if (target.reflectCharges > 0) {
+    if (target.reflectCharges > 0 && !target.immuneThisTurn) {
         if (tryReflect(target, player, (reflectedTarget) => {
             reflectedTarget.petrifiedTurns = X;
             queueFx({ t: 'petrificar', side: sideOf(player), uid: reflectedTarget.uid });
@@ -587,9 +587,10 @@ function serpientesDeLaCabeza(owner, X) {
 }
 
 // --- KEYWORD: BLOQUEO X ---
-// Amortigua hasta X puntos de reducción de stats (ATK o HP) sobre esta carta.
-// Solo absorbe efectos RIVALES (no costes propios). No absorbe daño directo.
-// Devuelve la cantidad NO absorbida (la que pasa).
+// Amortigua hasta X puntos de CUALQUIER reducción de stats que reciba la
+// carta: reducción de HP (daño), reducción de ATK. Es un escudo genérico.
+// Cuando se agotan las X cargas, se desactiva.
+// Devuelve la cantidad NO absorbida.
 function bloqueoAbsorb(card, amount) {
     if (!card || !(card.bloqueo > 0)) return amount;
     let absorbed = Math.min(amount, card.bloqueo);

@@ -909,3 +909,19 @@ main,
     color: #fde68a; display: flex; align-items: center; justify-content: center;
     font-size: 7px; z-index: 25; pointer-events: none;
 }
+
+/* --- CONTADOR EN ICONOS DE REFLEJO Y BLOQUEO --- */
+.fx-reflejo-icon,
+.fx-bloqueo-icon {
+    width: auto !important;
+    min-width: 18px;
+    padding: 0 3px;
+    font-size: 8px !important;
+    gap: 1px;
+    font-weight: 900;
+}
+
+/* FIX: z-[70] (valor arbitrario) no existe en el build estático de Tailwind
+   (solo z-10/20/40/50). Esta regla garantiza el modal de carta por encima
+   del modal de gameover (z-50). */
+#card-modal { z-index: 70; }

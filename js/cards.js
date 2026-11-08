@@ -41,9 +41,17 @@ const ALL_CARDS = [
                 desc: 'Reduce en -2 el ATK de TODOS los Seres rivales (permanente).', 
                 lore: 'Una densa penumbra inexplorada desciende de los cielos y cubre los valles arcaicos de Grecia. Esta neblina antinatural nubla el juicio de las tribus y debilita los primeros asentamientos humanos, obligándolos a dar sus primeros pasos a ciegas en la oscuridad. Es el aliento de Cronos, el titán que devora a sus hijos, filtrándose desde el Tártaro.',
                 art: 'assets/cartas/carta-05-niebla-del-caos.webp',
-                effect: (p, opp) => { queueFx({ t: 'wave', side: sideOf(opp) }); opp.activeBoard.forEach(c => { if (!c.dying && !c.noAtkRed) { let d = bloqueoAbsorb(c, 2);
-                if (d > 0) { d = colossusShieldFor(opp, d); }
-                if (d > 0) { c.atk = Math.max(0, c.atk - d); queueFx({ t: 'debuff', side: sideOf(opp), uid: c.uid, text: '-' + d + ' ATK', icon: 'fa-cloud', overlay: 'fog', pulse: 'fx-pulse-gray', cls: 'fx-gray' }); } } }); } 
+                effect: (p, opp) => {
+                    queueFx({ t: 'wave', side: sideOf(opp) });
+                    opp.activeBoard.forEach(c => {
+                        if (c.dying || c.noAtkRed) return;
+                        if (c.reflectCharges > 0 && !c.immuneThisTurn) {
+                            if (tryReflect(c, p, (rt) => { rt.atk = Math.max(0, rt.atk - 2); queueFx({ t: 'debuff', side: sideOf(p), uid: rt.uid, text: '-2 ATK', icon: 'fa-cloud' }); })) return;
+                        }
+                        let d = bloqueoAbsorb(c, 2);
+                        if (d > 0) { c.atk = Math.max(0, c.atk - d); queueFx({ t: 'debuff', side: sideOf(opp), uid: c.uid, text: '-' + d + ' ATK', icon: 'fa-cloud', overlay: 'fog' }); }
+                    });
+                }
             },
             { 
                 id: 'c6', name: 'Ninfas de las Fuentes Secas', kind: 'Ser', faction: 'Poseidón', cost: 2, atk: 1, hp: 2, 
@@ -51,9 +59,15 @@ const ALL_CARDS = [
                 desc: 'Al entrar: Reduce en -1 el ATK del Ser rival en la Fila 1 (permanente).', 
                 lore: 'Las protectoras de los manantiales sufren la corrupción de la niebla. Al verse marchitas y sin agua pura, pierden la razón y se convierten en espectros errantes que lloran desconsoladamente, confundiendo con sus cantos a cualquiera que se acerque. Son las ninfas de Poseidón, hijas del mar y de los ríos, ahora corrompidas por el Caos.',
                 art: 'assets/cartas/carta-06-ninfas-de-las-fuentes-secas.webp',
-                effect: (p, opp) => { let target = opp.activeBoard[0]; if (target && !target.dying && !target.noAtkRed) { let d = bloqueoAbsorb(target, 1);
-                if (d > 0) { d = colossusShieldFor(opp, d); }
-                if (d > 0) { target.atk = Math.max(0, target.atk - d); queueFx({ t: 'debuff', side: sideOf(opp), uid: target.uid, text: '-' + d + ' ATK', icon: 'fa-water', overlay: 'tears' }); } } }, startTurn: null 
+                effect: (p, opp) => {
+                    let t = opp.activeBoard[0];
+                    if (!t || t.dying || t.noAtkRed) return;
+                    if (t.reflectCharges > 0 && !t.immuneThisTurn) {
+                        if (tryReflect(t, p, (rt) => { rt.atk = Math.max(0, rt.atk - 1); queueFx({ t: 'debuff', side: sideOf(p), uid: rt.uid, text: '-1 ATK', icon: 'fa-water' }); })) return;
+                    }
+                    let d = bloqueoAbsorb(t, 1);
+                    if (d > 0) { t.atk = Math.max(0, t.atk - d); queueFx({ t: 'debuff', side: sideOf(opp), uid: t.uid, text: '-' + d + ' ATK', icon: 'fa-water', overlay: 'tears' }); }
+                }, startTurn: null
             },
             { 
                 id: 'c7', name: 'Jabalí de Erimanto', kind: 'Ser', cost: 5, atk: 4, hp: 6, faction: 'Artemisa',
@@ -105,9 +119,20 @@ const ALL_CARDS = [
                 desc: 'Reduce en -1 el ATK de TODOS los Seres (rivales y aliados), permanentemente.',
                 lore: 'Los robles milenarios de los bosques sagrados guardan secretos antiguos. Cuando los intrusos se adentran sin respeto, las hojas y el viento susurran nombres prohibidos que paralizan la voluntad y confunden las mentes de los enemigos. Es el santuario oracular más antiguo de Zeus, donde los robles susurran sus profecías y su poder debilita a los incrédulos.',
                 art: 'assets/cartas/carta-10-ecos-de-dodona.webp',
-                effect: (p, opp) => { [p, opp].forEach(owner => { queueFx({ t: 'wave', side: sideOf(owner) }); owner.activeBoard.forEach(c => { if (!c.dying && !c.noAtkRed) { let d = bloqueoAbsorb(c, 1);
-                if (d > 0) { d = colossusShieldFor(owner, d); }
-                if (d > 0) { c.atk = Math.max(0, c.atk - d); queueFx({ t: 'debuff', side: sideOf(owner), uid: c.uid, text: '-' + d + ' ATK', icon: 'fa-leaf', overlay: 'leaf' }); } } }); }); }
+                effect: (p, opp) => {
+                    [p, opp].forEach(owner => {
+                        let other = owner === p ? opp : p;
+                        queueFx({ t: 'wave', side: sideOf(owner) });
+                        owner.activeBoard.forEach(c => {
+                            if (c.dying || c.noAtkRed) return;
+                            if (c.reflectCharges > 0 && !c.immuneThisTurn) {
+                                if (tryReflect(c, other, (rt) => { rt.atk = Math.max(0, rt.atk - 1); queueFx({ t: 'debuff', side: sideOf(other), uid: rt.uid, text: '-1 ATK', icon: 'fa-leaf' }); })) return;
+                            }
+                            let d = bloqueoAbsorb(c, 1);
+                            if (d > 0) { c.atk = Math.max(0, c.atk - d); queueFx({ t: 'debuff', side: sideOf(owner), uid: c.uid, text: '-' + d + ' ATK', icon: 'fa-leaf', overlay: 'leaf' }); }
+                        });
+                    });
+                }
             },
 {
     id: 'a2', name: 'Asterión, Enfurecido', kind: 'Ser', faction: 'Poseidón', cost: 5, atk: 5, hp: 5,
@@ -307,7 +332,15 @@ const ALL_CARDS = [
     lore: 'La tercera Gorgona, errante y silenciosa. Se dice que podía ver el futuro en el vuelo de los cuervos. Fue ella quien advirtió a Medusa de que un héroe con sandalias aladas cruzaba el mar, pero Medusa ya no podía escuchar.',
     art: 'assets/cartas/medusa-b4-euriale.webp',
     substory: 'medusa',
-    effect: (p, opp) => { let t = opp.activeBoard[0]; if (t && !t.dying && !t.noAtkRed) { t.atk = Math.max(0, t.atk - 1); queueFx({ t: 'debuff', side: sideOf(opp), uid: t.uid, text: '-1 ATK', icon: 'fa-eye' }); } },
+    effect: (p, opp) => {
+        let t = opp.activeBoard[0];
+        if (!t || t.dying || t.noAtkRed) return;
+        if (t.reflectCharges > 0 && !t.immuneThisTurn) {
+            if (tryReflect(t, p, (rt) => { rt.atk = Math.max(0, rt.atk - 1); queueFx({ t: 'debuff', side: sideOf(p), uid: rt.uid, text: '-1 ATK', icon: 'fa-eye' }); })) return;
+        }
+        let d = bloqueoAbsorb(t, 1);
+        if (d > 0) { t.atk = Math.max(0, t.atk - d); queueFx({ t: 'debuff', side: sideOf(opp), uid: t.uid, text: '-' + d + ' ATK', icon: 'fa-eye' }); }
+    },
     startTurn: null
 },
 {
