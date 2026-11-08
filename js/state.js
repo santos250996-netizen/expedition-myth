@@ -156,14 +156,16 @@ function migrateCleanup() {
         }
     } catch(e) { console.error('migrateCleanup events:', e); }
 
-    // 4. Mazo guardado: loadDeck ya filtra por ownedCardIds, pero si el mazo
+    // 4. Mazo guardado: loadDeck ya normaliza y filtra, pero si el mazo
     // tenía cartas borradas y queda vacío, se reconstruye el starter.
+    // SISTEMA DE FAMILIAS: los familyId ('asterion', 'dedalo') también son
+    // entradas válidas del mazo.
     try {
         let rawDeck = safeStorageGet('nexo_deck_v1');
         if (rawDeck) {
             let savedIds = JSON.parse(rawDeck);
             if (Array.isArray(savedIds)) {
-                let validIds = new Set(ALL_CARDS.map(c => c.id));
+                let validIds = new Set([...ALL_CARDS.map(c => c.id), ...Object.keys(CARD_FAMILIES)]);
                 let cleaned = savedIds.filter(id => validIds.has(id));
                 if (cleaned.length !== savedIds.length) {
                     safeStorageSet('nexo_deck_v1', JSON.stringify(cleaned));
@@ -183,103 +185,158 @@ function setLastSeenVersion(v) {
     safeStorageSet('nexo_last_seen_version', v);
 }
 
-// --- SISTEMA DE FASES (ASTERIÓN) ---
-// Cada "familia" de cartas tiene una carta base y fases desbloqueables.
-// Estructura de familias: { baseId: [fase1Id, fase2Id, fase3Id] }
+// --- SISTEMA DE FAMILIAS ---
+// Cada familia agrupa formas de una misma carta (base + desbloqueables).
+// El mazo guarda el familyId; el motor juega la forma marcada.
 const CARD_FAMILIES = {
-    c3: ['c3', 'a2', 'a3'] // Asterión: Minotauro → Enfurecido → Señor del Laberinto
-};
-
-// Misiones: van en la fase que se desbloquea (a2, a3). La base (c3) NO tiene
-// misión. previousCardId = la carta con la que se cumple la condición.
-const CARD_MISSIONS = {
-    a2: {
-        type: 'wins',
-        count: 3,
-        previousCardId: 'c3',
-        description: 'Gana 3 combates con Asterión, el Minotauro en el tablero.'
+    asterion: {
+        id: 'asterion',
+        name: 'Asterión',
+        forms: ['c3', 'a2', 'a3']
     },
-    a3: {
-        type: 'laberinto_received',
-        count: 1,
-        previousCardId: 'a2',
-        description: 'Recibe el efecto Laberinto con Asterión, Enfurecido en el tablero.'
+    dedalo: {
+        id: 'dedalo',
+        name: 'Dédalo',
+        forms: ['a7', 'a10', 'talos']
     }
 };
 
-// Progreso de misiones: { [cardId]: { wins, laberintoReceived, completed } }
+const CARD_MISSIONS = {
+    a2: {
+        type: 'wins', count: 3, previousCardId: 'c3',
+        familyId: 'asterion', formIndex: 1,
+        description: 'Gana 3 combates con Asterión, el Minotauro en el tablero.'
+    },
+    a3: {
+        type: 'laberinto_received', count: 1, previousCardId: 'a2',
+        familyId: 'asterion', formIndex: 2,
+        description: 'Recibe el efecto Laberinto con Asterión, Enfurecido en el tablero.'
+    },
+    a10: {
+        type: 'games_with', count: 30, previousCardId: 'a7',
+        familyId: 'dedalo', formIndex: 1,
+        description: 'Juega a Dédalo en 30 partidas distintas.'
+    },
+    talos: {
+        type: 'games_with', count: 50, previousCardId: 'a7',
+        familyId: 'dedalo', formIndex: 2,
+        description: 'Juega a Dédalo en 50 partidas distintas.'
+    }
+};
+
+// Formas desbloqueadas: { [familyId]: [formId, ...] }. La forma base siempre
+// cuenta como desbloqueada. MIGRACIÓN: si nunca se guardó, se reconstruye
+// desde ownedCardIds (el sistema anterior desbloqueaba fases añadiéndolas ahí).
+function getUnlockedForms() {
+    let raw = safeStorageGet('nexo_unlocked_forms_v1');
+    if (!raw) {
+        let migrated = {};
+        let changed = false;
+        for (let familyId in CARD_FAMILIES) {
+            migrated[familyId] = [CARD_FAMILIES[familyId].forms[0]];
+            CARD_FAMILIES[familyId].forms.forEach(formId => {
+                if (formId !== CARD_FAMILIES[familyId].forms[0] && ownedCardIds.includes(formId)) {
+                    migrated[familyId].push(formId);
+                    changed = true;
+                }
+            });
+        }
+        if (changed) saveUnlockedForms(migrated);
+        return migrated;
+    }
+    try { return JSON.parse(raw) || {}; } catch(e) { return {}; }
+}
+function saveUnlockedForms(forms) { safeStorageSet('nexo_unlocked_forms_v1', JSON.stringify(forms)); }
+
+function isFormUnlocked(familyId, formId) {
+    let unlocked = getUnlockedForms();
+    let forms = unlocked[familyId] || [CARD_FAMILIES[familyId].forms[0]];
+    return forms.includes(formId);
+}
+
+function unlockForm(familyId, formId) {
+    let unlocked = getUnlockedForms();
+    if (!unlocked[familyId]) unlocked[familyId] = [CARD_FAMILIES[familyId].forms[0]];
+    if (!unlocked[familyId].includes(formId)) {
+        unlocked[familyId].push(formId);
+        saveUnlockedForms(unlocked);
+    }
+}
+
+// Forma marcada por familia: { [familyId]: formId }. MIGRACIÓN: acepta la
+// clave antigua (id de la carta base, ej. 'c3') si no existe la nueva.
+function getSelectedPhase(familyId) {
+    let raw = safeStorageGet('nexo_selected_phases_v1');
+    if (!raw) return CARD_FAMILIES[familyId] ? CARD_FAMILIES[familyId].forms[0] : familyId;
+    try {
+        let parsed = JSON.parse(raw) || {};
+        let family = CARD_FAMILIES[familyId];
+        return parsed[familyId] || (family ? (parsed[family.forms[0]] || family.forms[0]) : familyId);
+    } catch(e) { return familyId; }
+}
+
+function setSelectedPhase(familyId, formId) {
+    let raw = safeStorageGet('nexo_selected_phases_v1');
+    let parsed = {};
+    if (raw) { try { parsed = JSON.parse(raw) || {}; } catch(e) {} }
+    parsed[familyId] = formId;
+    safeStorageSet('nexo_selected_phases_v1', JSON.stringify(parsed));
+}
+
+// Devuelve la familia de una carta (o null si no tiene).
+function getFamilyFor(cardId) {
+    for (let familyId in CARD_FAMILIES) {
+        if (CARD_FAMILIES[familyId].forms.includes(cardId)) return CARD_FAMILIES[familyId];
+    }
+    return null;
+}
+
+function getFamilyById(familyId) { return CARD_FAMILIES[familyId] || null; }
+
+// Devuelve la forma desbloqueada más cercana hacia atrás (para corregir
+// selecciones bloqueadas). Si la marcada está desbloqueada, la devuelve.
+function resolvePhase(familyId, formId) {
+    let family = CARD_FAMILIES[familyId];
+    if (!family) return formId;
+    let idx = family.forms.indexOf(formId);
+    if (idx === -1) return family.forms[0];
+    for (let i = idx; i >= 0; i--) {
+        if (isFormUnlocked(familyId, family.forms[i])) return family.forms[i];
+    }
+    return family.forms[0];
+}
+
+// Progreso de misiones: { [cardId]: { wins, laberintoReceived, gamesWith, completed } }
 function getCardProgress() {
     let raw = safeStorageGet('nexo_card_progress_v1');
     if (!raw) return {};
     try { return JSON.parse(raw) || {}; } catch(e) { return {}; }
 }
-
-function saveCardProgress(progress) {
-    safeStorageSet('nexo_card_progress_v1', JSON.stringify(progress));
-}
+function saveCardProgress(progress) { safeStorageSet('nexo_card_progress_v1', JSON.stringify(progress)); }
 
 function getProgressFor(cardId) {
     let progress = getCardProgress();
-    return progress[cardId] || { wins: 0, laberintoReceived: 0, completed: false };
+    return progress[cardId] || { wins: 0, laberintoReceived: 0, gamesWith: 0, completed: false };
 }
 
 function updateProgressFor(cardId, updates) {
     let progress = getCardProgress();
-    if (!progress[cardId]) progress[cardId] = { wins: 0, laberintoReceived: 0, completed: false };
+    if (!progress[cardId]) progress[cardId] = { wins: 0, laberintoReceived: 0, gamesWith: 0, completed: false };
     Object.assign(progress[cardId], updates);
     saveCardProgress(progress);
     return progress[cardId];
 }
 
-function getMissionFor(cardId) {
-    return CARD_MISSIONS[cardId] || null;
-}
+function getMissionFor(cardId) { return CARD_MISSIONS[cardId] || null; }
 
 function unlockCard(cardId) {
-    if (ownedCardIds.includes(cardId)) return false;
-    ownedCardIds.push(cardId);
-    safeStorageSet('nexo_owned_cards', JSON.stringify(ownedCardIds));
+    let mission = CARD_MISSIONS[cardId];
+    if (!mission) return false;
+    // Si ya estaba completada, no re-notificar (evita el toast repetido en
+    // cada partida que cumpla la condición de nuevo).
+    if (getProgressFor(cardId).completed) return false;
+    unlockForm(mission.familyId, cardId);
     updateProgressFor(cardId, { completed: true });
     return true;
-}
-
-// Devuelve la familia de una carta (o null si no tiene).
-function getFamilyFor(cardId) {
-    for (let baseId in CARD_FAMILIES) {
-        if (CARD_FAMILIES[baseId].includes(cardId)) return CARD_FAMILIES[baseId];
-    }
-    return null;
-}
-
-// Devuelve la fase seleccionada por el jugador para una familia.
-// Estructura: { [baseId]: faseId } (ej. { c3: 'a2' })
-function getSelectedPhase(baseId) {
-    let raw = safeStorageGet('nexo_selected_phases_v1');
-    if (!raw) return baseId;
-    try {
-        let parsed = JSON.parse(raw) || {};
-        return parsed[baseId] || baseId;
-    } catch(e) { return baseId; }
-}
-
-function setSelectedPhase(baseId, phaseId) {
-    let raw = safeStorageGet('nexo_selected_phases_v1');
-    let parsed = {};
-    if (raw) { try { parsed = JSON.parse(raw) || {}; } catch(e) {} }
-    parsed[baseId] = phaseId;
-    safeStorageSet('nexo_selected_phases_v1', JSON.stringify(parsed));
-}
-
-// Devuelve la fase desbloqueada más cercana hacia atrás (para corregir
-// selecciones bloqueadas). Si la marcada está desbloqueada, la devuelve.
-function resolvePhase(baseId, phaseId) {
-    let family = CARD_FAMILIES[baseId];
-    if (!family) return phaseId;
-    let idx = family.indexOf(phaseId);
-    if (idx === -1) return baseId;
-    for (let i = idx; i >= 0; i--) {
-        if (ownedCardIds.includes(family[i])) return family[i];
-    }
-    return baseId;
 }
 

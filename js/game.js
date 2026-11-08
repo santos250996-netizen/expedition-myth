@@ -113,9 +113,8 @@ function laberinto(player, opp, X) {
     target.hp = 0;
     queueFx({ t: 'laberinto', side: sideOf(opp), uid: target.uid });
 
-    // SISTEMA DE FASES: la misión "laberinto_received" vive en la carta que se
-    // desbloquea; previousCardId es la que RECIBE el Laberinto (ej. a2 recibe
-    // Laberinto → desbloquea a3). El progreso se guarda en la desbloqueada.
+    // SISTEMA DE FAMILIAS: la misión "laberinto_received" vive en la forma que
+    // se desbloquea; previousCardId es la que RECIBE el Laberinto.
     for (let missionCardId in CARD_MISSIONS) {
         let mission = CARD_MISSIONS[missionCardId];
         if (mission.previousCardId === target.id && mission.type === 'laberinto_received') {
@@ -125,7 +124,7 @@ function laberinto(player, opp, X) {
             if (newCount >= mission.count) {
                 if (unlockCard(missionCardId)) {
                     let cardData = ALL_CARDS.find(c => c.id === missionCardId);
-                    showTutorialMessage("¡Misión completada!", "Has desbloqueado: " + (cardData ? cardData.name : missionCardId));
+                    showTutorialMessage("¡Misión completada!", "Has desbloqueado la forma: " + (cardData ? cardData.name : missionCardId));
                 }
             }
         }
@@ -508,7 +507,19 @@ function gameTick() {
             // plantillas de ALL_CARDS ni las copias del rival. Las funciones
             // (effect, startTurn, onDeath, damageReact) se copian por referencia:
             // son inmutables y deben compartirse.
-            gameState.p1.deck = playerDeck.map(c => ({ ...c }));
+            // SISTEMA DE FAMILIAS: el mazo guarda familyId (o ids sueltos); el
+            // motor juega la forma marcada de cada familia.
+            gameState.p1.deck = playerDeck.map(cardOrId => {
+                let cardId = typeof cardOrId === 'string' ? cardOrId : cardOrId.id;
+                let family = getFamilyById(cardId);
+                if (family) {
+                    let selectedForm = getSelectedPhase(family.id);
+                    let formCard = ALL_CARDS.find(c => c.id === selectedForm);
+                    return formCard ? { ...formCard } : null;
+                }
+                let card = ALL_CARDS.find(c => c.id === cardId);
+                return card ? { ...card } : null;
+            }).filter(c => c !== null);
             gameState.p2.deck = rivalDeck.map(c => ({ ...c }));
             document.getElementById('pause-overlay').classList.add('hidden-view');
             updateHUD();

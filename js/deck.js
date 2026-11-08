@@ -18,47 +18,67 @@ function loadDeck() {
     // Inicializar el inventario del jugador (cartas del Capítulo 1.0).
     initOwnedCards();
 
+    // SISTEMA DE FAMILIAS: el mazo guarda familyId ('asterion', 'dedalo') para
+    // familias y el id de la carta para cartas sueltas. Los ids legados de
+    // fases ('c3', 'a2', 'a7'...) se normalizan al familyId de su familia.
+    let normalizeIds = (ids) => {
+        let out = [];
+        (ids || []).forEach(id => {
+            let family = getFamilyFor(id);
+            let normalized = family ? family.id : id;
+            if (!out.includes(normalized)) out.push(normalized);
+        });
+        return out;
+    };
+    // Entrada válida: carta suelta poseída, o familia cuya base se posee.
+    let isValidEntry = (id) => {
+        let family = getFamilyById(id);
+        if (family) return ownedCardIds.includes(family.forms[0]);
+        return ownedCardIds.includes(id);
+    };
+
     let saved = safeStorageGet('nexo_deck_v1');
     if (saved) {
         try {
             let savedIds = JSON.parse(saved);
-            let uniqueIds = [...new Set(savedIds)];
-            // Filtrar solo las cartas que el jugador posee.
-            playerDeck = uniqueIds.map(id => ALL_CARDS.find(c => c.id === id)).filter(c => c !== undefined && ownedCardIds.includes(c.id));
+            playerDeck = normalizeIds(savedIds).filter(isValidEntry);
         } catch(e) { console.error("Error loading deck", e); }
     }
 
     // Sin mazo guardado (o vacío): starter con las cartas que se poseen.
     if (!playerDeck || playerDeck.length === 0) {
-        playerDeck = ALL_CARDS.filter(c => ownedCardIds.includes(c.id)).slice(0, 10);
+        playerDeck = normalizeIds(ALL_CARDS.filter(c => ownedCardIds.includes(c.id)).map(c => c.id)).slice(0, 10);
     }
     if (playerDeck.length > 10) playerDeck = playerDeck.slice(0, 10);
 
     // Override dev: si el mazo guardado tiene menos de 10 cartas, se rellena
     // con el resto de cartas disponibles hasta 10. Solo en modo dev.
     if (isDevMode() && playerDeck.length < 10) {
-        let used = new Set(playerDeck.map(c => c.id));
+        let used = new Set(playerDeck);
         for (let c of ALL_CARDS) {
             if (playerDeck.length >= 10) break;
-            if (!used.has(c.id)) { playerDeck.push(c); used.add(c.id); }
+            let family = getFamilyFor(c.id);
+            let entry = family ? family.id : c.id;
+            if (!used.has(entry) && isValidEntry(entry)) { playerDeck.push(entry); used.add(entry); }
         }
     }
 
-    // Validación: si alguna carta del mazo guardado ya no está en
-    // ownedCardIds (por reinicio de progreso, migración, etc.), se elimina.
-    // Si el mazo queda vacío tras la validación, se reconstruye el starter.
+    // Validación: si alguna entrada del mazo guardado ya no es válida (por
+    // reinicio de progreso, migración, etc.), se elimina. Si el mazo queda
+    // vacío tras la validación, se reconstruye el starter.
     if (!isDevMode()) {
-        let validIds = new Set(ownedCardIds);
-        playerDeck = playerDeck.filter(c => validIds.has(c.id));
+        playerDeck = playerDeck.filter(isValidEntry);
         if (playerDeck.length === 0) {
-            playerDeck = ALL_CARDS.filter(c => ownedCardIds.includes(c.id)).slice(0, 10);
+            playerDeck = normalizeIds(ALL_CARDS.filter(c => ownedCardIds.includes(c.id)).map(c => c.id)).slice(0, 10);
         }
     }
 }
 
         function saveDeck() {
-            try { 
-                safeStorageSet('nexo_deck_v1', JSON.stringify(playerDeck.map(c => c.id)));
+            try {
+                // SISTEMA DE FAMILIAS: el mazo ya guarda ids (familyId o id de
+                // carta suelta), no objetos.
+                safeStorageSet('nexo_deck_v1', JSON.stringify(playerDeck));
                 let indicator = document.getElementById('save-indicator');
                 indicator.style.opacity = '1';
                 setTimeout(() => { indicator.style.opacity = '0'; }, 2000);
@@ -96,13 +116,12 @@ function loadDeck() {
             e.preventDefault();
             e.currentTarget.classList.remove('drag-over');
             let source = e.dataTransfer.getData('text/plain');
-            let card = ALL_CARDS.find(c => c.id === draggedCardId);
-            if (!card) return;
+            if (!draggedCardId) return;
 
             if (source === 'collection') {
-                if (playerDeck.length >= 10) { alert("El mazo está lleno (10/10)."); return; }
-                playerDeck.push(card); // Lo añade al final del array
-                saveDeck(); renderDeckEditor(); renderCollection();
+                // SISTEMA DE FAMILIAS: draggedCardId es un id (familyId o de
+                // carta suelta); addCardToDeck gestiona dup/licencia/límite.
+                addCardToDeck(draggedCardId);
             }
         }
 
@@ -112,38 +131,36 @@ function loadDeck() {
             e.currentTarget.classList.remove('drag-over');
             let source = e.dataTransfer.getData('text/plain');
             if (source === 'deck') {
-                let idx = playerDeck.findIndex(c => c.id === draggedCardId);
-                if (idx > -1) {
-                    playerDeck.splice(idx, 1);
-                    saveDeck(); renderDeckEditor(); renderCollection();
-                }
+                removeCardFromDeck(draggedCardId);
             }
         }
 
         // Soltar SOBRE una carta específica del mazo
         function handleDropOnCard(e, targetIndex) {
             e.preventDefault();
-            e.stopPropagation(); 
+            e.stopPropagation();
             let source = e.dataTransfer.getData('text/plain');
-            let card = ALL_CARDS.find(c => c.id === draggedCardId);
-            if (!card) return;
+            // SISTEMA DE FAMILIAS: las entradas del mazo son ids (familyId o
+            // id de carta suelta), no objetos.
+            if (!draggedCardId) return;
 
             if (source === 'deck') {
                 // Reordenar dentro del mazo
-                let sourceIndex = playerDeck.findIndex(c => c.id === card.id);
+                let sourceIndex = playerDeck.indexOf(draggedCardId);
                 if (sourceIndex > -1 && sourceIndex !== targetIndex) {
-                    let [movedCard] = playerDeck.splice(sourceIndex, 1);
+                    let [movedId] = playerDeck.splice(sourceIndex, 1);
                     // FIX: tras extraer, si la carta venía de antes el índice destino
                     // se desplaza una posición (off-by-one al reordenar).
                     let insertAt = sourceIndex < targetIndex ? targetIndex - 1 : targetIndex;
-                    playerDeck.splice(insertAt, 0, movedCard);
+                    playerDeck.splice(insertAt, 0, movedId);
                     saveDeck(); renderDeckEditor();
                 }
             } else if (source === 'collection') {
                 // FIX: soltar una carta de la colección ENCIMA de una carta del mazo
                 // antes "caía al vacío" (stopPropagation impedía que llegara al contenedor).
+                if (playerDeck.includes(draggedCardId)) return;
                 if (playerDeck.length >= 10) { alert("El mazo está lleno (10/10)."); return; }
-                playerDeck.splice(targetIndex, 0, card);
+                playerDeck.splice(targetIndex, 0, draggedCardId);
                 saveDeck(); renderDeckEditor(); renderCollection();
             }
         }
@@ -151,34 +168,21 @@ function loadDeck() {
         // --- ACCIONES TÁCTILES ---
         // El drag & drop HTML5 no funciona en pantallas táctiles; estos tres
         // métodos ofrecen la misma funcionalidad con toques (y sirven en escritorio).
-        function addCardToDeck(cardId) {
-            let card = ALL_CARDS.find(c => c.id === cardId);
-            if (!card) return;
+        function addCardToDeck(cardIdOrFamilyId) {
+            if (!cardIdOrFamilyId) return;
             if (navigator.vibrate) navigator.vibrate(15);
-            // SISTEMA DE FASES: si la carta pertenece a una familia, se añade
-            // la fase seleccionada (solo si está desbloqueada; protege contra
-            // selecciones legacy de fases bloqueadas). La familia ocupa un
-            // hueco: no coexisten dos fases de la misma familia en el mazo.
-            let family = getFamilyFor(cardId);
-            if (family) {
-                if (playerDeck.some(c => family.includes(c.id))) return;
-                let selectedPhase = getSelectedPhase(family[0]);
-                if (ownedCardIds.includes(selectedPhase)) {
-                    let phaseCard = ALL_CARDS.find(c => c.id === selectedPhase);
-                    if (phaseCard) card = phaseCard;
-                }
-            }
-            if (playerDeck.some(c => c.id === card.id)) return;
+            // SISTEMA DE FAMILIAS: el mazo guarda el familyId de las familias
+            // (la forma marcada se resuelve al renderizar y al jugar).
+            let family = getFamilyById(cardIdOrFamilyId);
+            let idToAdd = family ? family.id : cardIdOrFamilyId;
+            if (playerDeck.includes(idToAdd)) return;
             if (playerDeck.length >= 10) { alert("El mazo está lleno (10/10)."); return; }
-            playerDeck.push(card);
+            playerDeck.push(idToAdd);
             saveDeck(); renderDeckEditor(); renderCollection();
         }
 
-        function removeCardFromDeck(cardId) {
-            // SISTEMA DE FASES: quitar una carta de familia quita cualquier fase.
-            let family = getFamilyFor(cardId);
-            let targetIds = family ? family : [cardId];
-            let idx = playerDeck.findIndex(c => targetIds.includes(c.id));
+        function removeCardFromDeck(cardIdOrFamilyId) {
+            let idx = playerDeck.indexOf(cardIdOrFamilyId);
             if (idx > -1) {
                 if (navigator.vibrate) navigator.vibrate(15);
                 playerDeck.splice(idx, 1);
@@ -205,17 +209,27 @@ function loadDeck() {
                 return;
             }
 
-            playerDeck.forEach((card, idx) => {
-                let displayCard = card; // ya es la fase real: el mazo guarda la fase seleccionada
+            playerDeck.forEach((idOrCard, idx) => {
+                // SISTEMA DE FAMILIAS: la entrada es un familyId (se muestra la
+                // forma marcada) o el id de una carta suelta.
+                let displayCard = null;
+                let family = getFamilyById(idOrCard);
+                if (family) {
+                    let selectedForm = getSelectedPhase(family.id);
+                    displayCard = ALL_CARDS.find(c => c.id === selectedForm);
+                } else {
+                    displayCard = ALL_CARDS.find(c => c.id === idOrCard);
+                }
+                if (!displayCard) return;
                 let item = document.createElement('div');
                 item.className = "relative rounded-lg overflow-hidden border border-slate-700 cursor-grab hover:border-blue-500 transition-colors h-14";
                 item.draggable = true;
-                item.ondragstart = (e) => handleDragStart(e, card.id, 'deck');
+                item.ondragstart = (e) => handleDragStart(e, idOrCard, 'deck');
                 item.ondragend = handleDragEnd;
                 item.ondragover = (e) => { e.preventDefault(); item.classList.add('border-cyan-400'); };
                 item.ondragleave = (e) => { item.classList.remove('border-cyan-400'); };
                 item.ondrop = (e) => handleDropOnCard(e, idx);
-                item.onclick = () => openCardModal(card.id);
+                item.onclick = () => openCardModal(idOrCard);
 
                 item.innerHTML = `
                     <div class="absolute inset-0 bg-cover bg-center" style="background-image: url('${displayCard.art}');"></div>
@@ -239,7 +253,7 @@ function loadDeck() {
                 item.querySelectorAll('.move-btn').forEach(btn => {
                     btn.onclick = (e) => { e.stopPropagation(); moveDeckCard(idx, parseInt(btn.dataset.dir)); };
                 });
-                item.querySelector('.remove-btn').onclick = (e) => { e.stopPropagation(); removeCardFromDeck(card.id); };
+                item.querySelector('.remove-btn').onclick = (e) => { e.stopPropagation(); removeCardFromDeck(idOrCard); };
                 container.appendChild(item);
             });
         }
@@ -247,19 +261,26 @@ function loadDeck() {
         function renderCollection() {
             let container = document.getElementById('collection-container');
             container.innerHTML = '';
-            // Cartas recién obtenidas (no vistas aún en el deckbuilder).
-            // Se guarda en localStorage como nexo_seen_cards_v1 (array de ids).
             let seenRaw = safeStorageGet('nexo_seen_cards_v1');
             let seenCards = seenRaw ? (JSON.parse(seenRaw) || []) : [];
-            // Solo cartas que el jugador POSEE y que no estén ya en el mazo.
-            // SISTEMA DE FASES: la colección muestra solo la carta base de cada
-            // familia; las fases desbloqueadas no aparecen como cartas sueltas.
-            let availableCards = ALL_CARDS.filter(card => {
-                if (!ownedCardIds.includes(card.id)) return false;
-                let family = getFamilyFor(card.id);
-                if (family && family[0] !== card.id) return false;
-                if (playerDeck.some(d => family && family.includes(d.id))) return false;
-                return true;
+
+            // SISTEMA DE FAMILIAS: 1 carta por familia (con la forma marcada),
+            // más las cartas sueltas poseídas que no estén en el mazo.
+            let availableCards = [];
+            for (let familyId in CARD_FAMILIES) {
+                let family = CARD_FAMILIES[familyId];
+                if (playerDeck.includes(familyId)) continue;
+                // Solo familias poseídas: la base marca la posesión.
+                if (!ownedCardIds.includes(family.forms[0])) continue;
+                let selectedForm = getSelectedPhase(familyId);
+                let card = ALL_CARDS.find(c => c.id === selectedForm);
+                if (card) availableCards.push({ card, idOrCard: familyId });
+            }
+            ALL_CARDS.forEach(card => {
+                if (!ownedCardIds.includes(card.id)) return;
+                if (getFamilyFor(card.id)) return;
+                if (playerDeck.includes(card.id)) return;
+                availableCards.push({ card, idOrCard: card.id });
             });
 
             if (availableCards.length === 0) {
@@ -270,15 +291,15 @@ function loadDeck() {
             // Mismo aspecto que las tiras del mazo (columna izquierda): arte,
             // degradado, coste cian y medallas ATK/HP; el "+" vive en la
             // columna de control de la derecha de la tira.
-            availableCards.forEach((card) => {
+            availableCards.forEach(({ card, idOrCard }) => {
                 let el = document.createElement('div');
                 el.className = "relative rounded-lg overflow-hidden border border-slate-700 cursor-grab hover:border-blue-500 transition-colors h-14";
                 el.draggable = true;
-                el.ondragstart = (e) => handleDragStart(e, card.id, 'collection');
+                el.ondragstart = (e) => handleDragStart(e, idOrCard, 'collection');
                 el.ondragend = handleDragEnd;
                 el.ondragover = (e) => { e.preventDefault(); el.classList.add('border-cyan-400'); };
                 el.ondragleave = (e) => { el.classList.remove('border-cyan-400'); };
-                el.onclick = () => openCardModal(card.id);
+                el.onclick = () => openCardModal(idOrCard);
                 let isNew = !seenCards.includes(card.id);
 
                 el.innerHTML = `
@@ -299,11 +320,12 @@ function loadDeck() {
                         <button class="add-btn flex-1 text-cyan-300 text-lg leading-none flex items-center justify-center hover:bg-cyan-500/20 active:bg-cyan-500/40" aria-label="Añadir al mazo">+</button>
                     </div>
                 `;
-                el.querySelector('.add-btn').onclick = (e) => { e.stopPropagation(); addCardToDeck(card.id); };
+                el.querySelector('.add-btn').onclick = (e) => { e.stopPropagation(); addCardToDeck(idOrCard); };
                 container.appendChild(el);
             });
+
             // Marcar todas las cartas mostradas como vistas.
-            let allIds = availableCards.map(c => c.id);
+            let allIds = availableCards.map(a => a.card.id);
             let updatedSeen = [...new Set([...seenCards, ...allIds])];
             safeStorageSet('nexo_seen_cards_v1', JSON.stringify(updatedSeen));
         }
