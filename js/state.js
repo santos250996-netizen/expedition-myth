@@ -190,18 +190,19 @@ const CARD_FAMILIES = {
     c3: ['c3', 'a2', 'a3'] // Asterión: Minotauro → Enfurecido → Señor del Laberinto
 };
 
-// Misiones de cada fase (la que desbloquea la siguiente).
+// Misiones: van en la fase que se desbloquea (a2, a3). La base (c3) NO tiene
+// misión. previousCardId = la carta con la que se cumple la condición.
 const CARD_MISSIONS = {
-    c3: {
-        nextCardId: 'a2',
+    a2: {
         type: 'wins',
         count: 3,
+        previousCardId: 'c3',
         description: 'Gana 3 combates con Asterión, el Minotauro en el tablero.'
     },
-    a2: {
-        nextCardId: 'a3',
+    a3: {
         type: 'laberinto_received',
         count: 1,
+        previousCardId: 'a2',
         description: 'Recibe el efecto Laberinto con Asterión, Enfurecido en el tablero.'
     }
 };
@@ -234,31 +235,9 @@ function getMissionFor(cardId) {
     return CARD_MISSIONS[cardId] || null;
 }
 
-// Misión a MOSTRAR para una fase: la suya propia o, si no tiene (ej. a3),
-// la de la fase anterior que la desbloquea (la que tiene nextCardId === cardId).
-function getMissionDisplayFor(cardId) {
-    let own = getMissionFor(cardId);
-    if (own) return { mission: own, owner: cardId };
-    for (let key in CARD_MISSIONS) {
-        if (CARD_MISSIONS[key].nextCardId === cardId) return { mission: CARD_MISSIONS[key], owner: key };
-    }
-    return null;
-}
-
-function isMissionCompleted(cardId) {
-    let mission = getMissionFor(cardId);
-    if (!mission) return false;
-    let progress = getProgressFor(cardId);
-    if (mission.type === 'wins') return progress.wins >= mission.count;
-    if (mission.type === 'laberinto_received') return progress.laberintoReceived >= mission.count;
-    return false;
-}
-
-function unlockNextCard(cardId) {
-    let mission = getMissionFor(cardId);
-    if (!mission) return false;
-    if (ownedCardIds.includes(mission.nextCardId)) return false;
-    ownedCardIds.push(mission.nextCardId);
+function unlockCard(cardId) {
+    if (ownedCardIds.includes(cardId)) return false;
+    ownedCardIds.push(cardId);
     safeStorageSet('nexo_owned_cards', JSON.stringify(ownedCardIds));
     updateProgressFor(cardId, { completed: true });
     return true;
@@ -289,5 +268,18 @@ function setSelectedPhase(baseId, phaseId) {
     if (raw) { try { parsed = JSON.parse(raw) || {}; } catch(e) {} }
     parsed[baseId] = phaseId;
     safeStorageSet('nexo_selected_phases_v1', JSON.stringify(parsed));
+}
+
+// Devuelve la fase desbloqueada más cercana hacia atrás (para corregir
+// selecciones bloqueadas). Si la marcada está desbloqueada, la devuelve.
+function resolvePhase(baseId, phaseId) {
+    let family = CARD_FAMILIES[baseId];
+    if (!family) return phaseId;
+    let idx = family.indexOf(phaseId);
+    if (idx === -1) return baseId;
+    for (let i = idx; i >= 0; i--) {
+        if (ownedCardIds.includes(family[i])) return family[i];
+    }
+    return baseId;
 }
 

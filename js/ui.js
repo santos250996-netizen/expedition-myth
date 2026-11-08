@@ -34,22 +34,23 @@ function openCardModal(cardId) {
 // Renderiza el contenido del modal (arte, coste, nombre, tipo, stats, desc,
 // facción, keyword, lore). NO decide qué se ve; eso lo hace applyCardModalMode.
 // SISTEMA DE FASES: si la carta pertenece a una familia, muestra la fase
-// seleccionada y el selector de fases (con misiones de las bloqueadas).
+// seleccionada, el selector de fases (marca visual) y su caja de misión.
 function renderCardModalContent(card) {
-    // Si la carta pertenece a una familia, usar el selector de fases.
+    // Si la carta pertenece a una familia, mostrar la fase seleccionada.
     let family = getFamilyFor(card.id);
     let displayCard = card;
     if (family) {
-        // Mostrar la fase seleccionada (o la base si no hay selección).
         let baseId = family[0];
         let selectedPhaseId = getSelectedPhase(baseId);
         displayCard = ALL_CARDS.find(c => c.id === selectedPhaseId) || card;
     }
 
-    // Renderizar el displayCard (arte, coste, nombre, stats, desc).
     document.getElementById('modal-card-art').style.backgroundImage = `url('${displayCard.art}')`;
     document.getElementById('modal-card-cost').innerText = displayCard.cost;
     document.getElementById('modal-card-name').innerText = displayCard.name;
+    // Nombre en modo lore (arriba del arte).
+    let loreName = document.getElementById('modal-card-lore-name');
+    if (loreName) loreName.innerText = displayCard.name;
     document.getElementById('modal-card-desc').innerText = displayCard.desc;
     document.getElementById('modal-card-lore').innerText = displayCard.lore || '';
 
@@ -117,50 +118,48 @@ function renderCardModalContent(card) {
         keywordBox.classList.add('hidden-view');
     }
 
-    // SELECTOR DE FASES (solo si la carta pertenece a una familia).
+    // --- MISIÓN DE LA CARTA (si la carta mostrada tiene misión) ---
+    let missionBox = document.getElementById('modal-mission-box');
+    if (missionBox) {
+        let mission = getMissionFor(displayCard.id);
+        if (mission) {
+            let progress = getProgressFor(displayCard.id);
+            let current = 0;
+            if (mission.type === 'wins') current = progress.wins || 0;
+            if (mission.type === 'laberinto_received') current = progress.laberintoReceived || 0;
+            let completed = current >= mission.count;
+            let pct = Math.min(100, (current / mission.count) * 100);
+            missionBox.innerHTML = `
+                <div class="text-[8px] font-orbitron font-bold uppercase tracking-[0.2em] text-purple-300 text-center mb-1">MISIÓN</div>
+                <p class="text-[10px] text-slate-300 leading-tight text-center mb-1">${mission.description}</p>
+                <div class="w-full h-2 bg-slate-800 rounded-full overflow-hidden mb-1">
+                    <div class="h-full ${completed ? 'bg-emerald-500' : 'bg-purple-500'}" style="width:${pct}%"></div>
+                </div>
+                <p class="text-[9px] text-center ${completed ? 'text-emerald-400' : 'text-slate-400'}">${current}/${mission.count} ${completed ? '— ¡COMPLETADA!' : ''}</p>
+            `;
+            missionBox.classList.remove('hidden-view');
+        } else {
+            missionBox.classList.add('hidden-view');
+        }
+    }
+
+    // --- SELECTOR DE FASES (solo si la carta tiene familia) ---
     let phaseSelector = document.getElementById('modal-phase-selector');
     if (phaseSelector) {
         if (family) {
+            let baseId = family[0];
+            let selectedPhaseId = getSelectedPhase(baseId);
             let html = '<div class="text-[8px] font-orbitron font-bold uppercase tracking-[0.2em] text-amber-300 text-center mb-1">FASES</div>';
             html += '<div class="flex gap-1 justify-center">';
             family.forEach((phaseId, idx) => {
-                let phaseCard = ALL_CARDS.find(c => c.id === phaseId);
                 let isUnlocked = ownedCardIds.includes(phaseId);
-                let isSelected = (getSelectedPhase(family[0]) === phaseId);
-                let mission = getMissionFor(phaseId);
-                let progress = getProgressFor(phaseId);
-                let current = 0;
-                if (mission) {
-                    if (mission.type === 'wins') current = progress.wins || 0;
-                    if (mission.type === 'laberinto_received') current = progress.laberintoReceived || 0;
-                }
-                let completed = mission ? (current >= mission.count) : true;
+                let isSelected = (selectedPhaseId === phaseId);
                 let label = ['I', 'II', 'III'][idx];
                 let color = isSelected ? 'bg-amber-600 text-white' : (isUnlocked ? 'bg-slate-700 text-slate-200' : 'bg-slate-800 text-slate-500');
                 let lockIcon = isUnlocked ? '' : ' 🔒';
-                html += `<button onclick="selectPhase('${family[0]}','${phaseId}')" class="px-2 py-1 rounded text-[10px] font-bold ${color}">${label}${lockIcon}</button>`;
+                html += `<button onclick="markPhase('${baseId}','${phaseId}')" class="px-2 py-1 rounded text-[10px] font-bold ${color}">${label}${lockIcon}</button>`;
             });
             html += '</div>';
-            // Mostrar la misión de la fase seleccionada (si está bloqueada):
-            // la suya propia o, si no tiene, la de la fase anterior que la
-            // desbloquea (ej. a3 muestra la misión de a2).
-            let selectedId = getSelectedPhase(family[0]);
-            let missionInfo = getMissionDisplayFor(selectedId);
-            if (missionInfo) {
-                let mission = missionInfo.mission;
-                let progress = getProgressFor(missionInfo.owner);
-                let current = 0;
-                if (mission.type === 'wins') current = progress.wins || 0;
-                if (mission.type === 'laberinto_received') current = progress.laberintoReceived || 0;
-                let completed = current >= mission.count;
-                let pct = Math.min(100, (current / mission.count) * 100);
-                let nextCard = ALL_CARDS.find(c => c.id === mission.nextCardId);
-                html += `<div class="mt-2 pt-2 border-t border-slate-700">`;
-                html += `<p class="text-[9px] text-slate-300 leading-tight text-center mb-1">${mission.description}</p>`;
-                html += `<div class="w-full h-1.5 bg-slate-800 rounded-full overflow-hidden mb-1"><div class="h-full ${completed ? 'bg-emerald-500' : 'bg-purple-500'}" style="width:${pct}%"></div></div>`;
-                html += `<p class="text-[8px] text-center ${completed ? 'text-emerald-400' : 'text-slate-400'}">${current}/${mission.count} ${completed ? '— ¡COMPLETADA!' : ''}</p>`;
-                html += `</div>`;
-            }
             phaseSelector.innerHTML = html;
             phaseSelector.classList.remove('hidden-view');
         } else {
@@ -169,28 +168,27 @@ function renderCardModalContent(card) {
     }
 }
 
-// SISTEMA DE FASES: selecciona una fase de una familia y re-renderiza el
-// modal. Si la fase está bloqueada, solo la previsualiza (misión visible).
-function selectPhase(baseId, phaseId) {
-    // Si la fase está bloqueada, no hacer nada (solo mostrar misión).
+// Marca una fase visualmente (no la aplica hasta cerrar el modal).
+// Solo marca si está desbloqueada.
+let markedPhaseId = null;
+
+function markPhase(baseId, phaseId) {
     if (!ownedCardIds.includes(phaseId)) {
-        // Mostrar la misión de esa fase en el modal (actualizar selección temporal).
-        setSelectedPhase(baseId, phaseId);
-        let card = ALL_CARDS.find(c => c.id === phaseId);
-        if (card) {
-            window._modalActiveCard = card;
-            renderCardModalContent(card);
-            applyCardModalMode();
-        }
+        // Bloqueada: no se marca.
         return;
     }
-    // Si está desbloqueada, seleccionar y renderizar.
-    setSelectedPhase(baseId, phaseId);
-    let card = ALL_CARDS.find(c => c.id === phaseId);
-    if (card) {
-        window._modalActiveCard = card;
-        renderCardModalContent(card);
-        applyCardModalMode();
+    markedPhaseId = phaseId;
+    // Actualizar el estilo de los botones del selector.
+    let phaseSelector = document.getElementById('modal-phase-selector');
+    if (phaseSelector) {
+        let family = CARD_FAMILIES[baseId];
+        let buttons = phaseSelector.querySelectorAll('button');
+        buttons.forEach((btn, idx) => {
+            let isMarked = (family[idx] === phaseId);
+            btn.className = isMarked
+                ? 'px-2 py-1 rounded text-[10px] font-bold bg-amber-600 text-white ring-2 ring-amber-300'
+                : 'px-2 py-1 rounded text-[10px] font-bold ' + (ownedCardIds.includes(family[idx]) ? 'bg-slate-700 text-slate-200' : 'bg-slate-800 text-slate-500');
+        });
     }
 }
 
@@ -199,6 +197,10 @@ function applyCardModalMode() {
     let isLore = cardModalMode === 'lore';
     let frame = document.querySelector('.card-modal-frame');
     if (frame) frame.classList.toggle('card-modal-lore-mode', isLore);
+
+    // Mostrar el nombre en modo lore.
+    let loreName = document.getElementById('modal-card-lore-name');
+    if (loreName) loreName.style.display = isLore ? 'block' : 'none';
 
     // El lore box (debajo del marco) se muestra solo en modo lore Y si la
     // carta tiene lore. Si no hay lore, el bloque se queda oculto aunque
@@ -229,6 +231,16 @@ function toggleCardModalMode() {
 }
 
 function closeCardModal() {
+    // Aplicar la fase marcada (si hay) al cerrar.
+    if (markedPhaseId) {
+        let family = getFamilyFor(markedPhaseId);
+        if (family) {
+            let baseId = family[0];
+            let resolved = resolvePhase(baseId, markedPhaseId);
+            setSelectedPhase(baseId, resolved);
+        }
+        markedPhaseId = null;
+    }
     document.getElementById('card-modal').classList.add('hidden-view');
     cardModalMode = 'combat';
     window._modalActiveCard = null;
@@ -629,19 +641,22 @@ function showGameOver() {
     }
 
     // --- SISTEMA DE FASES: misiones de "wins" al ganar con cartas en tablero ---
+    // La misión vive en la carta que se desbloquea (CARD_MISSIONS[x].previousCardId
+    // es la que debe estar en tablero); el progreso se guarda en la que se desbloquea.
     if (won) {
         let uniqueCardIds = new Set(gameState.p1.activeBoard.map(c => c.id));
         uniqueCardIds.forEach(cardId => {
-            let mission = getMissionFor(cardId);
-            if (mission && mission.type === 'wins') {
-                let progress = getProgressFor(cardId);
-                let newWins = (progress.wins || 0) + 1;
-                updateProgressFor(cardId, { wins: newWins });
-                if (newWins >= mission.count) {
-                    let unlocked = unlockNextCard(cardId);
-                    if (unlocked) {
-                        let nextCard = ALL_CARDS.find(c => c.id === mission.nextCardId);
-                        showTutorialMessage("¡Misión completada!", "Has desbloqueado: " + (nextCard ? nextCard.name : mission.nextCardId));
+            for (let missionCardId in CARD_MISSIONS) {
+                let mission = CARD_MISSIONS[missionCardId];
+                if (mission.previousCardId === cardId && mission.type === 'wins') {
+                    let progress = getProgressFor(missionCardId);
+                    let newWins = (progress.wins || 0) + 1;
+                    updateProgressFor(missionCardId, { wins: newWins });
+                    if (newWins >= mission.count) {
+                        if (unlockCard(missionCardId)) {
+                            let cardData = ALL_CARDS.find(c => c.id === missionCardId);
+                            showTutorialMessage("¡Misión completada!", "Has desbloqueado: " + (cardData ? cardData.name : missionCardId));
+                        }
                     }
                 }
             }

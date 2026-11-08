@@ -113,18 +113,20 @@ function laberinto(player, opp, X) {
     target.hp = 0;
     queueFx({ t: 'laberinto', side: sideOf(opp), uid: target.uid });
 
-    // SISTEMA DE FASES: trackear la misión "laberinto_received" de la carta
-    // atrapada (ej. a2 Asterión Enfurecido recibe Laberinto → desbloquea a3).
-    let mission = getMissionFor(target.id);
-    if (mission && mission.type === 'laberinto_received') {
-        let progress = getProgressFor(target.id);
-        let newCount = (progress.laberintoReceived || 0) + 1;
-        updateProgressFor(target.id, { laberintoReceived: newCount });
-        if (newCount >= mission.count) {
-            let unlocked = unlockNextCard(target.id);
-            if (unlocked) {
-                let nextCard = ALL_CARDS.find(c => c.id === mission.nextCardId);
-                showTutorialMessage("¡Misión completada!", "Has desbloqueado: " + (nextCard ? nextCard.name : mission.nextCardId));
+    // SISTEMA DE FASES: la misión "laberinto_received" vive en la carta que se
+    // desbloquea; previousCardId es la que RECIBE el Laberinto (ej. a2 recibe
+    // Laberinto → desbloquea a3). El progreso se guarda en la desbloqueada.
+    for (let missionCardId in CARD_MISSIONS) {
+        let mission = CARD_MISSIONS[missionCardId];
+        if (mission.previousCardId === target.id && mission.type === 'laberinto_received') {
+            let progress = getProgressFor(missionCardId);
+            let newCount = (progress.laberintoReceived || 0) + 1;
+            updateProgressFor(missionCardId, { laberintoReceived: newCount });
+            if (newCount >= mission.count) {
+                if (unlockCard(missionCardId)) {
+                    let cardData = ALL_CARDS.find(c => c.id === missionCardId);
+                    showTutorialMessage("¡Misión completada!", "Has desbloqueado: " + (cardData ? cardData.name : missionCardId));
+                }
             }
         }
     }
