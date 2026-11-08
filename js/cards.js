@@ -461,6 +461,27 @@ const ALL_CARDS = [
         destruirSerCosteAlto(opp, 5);
     },
     startTurn: null
+},
+{
+    id: 'e5', name: 'Hidra de Lerna', kind: 'Ser', subtype: 'Vástago', faction: 'Hera', cost: 5, atk: 0, hp: 1,
+    icon: 'fa-snake',
+    desc: 'Al morir: invoca 3 Hidra de Lerna (tokens 2/1).',
+    lore: 'En los pantanos de Lerna, entre aguas estancadas y juncos podridos, vive la Hidra: una serpiente de nueve cabezas, con escamas verdes como el musgo y aliento venenoso. Por cada cabeza que pierde, le nacen dos más. Su sangre es un veneno que no tiene cura, y su sola presencia envenena el aire. No es una bestia: es una plaga.',
+    art: '', // TODO: arte
+    effect: null,
+    startTurn: null,
+    onDeath: (owner) => {
+        let tpl = ALL_CARDS.find(c => c.id === 'e5_token');
+        if (tpl) { summonCard(owner, tpl); summonCard(owner, tpl); summonCard(owner, tpl); }
+    }
+},
+{
+    id: 'e5_token', name: 'Hidra de Lerna', kind: 'Token', faction: 'Hera', cost: 0, atk: 2, hp: 1,
+    icon: 'fa-snake',
+    desc: 'Sin habilidades.',
+    lore: 'Le cortaron una cabeza a la Hidra. Pero su cuerpo no cayó: se retorció, y de la herida brotó otra cabeza. Es la misma Hidra, más pequeña, más débil, pero viva. Y mientras quede una sola cabeza, la plaga no habrá terminado.',
+    art: '', // TODO: arte
+    effect: null, startTurn: null
 }
         ];
 
