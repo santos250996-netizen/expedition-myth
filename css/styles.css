@@ -929,9 +929,9 @@ main,
 /* FIX: los max-h-[Nvh] (valores arbitrarios) tampoco existen en el build
    estático. Sin estas reglas el wrapper del gameover no tiene tope y el
    contenido se sale por abajo en vez de hacer scroll. */
-.max-h-\[90vh\] { max-height: 90vh; }
-.max-h-\[15vh\] { max-height: 15vh; }
-.max-h-\[28vh\] { max-height: 28vh; }
+.max-h-\[92vh\] { max-height: 92vh; }
+.max-h-\[12vh\] { max-height: 12vh; }
+.max-h-\[25vh\] { max-height: 25vh; }
 
 /* FIX: z-[90] (valor arbitrario) tampoco existe en el build estático; esta
    regla pone el modal dev de mazos de bots por encima del resto (z-50/70). */
