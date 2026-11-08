@@ -836,3 +836,25 @@ main,
 }
 
 /* --- FIN UX MEJORADO --- */
+
+/* --- PETRIFICAR: carta gris con icono de ojo tachado --- */
+@keyframes fxPetrificar {
+    0%   { filter: grayscale(0) brightness(1); }
+    100% { filter: grayscale(1) brightness(0.6); }
+}
+.fx-petrificado {
+    animation: fxPetrificar calc(0.5s * var(--fx-k, 1)) ease-out forwards;
+    filter: grayscale(1) brightness(0.6);
+}
+.fx-petrified-icon {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 26px;
+    color: rgba(203,213,225,0.9);
+    text-shadow: 0 0 8px rgba(0,0,0,0.9);
+    pointer-events: none;
+    z-index: 20;
+}

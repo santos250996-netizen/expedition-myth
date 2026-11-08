@@ -221,6 +221,20 @@
                                 fxFlash(fx.uid, 'blue');
                                 fxFloatOver(fx.side, fx.uid, 'INVOCADO', 'fx-blue fx-float-big', 'fa-wand-sparkles');
                                 break;
+                            case 'petrificar':
+                                // La carta se vuelve gris y se queda quieta (sin
+                                // encoger, a diferencia de Laberinto). Icono de
+                                // ojo tachado.
+                                fxFlash(fx.uid, 'gray');
+                                if (cardElByUid(fx.uid)) {
+                                    let el = cardElByUid(fx.uid);
+                                    el.classList.add('fx-petrificado');
+                                    let icon = document.createElement('div');
+                                    icon.className = 'fx-petrified-icon';
+                                    icon.innerHTML = '<i class="fa-solid fa-eye-slash"></i>';
+                                    el.appendChild(icon);
+                                }
+                                break;
                         }
                     } catch (e) { console.error('fx:', e); }
                 }, delay);

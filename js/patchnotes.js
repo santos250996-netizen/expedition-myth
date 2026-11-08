@@ -7,6 +7,40 @@
 
 const PATCH_NOTES = [
     {
+        version: '1.7.0',
+        date: '2026-11-07',
+        title: 'La Gorgona',
+        highlights: [
+            'Nueva subhistoria: La Gorgona (Medusa)',
+            '4 keywords nuevas: Petrificar, Serpientes, Reflejo, Serpientes de la Cabeza',
+            'Se desbloquea tras completar el evento Asterión'
+        ],
+        changes: {
+            new: [
+                'Evento: La Gorgona (subhistoria de Medusa)',
+                'Keyword: Petrificar X (no puntúa X turnos)',
+                'Keyword: Serpientes X (daño recurrente al rival de Fila 1)',
+                'Keyword: Reflejo X (refleja el próximo efecto rival)',
+                'Keyword: Serpientes de la Cabeza X (invoca tokens 1/1 al morir)',
+                'Carta: Medusa, la Doncella (0/3, +1 Gloria por aliado)',
+                'Carta: Medusa, la Gorgona (3/4, Petrificar 2 + Serpientes 1 + Serpientes de la Cabeza 2)',
+                'Carta: Esteno, la Fuerte (3/3, Bloqueo 2)',
+                'Carta: Euríale, la Errante (2/3, -1 ATK Fila 1)',
+                'Carta: El Escudo Espejo (Reflejo 1 este turno)',
+                'Carta: Las Sandalias Aladas (+2 ATK este turno)',
+                'Carta: El Casco de Invisibilidad (inmunidad a efectos rivales este turno)',
+                'Carta: Pegaso, el Nacido de la Sangre (3/4, +2 Gloria + +1 ATK a todos)',
+                'Carta: Crisaor, el de la Espada de Oro (3/3, +1 ATK permanente a todos)',
+                'Carta: La Mirada de Piedra (Petrificar 2 al rival con más ATK + +2 Gloria)',
+                'Token: Serpientes de la Cabeza (1/1, sin efecto)'
+            ],
+            buffs: [],
+            nerfs: [],
+            fixes: [],
+            removed: []
+        }
+    },
+    {
         version: '1.6.0',
         date: '2026-11-07',
         title: 'Pulido de UX y Embestida',

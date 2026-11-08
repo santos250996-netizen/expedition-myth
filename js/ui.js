@@ -81,6 +81,14 @@ function renderCardModalContent(card) {
         keywordExplanation = "<strong>Bloqueo X:</strong> Amortigua hasta X puntos de reducción (ATK o HP) sobre tus cartas. Al agotarse, el efecto se desactiva.";
     } else if (card.desc && card.desc.includes('Enfurecer')) {
         keywordExplanation = "<strong>Enfurecer X:</strong> Cada vez que esta carta recibe daño, gana +X ATK permanentemente.";
+    } else if (card.desc && card.desc.includes('Petrificar')) {
+        keywordExplanation = "<strong>Petrificar X:</strong> Convierte a un Ser rival aleatorio en piedra X turnos. Mientras esté petrificado, no puntúa (no suma su ATK a la Gloria), pero sigue atacando y recibiendo daño con normalidad.";
+    } else if (card.desc && card.desc.includes('Serpientes de la Cabeza')) {
+        keywordExplanation = "<strong>Serpientes de la Cabeza X:</strong> Al morir, invoca X Serpientes de la Cabeza (tokens 1/1) en tu tablero.";
+    } else if (card.desc && card.desc.includes('Serpientes')) {
+        keywordExplanation = "<strong>Serpientes X:</strong> Al inicio de cada turno, inflige X de daño al Ser rival de la Fila 1. No consume ATK ni HP.";
+    } else if (card.desc && card.desc.includes('Reflejo')) {
+        keywordExplanation = "<strong>Reflejo X:</strong> Inmune al próximo efecto rival que targetee a esta carta. El efecto se refleja y se aplica a una carta aleatoria del rival.";
     }
     if (keywordExplanation) {
         keywordText.innerHTML = keywordExplanation;
@@ -340,6 +348,23 @@ function updateCardElement(el, card) {
     } else {
         cardEl.classList.remove('fx-lab');
         let icon = cardEl.querySelector('.fx-lab-icon');
+        if (icon) icon.remove();
+    }
+
+    // Petrificado persistente: solo no puntúa, pero el estado visual (gris +
+    // icono de ojo tachado) se reaplica en cada render para que se vea
+    // mientras dure.
+    if (card.petrifiedTurns > 0) {
+        if (!cardEl.classList.contains('fx-petrificado')) cardEl.classList.add('fx-petrificado');
+        if (!cardEl.querySelector('.fx-petrified-icon')) {
+            let icon = document.createElement('div');
+            icon.className = 'fx-petrified-icon';
+            icon.innerHTML = '<i class="fa-solid fa-eye-slash"></i>';
+            cardEl.appendChild(icon);
+        }
+    } else {
+        cardEl.classList.remove('fx-petrificado');
+        let icon = cardEl.querySelector('.fx-petrified-icon');
         if (icon) icon.remove();
     }
 }

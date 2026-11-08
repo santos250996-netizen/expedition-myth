@@ -7,25 +7,25 @@
 //    revalidate: respuesta instantánea desde caché y refresco en segundo
 //    plano. Reabrir el juego no vuelve a descargar ninguna imagen.
 // Para publicar cambios: subir la versión de CACHE (y los ?v= del HTML).
-const CACHE = 'nexo-v20261117a';
+const CACHE = 'nexo-v20261117b';
 
 const PRECACHE = [
     './', './index.html', './manifest.json', './icon.svg',
-    './css/styles.css?v=20261117a',
-    './js/cards.js?v=20261117a',
-    './js/state.js?v=20261117a',
-    './js/fx.js?v=20261117a',
-    './js/deck.js?v=20261117a',
-    './js/chapters.js?v=20261117a',
-    './js/patchnotes.js?v=20261117a',
-    './js/ui.js?v=20261117a',
-    './js/game.js?v=20261117a',
-    './js/dev.js?v=20261117a',
-    './js/main.js?v=20261117a',
+    './css/styles.css?v=20261117b',
+    './js/cards.js?v=20261117b',
+    './js/state.js?v=20261117b',
+    './js/fx.js?v=20261117b',
+    './js/deck.js?v=20261117b',
+    './js/chapters.js?v=20261117b',
+    './js/patchnotes.js?v=20261117b',
+    './js/ui.js?v=20261117b',
+    './js/game.js?v=20261117b',
+    './js/dev.js?v=20261117b',
+    './js/main.js?v=20261117b',
     // Dependencias vendorizadas (antes CDN): Tailwind precompilado,
     // Font Awesome y Google Fonts. Sin ellas offline el juego perdería
     // estilos y tipografía.
-    './css/vendor/tailwind.min.css?v=20261117a',
+    './css/vendor/tailwind.min.css?v=20261117b',
     './css/vendor/all.min.css',
     './css/webfonts/fa-solid-900.woff2',
     './css/webfonts/fa-regular-400.woff2',
@@ -59,6 +59,18 @@ const PRECACHE = [
     './assets/cartas/asterion-a9-nacimiento-minotauro.webp',
     './assets/cartas/asterion-a10-construccion-laberinto.webp',
     './assets/cartas/asterion-a11-muerte-minotauro.webp',
+    // Artes del mazo de Medusa (subhistoria; placeholders hasta tener arte)
+    './assets/cartas/medusa-b0-serpientes-cabeza.webp',
+    './assets/cartas/medusa-b1-doncella.webp',
+    './assets/cartas/medusa-b2-gorgona.webp',
+    './assets/cartas/medusa-b3-esteno.webp',
+    './assets/cartas/medusa-b4-euriale.webp',
+    './assets/cartas/medusa-b5-escudo-espejo.webp',
+    './assets/cartas/medusa-b6-sandalias-aladas.webp',
+    './assets/cartas/medusa-b7-casco-invisibilidad.webp',
+    './assets/cartas/medusa-b8-pegaso.webp',
+    './assets/cartas/medusa-b9-crisaor.webp',
+    './assets/cartas/medusa-b10-mirada-piedra.webp',
     // Artes de capítulos
     './assets/capitulos/capitulo-01-el-despertar-en-la-helade.webp',
     './assets/capitulos/capitulo-1-3-el-eclipse-del-olimpo.webp'

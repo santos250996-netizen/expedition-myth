@@ -52,6 +52,27 @@ const CHAPTERS = [
         ['a4', 'a7', 'a6', 'c3', 'a5', 'a2', 'a10', 'a9', 'a3', 'a11'], // defensive
         ['c3', 'a2', 'a3', 'a4', 'a5', 'a6', 'a7', 'a9', 'a10', 'a11']  // balanced
     ]
+},
+{
+    id: 'medusa',
+    number: '★★',
+    title: 'La Gorgona',
+    subtitle: 'En el templo de Atenea, una doncella de belleza imposible osó desafiar a una diosa. Lo que nació de la envidia divina no fue un castigo, sino una maldición: serpientes por cabello, piedra por mirada. Años después, un héroe con sandalias aladas cruza el mar para cortar la cabeza de lo que una vez fue mujer.',
+    beats: [
+        { icon: 'fa-water', title: 'La Afrenta de Poseidón', text: 'Medusa era la más bella de las sacerdotisas de Atenea. Pero Poseidón, dios del mar, la deseó y la tomó en el templo sagrado. La diosa lo vio todo, y su furia no distinguió entre el culpable y la víctima.' },
+        { icon: 'fa-snake', title: 'El Castigo de Atenea', text: 'Atenea transformó el cabello de Medusa en serpientes y su mirada en piedra. La doncella huyó a las tierras heladas del norte, donde las Gorgonas la acogieron. Desde entonces, ningún hombre que la mirara volvió a contar lo que vio.' },
+        { icon: 'fa-shield-halved', title: 'El Espejo de Perseo', text: 'El rey Polidectes envió a Perseo a matar a la Gorgona. Con el escudo espejo de Atenea, las sandalias aladas de Hermes y el casco de Hades, el héroe cruzó el mar. No la miró a los ojos: la vio en el reflejo.' }
+    ],
+    epilogue: 'La cabeza de Medusa fue entregada a Atenea, que la clavó en su égida para petrificar a sus enemigos. Pero el mito no termina con la muerte: Pegaso voló al Olimpo, Crisaor empuñó su espada, y las Gorgonas lloraron a su hermana. La piedra que una vez fue mujer sigue mirando desde el escudo de la diosa, y quien se atreva a mirarla de frente, aún hoy, se convierte en estatua.',
+    art: 'assets/capitulos/capitulo-1-3-el-eclipse-del-olimpo.webp',
+    rival: { name: 'Medusa', sub: 'GORGONA' },
+    isEvent: true,
+    unlockedBy: 'asterion',
+    botDecks: [
+        ['b1', 'b4', 'b6', 'b5', 'b2', 'b10', 'b7', 'b3', 'b9', 'b8'], // aggressive
+        ['b3', 'b1', 'b9', 'b7', 'b5', 'b8', 'b4', 'b6', 'b10', 'b2'], // defensive
+        ['b1', 'b6', 'b4', 'b5', 'b3', 'b2', 'b9', 'b8', 'b10', 'b7']  // balanced
+    ]
 }
 ];
 

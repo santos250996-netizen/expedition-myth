@@ -33,7 +33,7 @@ function killCard(card, side) {
     let board = side === 'p1' ? gameState.p1.activeBoard : gameState.p2.activeBoard;
     let idx = board.indexOf(card);
     if (idx > -1) board.splice(idx, 1);
-    // Reacción al morir (Vaca de Madera Hueca a8: invoca un Asterión).
+    // Reacción al morir (Vaca de Madera Hueca a8, Serpientes de la Cabeza b2).
     if (card.onDeath) {
         let owner = side === 'p1' ? gameState.p1 : gameState.p2;
         try { card.onDeath(owner); } catch (e) { console.error('onDeath:', e); }
@@ -114,7 +114,9 @@ function summonCard(player, cardTemplate) {
         tempAtkMod: 0,
         tempHpMod: 0,
         stunned: false,
-        laberintoTurns: 0
+        laberintoTurns: 0,
+        petrifiedTurns: 0,
+        reflectCharges: 0
     };
     player.activeBoard.unshift(inst);
     gameState.justDeployed.push(inst.uid);
@@ -171,6 +173,7 @@ function canStillScore(player) {
     let alive = player.activeBoard.filter(c => !c.dying);
     return alive.some(c => {
         if (c.stunned) return (c.laberintoTurns || 0) > 0;
+        if (c.petrifiedTurns > 0) return true; // petrificado puede despertar
         if (c.atk > 0) return true;
         if (c.id === 'c15') return true;
         if (c.id === 'c2' && alive.some(o => o !== c && o.kind === 'Ser')) return true;
@@ -224,6 +227,19 @@ function gameTick() {
                     }
                 });
             });
+
+            // Decremento de Petrificar: solo el contador. No toca stats.
+            [gameState.p1, gameState.p2].forEach(owner => {
+                owner.activeBoard.forEach(c => {
+                    if (c.petrifiedTurns > 0 && !c.dying) {
+                        c.petrifiedTurns = (c.petrifiedTurns || 0) - 1;
+                        if (c.petrifiedTurns <= 0) {
+                            c.petrifiedTurns = 0;
+                            queueFx({ t: 'liberado', side: sideOf(owner), uid: c.uid });
+                        }
+                    }
+                });
+            });
             // Reset de temp y expiración de HP temporal: solo no-stunned.
             gameState.p1.activeBoard.forEach(c => { if (!c.stunned) { c.tempAtkMod = 0; expireTempHp(c); } });
             gameState.p2.activeBoard.forEach(c => { if (!c.stunned) { c.tempAtkMod = 0; expireTempHp(c); } });
@@ -264,7 +280,7 @@ function gameTick() {
 
             // Las cartas muriendo o aturdidas este turno ya no suman gloria:
 // aturdir = no atacar = no puntuar un tick.
-            let boardPoints = (board) => board.reduce((sum, card) => sum + (card.dying || card.stunned ? 0 : Math.max(0, card.atk + (card.tempAtkMod || 0))), 0);
+            let boardPoints = (board) => board.reduce((sum, card) => sum + ((card.dying || card.stunned || (card.petrifiedTurns > 0)) ? 0 : Math.max(0, card.atk + (card.tempAtkMod || 0))), 0);
             let p1TurnPoints = boardPoints(gameState.p1.activeBoard) + gameState.p1.extraPoints;
             let p2TurnPoints = boardPoints(gameState.p2.activeBoard) + gameState.p2.extraPoints;
             
@@ -333,7 +349,7 @@ function gameTick() {
             player.deckPointer++;
             return {
                 card: nextCard,
-                inst: { ...nextCard, uid: Math.random().toString(36).slice(2, 9), tempAtkMod: 0, stunned: false },
+                inst: { ...nextCard, uid: Math.random().toString(36).slice(2, 9), tempAtkMod: 0, stunned: false, petrifiedTurns: 0, reflectCharges: 0 },
                 discount: oracleDiscount
             };
         }
@@ -495,3 +511,61 @@ function gameTick() {
             };
             return snap;
         }
+
+// --- KEYWORD: PETRIFICAR X ---
+// Convierte a un Ser rival aleatorio en piedra X turnos. Mientras esté
+// petrificado: SOLO no puntúa (no suma su ATK a la Gloria al final del turno).
+// El resto de su comportamiento es normal: ataca, recibe daño, es target de
+// efectos. No toca ATK/HP. Se decrementa en gameTick (junto a laberinto).
+function petrificar(player, opp, X) {
+    let targets = opp.activeBoard.filter(c => !c.dying && !(c.petrifiedTurns > 0));
+    if (!targets.length) return;
+    let target = targets[Math.floor(Math.random() * targets.length)];
+    // Reflejo (Escudo Espejo b5): si el target tiene cargas, el efecto se
+    // refleja a una carta aleatoria del atacante y no petrifica.
+    if (tryReflect(target, player)) return;
+    target.petrifiedTurns = X;
+    queueFx({ t: 'petrificar', side: sideOf(opp), uid: target.uid });
+}
+
+// --- KEYWORD: SERPIENTES X ---
+// Al inicio de cada turno, inflige X de daño al Ser rival de la Fila 1.
+// Si no hay rival, no se activa. No consume ATK/HP (las serpientes atacan
+// solas). Se llama desde el startTurn de la carta que la tiene.
+function serpientes(self, player, opp, X) {
+    if (self.dying || self.petrifiedTurns > 0) return;
+    let target = opp.activeBoard[0];
+    if (!target || target.dying) return;
+    dealDamage(target, X, sideOf(opp));
+    queueFx({ t: 'debuff', side: sideOf(opp), uid: target.uid, text: '-' + X + ' HP', icon: 'fa-snake', overlay: 'hit' });
+}
+
+// --- KEYWORD: REFLEJO X ---
+// Inmune al próximo efecto rival que targetee a esta carta. El efecto se
+// refleja y se aplica a una carta aleatoria del rival. X reflejos por turno
+// (temporal: este turno). Se consume al reflejar.
+// Implementación: campo reflectCharges. Los efectos que targeteen a la carta
+// con reflectCharges > 0 deben llamar a tryReflect() antes de aplicar.
+function tryReflect(card, opponent) {
+    if (!card || !(card.reflectCharges > 0)) return false;
+    card.reflectCharges--;
+    // Elegir una carta aleatoria del rival (no dying, no petrificada).
+    let targets = opponent.activeBoard.filter(c => !c.dying);
+    if (!targets.length) return true; // refleja pero no hay a quién
+    let target = targets[Math.floor(Math.random() * targets.length)];
+    // Aplicar un debuff genérico al target (el llamador decide el tipo).
+    // Para simplificar, el reflejo aplica -1 HP y un FX.
+    target.hp -= 1;
+    queueFx({ t: 'debuff', side: sideOf(opponent), uid: target.uid, text: 'REFLEJADO -1 HP', icon: 'fa-shield-halved', overlay: 'hit' });
+    if (target.hp <= 0) { target.hp = 0; killCard(target, sideOf(opponent)); }
+    return true;
+}
+
+// --- KEYWORD: SERPIENTES DE LA CABEZA X ---
+// Al morir: invoca X tokens 1/1 vanilla (Serpientes de la Cabeza) en el
+// tablero del dueño. Se llama desde killCard si la carta tiene onDeath.
+function serpientesDeLaCabeza(owner, X) {
+    let tpl = ALL_CARDS.find(c => c.id === 'b0');
+    if (!tpl) return;
+    for (let i = 0; i < X; i++) summonCard(owner, tpl);
+}

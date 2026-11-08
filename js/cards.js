@@ -242,6 +242,150 @@ const ALL_CARDS = [
         queueFx({ t: 'debuff', side: sideOf(opp), uid: target.uid, text: '-4 HP', icon: 'fa-skull', overlay: 'hit' });
     },
     startTurn: null
+},
+{
+    id: 'b0', name: 'Serpientes de la Cabeza', kind: 'Token', faction: 'Atenea', cost: 0, atk: 1, hp: 1,
+    icon: 'fa-snake',
+    desc: 'Sin habilidades. Las serpientes del cabello de Medusa buscan venganza.',
+    lore: 'Las serpientes del cabello de Medusa siguen vivas incluso después de la muerte de su portadora. Buscan venganza con colmillos pequeños pero certeros.',
+    art: '', // TODO: arte
+    substory: 'medusa',
+    effect: null, startTurn: null
+},
+{
+    id: 'b1', name: 'Medusa, la Doncella', kind: 'Ser', faction: 'Afrodita', cost: 2, atk: 0, hp: 3,
+    icon: 'fa-user',
+    desc: 'Al entrar: +1 Gloria por cada Ser aliado en el tablero.',
+    lore: 'Antes de la maldición, Medusa era la más bella de las sacerdotisas de Atenea. Su cabello dorado caía como una cascada y su voz calmaba a las bestias. Los hombres cruzaban el mar solo para verla, y ella, orgullosa, se atrevió a compararse con la diosa.',
+    art: '', // TODO: arte
+    substory: 'medusa',
+    effect: (p) => {
+        let n = p.activeBoard.filter(c => !c.dying && !c.stunned && !(c.petrifiedTurns > 0)).length;
+        if (n > 0) { p.score += n; queueFx({ t: 'gloria', side: sideOf(p), text: '+' + n + ' GLORIA', icon: 'fa-user', num: n }); }
+    },
+    startTurn: null
+},
+{
+    id: 'b2', name: 'Medusa, la Gorgona', kind: 'Ser', faction: 'Atenea', cost: 6, atk: 3, hp: 4,
+    icon: 'fa-snake',
+    desc: 'Al entrar: Petrificar 2 (un rival aleatorio no puntúa 2 turnos). Serpientes 1 (al inicio de cada turno, 1 daño al rival de Fila 1). Serpientes de la Cabeza 2 (al morir, invoca 2 tokens 1/1).',
+    lore: 'Atenea no distinguió entre el culpable y la víctima. El cabello de Medusa se enroscó en serpientes, y su mirada se volvió piedra. Huyó al norte, donde las Gorgonas la acogieron, y desde entonces ningún hombre que la mirara volvió a contar lo que vio.',
+    art: '', // TODO: arte
+    substory: 'medusa',
+    effect: (p, opp) => { petrificar(p, opp, 2); },
+    startTurn: (self, player, opp) => { serpientes(self, player, opp, 1); },
+    onDeath: (owner) => { serpientesDeLaCabeza(owner, 2); }
+},
+{
+    id: 'b3', name: 'Esteno, la Fuerte', kind: 'Ser', faction: 'Atenea', cost: 4, atk: 3, hp: 3,
+    icon: 'fa-shield-halved',
+    desc: 'Bloqueo 2.',
+    lore: 'La mayor de las Gorgonas, hija de Forcis y Ceto. Su fuerza era tal que podía detener a un toro con una mano. Cuando Medusa llegó al norte, Esteno la abrazó como a una hermana y juró protegerla de los hombres que la buscaban.',
+    art: '', // TODO: arte
+    substory: 'medusa',
+    effect: null, startTurn: null
+},
+{
+    id: 'b4', name: 'Euríale, la Errante', kind: 'Ser', faction: 'Atenea', cost: 3, atk: 2, hp: 3,
+    icon: 'fa-eye',
+    desc: 'Al entrar: -1 ATK al Ser rival en la Fila 1.',
+    lore: 'La tercera Gorgona, errante y silenciosa. Se dice que podía ver el futuro en el vuelo de los cuervos. Fue ella quien advirtió a Medusa de que un héroe con sandalias aladas cruzaba el mar, pero Medusa ya no podía escuchar.',
+    art: '', // TODO: arte
+    substory: 'medusa',
+    effect: (p, opp) => { let t = opp.activeBoard[0]; if (t && !t.dying && !t.noAtkRed) { t.atk = Math.max(0, t.atk - 1); queueFx({ t: 'debuff', side: sideOf(opp), uid: t.uid, text: '-1 ATK', icon: 'fa-eye' }); } },
+    startTurn: null
+},
+{
+    id: 'b5', name: 'El Escudo Espejo', kind: 'Evento', faction: 'Atenea', cost: 3, atk: 0, hp: 0,
+    icon: 'fa-shield-halved',
+    desc: 'Tu Ser con más ATK gana Reflejo 1 este turno (refleja el próximo efecto rival que lo targetee).',
+    lore: 'Atenea entregó a Perseo un escudo pulido como un espejo. "No la mires a los ojos", le dijo. "Mírala en el reflejo". El héroe avanzó por la cueva con el escudo en alto, y las serpientes de Medusa se reflejaron en el bronce antes de que pudieran alcanzarlo.',
+    art: '', // TODO: arte
+    substory: 'medusa',
+    effect: (p) => {
+        let alive = p.activeBoard.filter(c => !c.dying);
+        if (!alive.length) return;
+        let target = alive.reduce((max, c) => (c.atk + (c.tempAtkMod || 0)) > (max.atk + (max.tempAtkMod || 0)) ? c : max, alive[0]);
+        target.reflectCharges = (target.reflectCharges || 0) + 1;
+        queueFx({ t: 'buff', side: sideOf(p), uid: target.uid, text: 'REFLEJO 1', icon: 'fa-shield-halved' });
+    },
+    startTurn: null
+},
+{
+    id: 'b6', name: 'Las Sandalias Aladas', kind: 'Evento', faction: 'Hermes', cost: 2, atk: 0, hp: 0,
+    icon: 'fa-shoe-prints',
+    desc: 'Tu Ser con más ATK gana +2 ATK este turno.',
+    lore: 'Hermes, el mensajero de los dioses, prestó a Perseo sus sandalias aladas. Con ellas, el héroe podía volar sobre el mar y escapar de cualquier enemigo. Pero las sandalias no protegían de la mirada de la Gorgona: solo de sus garras.',
+    art: '', // TODO: arte
+    substory: 'medusa',
+    effect: (p) => {
+        let alive = p.activeBoard.filter(c => !c.dying);
+        if (!alive.length) return;
+        let target = alive.reduce((max, c) => (c.atk + (c.tempAtkMod || 0)) > (max.atk + (max.tempAtkMod || 0)) ? c : max, alive[0]);
+        target.tempAtkMod = (target.tempAtkMod || 0) + 2;
+        queueFx({ t: 'buff', side: sideOf(p), uid: target.uid, text: '+2 ATK', icon: 'fa-shoe-prints' });
+    },
+    startTurn: null
+},
+{
+    id: 'b7', name: 'El Casco de Invisibilidad', kind: 'Evento', faction: 'Hades', cost: 2, atk: 0, hp: 0,
+    icon: 'fa-ghost',
+    desc: 'Tus Seres son inmunes a efectos rivales este turno (no pueden ser target de debuffs, petrificar ni destruir).',
+    lore: 'Hades, el dios del inframundo, prestó a Perseo su casco de invisibilidad. Con él, el héroe podía caminar entre los monstruos sin ser visto. Pero el casco no lo hacía invisible a los dioses: solo a los ojos de los mortales.',
+    art: '', // TODO: arte
+    substory: 'medusa',
+    effect: (p) => {
+        p.activeBoard.forEach(c => {
+            if (!c.dying) { c.immuneThisTurn = true; }
+        });
+        queueFx({ t: 'buff', side: sideOf(p), text: 'INMUNE', icon: 'fa-ghost' });
+    },
+    startTurn: null
+},
+{
+    id: 'b8', name: 'Pegaso, el Nacido de la Sangre', kind: 'Ser', faction: 'Poseidón', cost: 5, atk: 3, hp: 4,
+    icon: 'fa-horse',
+    desc: 'Al entrar: +2 Gloria y +1 ATK a todos tus Seres.',
+    lore: 'Cuando la cabeza de Medusa cayó, de su sangre brotaron dos criaturas: Crisaor, el de la espada de oro, y Pegaso, el caballo alado. Pegaso voló al Olimpo y se convirtió en el corcel de Zeus. Pero su sangre era la de Poseidón, y su alma, la de Medusa.',
+    art: '', // TODO: arte
+    substory: 'medusa',
+    effect: (p) => {
+        p.score += 2;
+        p.activeBoard.forEach(c => { if (!c.dying) { c.atk += 1; queueFx({ t: 'buff', side: sideOf(p), uid: c.uid, text: '+1 ATK', icon: 'fa-horse' }); } });
+        queueFx({ t: 'gloria', side: sideOf(p), text: '+2 GLORIA', icon: 'fa-horse', num: 2 });
+    },
+    startTurn: null
+},
+{
+    id: 'b9', name: 'Crisaor, el de la Espada de Oro', kind: 'Ser', faction: 'Poseidón', cost: 4, atk: 3, hp: 3,
+    icon: 'fa-sword',
+    desc: 'Al entrar: +1 ATK permanente a todos tus Seres.',
+    lore: 'El hermano de Pegaso, nacido de la misma sangre. Crisaor empuñaba una espada de oro que ningún mortal podía mirar sin deslumbrarse. Se dice que fue él quien recogió la cabeza de Medusa del suelo, y que la entregó a Atenea con sus propias manos.',
+    art: '', // TODO: arte
+    substory: 'medusa',
+    effect: (p) => {
+        p.activeBoard.forEach(c => { if (!c.dying) { c.atk += 1; queueFx({ t: 'buff', side: sideOf(p), uid: c.uid, text: '+1 ATK', icon: 'fa-sword' }); } });
+    },
+    startTurn: null
+},
+{
+    id: 'b10', name: 'La Mirada de Piedra', kind: 'Evento', faction: 'Atenea', cost: 4, atk: 0, hp: 0,
+    icon: 'fa-eye-slash',
+    desc: 'Petrificar 2 al Ser rival con más ATK (no puntúa 2 turnos). +2 Gloria.',
+    lore: 'Quien mire a los ojos de la Gorgona se convierte en piedra. No hay escudo que valga, no hay dios que proteja. La mirada de Medusa es la mirada de Atenea: fría, justa, implacable. Y la piedra que deja no es un castigo: es una advertencia.',
+    art: '', // TODO: arte
+    substory: 'medusa',
+    effect: (p, opp) => {
+        let alive = opp.activeBoard.filter(c => !c.dying && !(c.petrifiedTurns > 0));
+        if (alive.length) {
+            let target = alive.reduce((max, c) => (c.atk + (c.tempAtkMod || 0)) > (max.atk + (max.tempAtkMod || 0)) ? c : max, alive[0]);
+            target.petrifiedTurns = 2;
+            queueFx({ t: 'petrificar', side: sideOf(opp), uid: target.uid });
+        }
+        p.score += 2;
+        queueFx({ t: 'gloria', side: sideOf(p), text: '+2 GLORIA', icon: 'fa-eye-slash', num: 2 });
+    },
+    startTurn: null
 }
         ];
 
