@@ -7,25 +7,25 @@
 //    revalidate: respuesta instantánea desde caché y refresco en segundo
 //    plano. Reabrir el juego no vuelve a descargar ninguna imagen.
 // Para publicar cambios: subir la versión de CACHE (y los ?v= del HTML).
-const CACHE = 'nexo-v20261118l';
+const CACHE = 'nexo-v20261118n';
 
 const PRECACHE = [
     './', './index.html', './manifest.json', './icon.svg',
-    './css/styles.css?v=20261118l',
-    './js/cards.js?v=20261118l',
-    './js/state.js?v=20261118l',
-    './js/fx.js?v=20261118l',
-    './js/deck.js?v=20261118l',
-    './js/chapters.js?v=20261118l',
-    './js/patchnotes.js?v=20261118l',
-    './js/ui.js?v=20261118l',
-    './js/game.js?v=20261118l',
-    './js/dev.js?v=20261118l',
-    './js/main.js?v=20261118l',
+    './css/styles.css?v=20261118n',
+    './js/cards.js?v=20261118n',
+    './js/state.js?v=20261118n',
+    './js/fx.js?v=20261118n',
+    './js/deck.js?v=20261118n',
+    './js/chapters.js?v=20261118n',
+    './js/patchnotes.js?v=20261118n',
+    './js/ui.js?v=20261118n',
+    './js/game.js?v=20261118n',
+    './js/dev.js?v=20261118n',
+    './js/main.js?v=20261118n',
     // Dependencias vendorizadas (antes CDN): Tailwind precompilado,
     // Font Awesome y Google Fonts. Sin ellas offline el juego perdería
     // estilos y tipografía.
-    './css/vendor/tailwind.min.css?v=20261118l',
+    './css/vendor/tailwind.min.css?v=20261118n',
     './css/vendor/all.min.css',
     './css/webfonts/fa-solid-900.woff2',
     './css/webfonts/fa-regular-400.woff2',

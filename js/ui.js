@@ -1151,32 +1151,3 @@ function openDeckbuilderFromGameover() {
     setTimeout(() => { renderDeckEditor(); renderCollection(); }, 50);
 }
 
-// --- MODO DEV: LISTA DE MAZOS DE BOTS EN VIEW-DECKS ---
-function renderDevBotDecksList() {
-    let section = document.getElementById('dev-botdecks-section');
-    let list = document.getElementById('dev-botdecks-list');
-    if (!section || !list) return;
-    if (!isDevMode()) { section.classList.add('hidden'); return; }
-    section.classList.remove('hidden');
-    let devDecks = getDevBotDecks();
-    let chapters = CHAPTERS.filter(c => c.botDecks || c.botDeck);
-    let html = '';
-    chapters.forEach(ch => {
-        let originalOrders = ch.botDecks || [ch.botDeck];
-        let chapterDevDecks = devDecks[ch.id] || {};
-        let orderNames = Object.keys(chapterDevDecks).length > 0 ? Object.keys(chapterDevDecks) : originalOrders.map((_, i) => ['aggressive','defensive','balanced'][i] || ('order' + i));
-        html += '<div class="bg-slate-900 border border-indigo-500/50 rounded-lg p-2 mb-2">';
-        html += '<div class="text-amber-300 font-orbitron font-bold text-xs mb-1">' + ch.title + '</div>';
-        orderNames.forEach((orderName, idx) => {
-            let deck = chapterDevDecks[orderName] || originalOrders[idx] || [];
-            html += '<div class="flex justify-between items-center bg-slate-800 rounded p-1 mb-1">';
-            html += '<span class="text-slate-300 text-[10px] font-bold">' + orderName + ' (' + deck.length + ' cartas)</span>';
-            html += '<div class="flex gap-1">';
-            html += '<button onclick="openBotDeckEditor(\'' + ch.id + '\',\'' + orderName + '\')" class="bg-indigo-700 text-white text-[9px] px-2 py-1 rounded">Editar</button>';
-            html += '<button onclick="devSelectBotDeck(\'' + ch.id + '\',\'' + orderName + '\')" class="bg-green-700 text-white text-[9px] px-2 py-1 rounded">Usar</button>';
-            html += '</div></div>';
-        });
-        html += '</div>';
-    });
-    list.innerHTML = html;
-}

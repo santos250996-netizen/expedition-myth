@@ -119,6 +119,7 @@ function laberinto(player, opp, X) {
 // con uid nuevo. Si el tablero está lleno (12), no se invoca.
 function summonCard(player, cardTemplate) {
     if (!cardTemplate) return;
+    if (!player || !player.activeBoard) { console.error('summonCard: player inválido', player); return; }
     if (player.activeBoard.length >= 12) return;
     let inst = {
         ...cardTemplate,
@@ -129,7 +130,8 @@ function summonCard(player, cardTemplate) {
         laberintoTurns: 0,
         petrifiedTurns: 0,
         reflectCharges: 0,
-        bloqueo: cardTemplate.bloqueo || 0
+        bloqueo: cardTemplate.bloqueo || 0,
+        immuneThisTurn: false
     };
     player.activeBoard.unshift(inst);
     gameState.justDeployed.push(inst.uid);
@@ -266,7 +268,12 @@ function gameTick() {
 
             // Las cartas muriendo o aturdidas este turno ya no suman gloria:
 // aturdir = no atacar = no puntuar un tick.
-            let boardPoints = (board) => board.reduce((sum, card) => sum + ((card.dying || card.stunned || (card.petrifiedTurns > 0)) ? 0 : Math.max(0, card.atk + (card.tempAtkMod || 0))), 0);
+            let boardPoints = (board) => board.reduce((sum, card) => {
+                if (card.dying || card.stunned || (card.petrifiedTurns > 0)) return sum;
+                let atk = (typeof card.atk === 'number') ? card.atk : 0;
+                let mod = (typeof card.tempAtkMod === 'number') ? card.tempAtkMod : 0;
+                return sum + Math.max(0, atk + mod);
+            }, 0);
             let p1TurnPoints = boardPoints(gameState.p1.activeBoard) + gameState.p1.extraPoints;
             let p2TurnPoints = boardPoints(gameState.p2.activeBoard) + gameState.p2.extraPoints;
             
@@ -606,6 +613,7 @@ function bloqueoAbsorb(card, amount) {
 // en el tablero del jugador. Si no hay Vástagos disponibles, no hace nada.
 // Usado por Equidna (e2) al inicio de cada turno.
 function invocarVastago(player) {
+    if (!player) { console.error('invocarVastago: player inválido'); return; }
     let vastagos = ALL_CARDS.filter(c => c.subtype === 'Vástago');
     if (!vastagos.length) return;
     let chosen = vastagos[Math.floor(Math.random() * vastagos.length)];

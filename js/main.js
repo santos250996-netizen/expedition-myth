@@ -19,10 +19,7 @@ function switchView(viewId) {
     if (viewId === 'view-game') resetMatch();
     if (viewId === 'view-chapters') renderChapterSelect();
     if (viewId === 'view-deckbuilder') { renderDeckEditor(); renderCollection(); }
-    if (viewId === 'view-decks') {
-        document.getElementById('deck-count-label').innerText = playerDeck.length;
-        renderDevBotDecksList();
-    }
+    if (viewId === 'view-decks') document.getElementById('deck-count-label').innerText = playerDeck.length;
 
     // --- Ocultar botones globales ---
     // Perfil y Opciones solo en la home: la selección de capítulos y el
