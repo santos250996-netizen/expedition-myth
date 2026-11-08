@@ -195,3 +195,8 @@ function saveDevBotDecks(decks) {
 }
 
 let devSelectedBotDeck = null;
+
+// Capítulo que se está editando (id) y orden (aggressive/defensive/balanced).
+// Los usan openBotDeckEditor/saveBotDeck/closeBotDeckEditor (deck.js).
+let devEditingChapterId = null;
+let devEditingOrderName = null;

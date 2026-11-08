@@ -100,9 +100,11 @@ function loadDeck() {
             if (!card) return;
 
             if (source === 'collection') {
-                if (playerDeck.length >= 10) { alert("El mazo está lleno (10/10)."); return; }
-                playerDeck.push(card); // Lo añade al final del array
-                saveDeck(); renderDeckEditor(); renderCollection();
+                let targetDeck = (isDevMode() && botDeckBeingEdited) ? botDeckBeingEdited : playerDeck;
+                if (targetDeck.length >= 10) { alert("El mazo está lleno (10/10)."); return; }
+                targetDeck.push(card); // Lo añade al final del array
+                if (isDevMode() && botDeckBeingEdited) { saveBotDeck(); renderDeckEditor(); renderCollection(); }
+                else { saveDeck(); renderDeckEditor(); renderCollection(); }
             }
         }
 
@@ -112,10 +114,12 @@ function loadDeck() {
             e.currentTarget.classList.remove('drag-over');
             let source = e.dataTransfer.getData('text/plain');
             if (source === 'deck') {
-                let idx = playerDeck.findIndex(c => c.id === draggedCardId);
+                let targetDeck = (isDevMode() && botDeckBeingEdited) ? botDeckBeingEdited : playerDeck;
+                let idx = targetDeck.findIndex(c => c.id === draggedCardId);
                 if (idx > -1) {
-                    playerDeck.splice(idx, 1);
-                    saveDeck(); renderDeckEditor(); renderCollection();
+                    targetDeck.splice(idx, 1);
+                    if (isDevMode() && botDeckBeingEdited) { saveBotDeck(); renderDeckEditor(); renderCollection(); }
+                    else { saveDeck(); renderDeckEditor(); renderCollection(); }
                 }
             }
         }
@@ -128,23 +132,25 @@ function loadDeck() {
             let card = ALL_CARDS.find(c => c.id === draggedCardId);
             if (!card) return;
 
+            let targetDeck = (isDevMode() && botDeckBeingEdited) ? botDeckBeingEdited : playerDeck;
+            let saveFn = (isDevMode() && botDeckBeingEdited) ? saveBotDeck : saveDeck;
             if (source === 'deck') {
                 // Reordenar dentro del mazo
-                let sourceIndex = playerDeck.findIndex(c => c.id === card.id);
+                let sourceIndex = targetDeck.findIndex(c => c.id === card.id);
                 if (sourceIndex > -1 && sourceIndex !== targetIndex) {
-                    let [movedCard] = playerDeck.splice(sourceIndex, 1);
+                    let [movedCard] = targetDeck.splice(sourceIndex, 1);
                     // FIX: tras extraer, si la carta venía de antes el índice destino
                     // se desplaza una posición (off-by-one al reordenar).
                     let insertAt = sourceIndex < targetIndex ? targetIndex - 1 : targetIndex;
-                    playerDeck.splice(insertAt, 0, movedCard);
-                    saveDeck(); renderDeckEditor();
+                    targetDeck.splice(insertAt, 0, movedCard);
+                    saveFn(); renderDeckEditor();
                 }
             } else if (source === 'collection') {
                 // FIX: soltar una carta de la colección ENCIMA de una carta del mazo
                 // antes "caía al vacío" (stopPropagation impedía que llegara al contenedor).
-                if (playerDeck.length >= 10) { alert("El mazo está lleno (10/10)."); return; }
-                playerDeck.splice(targetIndex, 0, card);
-                saveDeck(); renderDeckEditor(); renderCollection();
+                if (targetDeck.length >= 10) { alert("El mazo está lleno (10/10)."); return; }
+                targetDeck.splice(targetIndex, 0, card);
+                saveFn(); renderDeckEditor(); renderCollection();
             }
         }
 
@@ -155,41 +161,60 @@ function loadDeck() {
             let card = ALL_CARDS.find(c => c.id === cardId);
             if (!card) return;
             if (navigator.vibrate) navigator.vibrate(15);
-            if (playerDeck.some(c => c.id === cardId)) return;
-            if (playerDeck.length >= 10) { alert("El mazo está lleno (10/10)."); return; }
-            playerDeck.push(card);
-            saveDeck(); renderDeckEditor(); renderCollection();
+            let targetDeck = (isDevMode() && botDeckBeingEdited) ? botDeckBeingEdited : playerDeck;
+            if (targetDeck.some(c => c.id === cardId)) return;
+            if (targetDeck.length >= 10) { alert("El mazo está lleno (10/10)."); return; }
+            targetDeck.push(card);
+            if (isDevMode() && botDeckBeingEdited) { saveBotDeck(); renderDeckEditor(); renderCollection(); }
+            else { saveDeck(); renderDeckEditor(); renderCollection(); }
         }
 
         function removeCardFromDeck(cardId) {
-            let idx = playerDeck.findIndex(c => c.id === cardId);
+            let targetDeck = (isDevMode() && botDeckBeingEdited) ? botDeckBeingEdited : playerDeck;
+            let idx = targetDeck.findIndex(c => c.id === cardId);
             if (idx > -1) {
                 if (navigator.vibrate) navigator.vibrate(15);
-                playerDeck.splice(idx, 1);
-                saveDeck(); renderDeckEditor(); renderCollection();
+                targetDeck.splice(idx, 1);
+                if (isDevMode() && botDeckBeingEdited) { saveBotDeck(); renderDeckEditor(); renderCollection(); }
+                else { saveDeck(); renderDeckEditor(); renderCollection(); }
             }
         }
 
         function moveDeckCard(index, dir) {
+            let targetDeck = (isDevMode() && botDeckBeingEdited) ? botDeckBeingEdited : playerDeck;
             let target = index + dir;
-            if (target < 0 || target >= playerDeck.length) return;
-            let [movedCard] = playerDeck.splice(index, 1);
-            playerDeck.splice(target, 0, movedCard);
-            saveDeck(); renderDeckEditor();
+            if (target < 0 || target >= targetDeck.length) return;
+            let [movedCard] = targetDeck.splice(index, 1);
+            targetDeck.splice(target, 0, movedCard);
+            if (isDevMode() && botDeckBeingEdited) { saveBotDeck(); renderDeckEditor(); }
+            else { saveDeck(); renderDeckEditor(); }
         }
 
         // --- RENDERIZADO DEL DECKBUILDER ---
         function renderDeckEditor() {
             let container = document.getElementById('deck-list-container');
             container.innerHTML = '';
-            document.getElementById('builder-deck-count').innerText = playerDeck.length;
+            // MODO DEV: si se está editando el mazo de un bot, mostrar su título
+            // y sus botones (VOLVER visible, JUGAR oculto).
+            let titleEl = document.getElementById('deckbuilder-title');
+            if (titleEl) {
+                titleEl.innerText = (isDevMode() && botDeckBeingEdited)
+                    ? 'Mazo del bot: ' + devEditingChapterId + ' / ' + devEditingOrderName
+                    : 'Mazo Heládico';
+            }
+            let backBtn = document.getElementById('btn-botdeck-back');
+            if (backBtn) backBtn.classList.toggle('hidden', !(isDevMode() && botDeckBeingEdited));
+            let playBtn = document.querySelector('#view-deckbuilder button[onclick="startGame()"]');
+            if (playBtn) playBtn.classList.toggle('hidden', !!(isDevMode() && botDeckBeingEdited));
+            let currentDeck = (isDevMode() && botDeckBeingEdited) ? botDeckBeingEdited : playerDeck;
+            document.getElementById('builder-deck-count').innerText = currentDeck.length;
 
-            if(playerDeck.length === 0) {
+            if(currentDeck.length === 0) {
                 container.innerHTML = `<div class="text-center text-slate-500 text-xs p-4">Toca el botón + de la colección para añadir cartas a tu mazo.</div>`;
                 return;
             }
 
-            playerDeck.forEach((card, idx) => {
+            currentDeck.forEach((card, idx) => {
                 let item = document.createElement('div');
                 item.className = "relative rounded-lg overflow-hidden border border-slate-700 cursor-grab hover:border-blue-500 transition-colors h-14";
                 item.draggable = true;
@@ -215,7 +240,7 @@ function loadDeck() {
                     </div>
                     <div class="absolute top-0 right-0 bottom-0 w-7 flex flex-col bg-black/70 border-l border-slate-600/50 z-10">
                         <button class="move-btn flex-1 text-cyan-300 text-[10px] leading-none flex items-center justify-center hover:bg-cyan-500/20 active:bg-cyan-500/40" data-dir="-1" aria-label="Subir carta" ${idx === 0 ? 'disabled' : ''}>▲</button>
-                        <button class="move-btn flex-1 text-slate-300 text-[10px] leading-none flex items-center justify-center hover:bg-slate-500/20 active:bg-slate-500/40 border-y border-slate-600/50" data-dir="1" aria-label="Bajar carta" ${idx === playerDeck.length - 1 ? 'disabled' : ''}>▼</button>
+                        <button class="move-btn flex-1 text-slate-300 text-[10px] leading-none flex items-center justify-center hover:bg-slate-500/20 active:bg-slate-500/40 border-y border-slate-600/50" data-dir="1" aria-label="Bajar carta" ${idx === currentDeck.length - 1 ? 'disabled' : ''}>▼</button>
                         <button class="remove-btn flex-1 text-red-400 text-[10px] leading-none flex items-center justify-center hover:bg-red-500/20 active:bg-red-500/40" aria-label="Quitar del mazo">✕</button>
                     </div>
                 `;
@@ -235,8 +260,11 @@ function loadDeck() {
             let seenRaw = safeStorageGet('nexo_seen_cards_v1');
             let seenCards = seenRaw ? (JSON.parse(seenRaw) || []) : [];
             // Solo cartas que el jugador POSEE y que no estén ya en el mazo.
+            // MODO DEV: si se edita el mazo de un bot, comparar contra ese mazo
+            // (ownedCardIds en dev ya contiene todas las cartas del juego).
+            let currentDeck = (isDevMode() && botDeckBeingEdited) ? botDeckBeingEdited : playerDeck;
             let availableCards = ALL_CARDS.filter(card =>
-                ownedCardIds.includes(card.id) && !playerDeck.some(d => d.id === card.id)
+                ownedCardIds.includes(card.id) && !currentDeck.some(d => d.id === card.id)
             );
 
             if (availableCards.length === 0) {
@@ -283,4 +311,52 @@ function loadDeck() {
             let allIds = availableCards.map(c => c.id);
             let updatedSeen = [...new Set([...seenCards, ...allIds])];
             safeStorageSet('nexo_seen_cards_v1', JSON.stringify(updatedSeen));
+        }
+
+        // --- MODO DEV: EDITAR MAZO DEL BOT ---
+        // El mazo del bot se edita con las mismas funciones que el del jugador
+        // (drag & drop, ▲▼, +, ✕). Para no duplicar código, usamos una variable
+        // global que apunta al array que se está editando: playerDeck (jugador) o
+        // botDeckBeingEdited (bot). Las funciones de drag & drop ya operan sobre
+        // playerDeck; aquí las redirigimos.
+
+        let botDeckBeingEdited = null;
+
+        // Abre el deckbuilder en modo "editar mazo del bot".
+        function openBotDeckEditor(chapterId, orderName) {
+            devEditingChapterId = chapterId;
+            devEditingOrderName = orderName;
+            let devDecks = getDevBotDecks();
+            let ch = CHAPTERS.find(c => c.id === chapterId);
+            let idx = ['aggressive','defensive','balanced'].indexOf(orderName);
+            let original = ch.botDecks ? ch.botDecks[idx] : ch.botDeck;
+            // FIX: el editor renderiza OBJETOS de carta (como playerDeck), no ids;
+            // convertimos el array de ids guardado en localStorage a plantillas.
+            let ids = (devDecks[chapterId] && devDecks[chapterId][orderName])
+                ? devDecks[chapterId][orderName]
+                : (original || []);
+            botDeckBeingEdited = ids.map(id => ALL_CARDS.find(c => c.id === id)).filter(c => c !== undefined);
+            switchView('view-deckbuilder');
+            // El deckbuilder mostrará el mazo del bot en vez del del jugador.
+            renderDeckEditor();
+            renderCollection();
+        }
+
+        // Guarda el mazo del bot editado en localStorage.
+        function saveBotDeck() {
+            if (!devEditingChapterId || !devEditingOrderName || !botDeckBeingEdited) return;
+            let devDecks = getDevBotDecks();
+            if (!devDecks[devEditingChapterId]) devDecks[devEditingChapterId] = {};
+            devDecks[devEditingChapterId][devEditingOrderName] = botDeckBeingEdited.map(c => c.id);
+            saveDevBotDecks(devDecks);
+            let indicator = document.getElementById('save-indicator');
+            if (indicator) { indicator.style.opacity = '1'; setTimeout(() => { indicator.style.opacity = '0'; }, 2000); }
+        }
+
+        // Cierra el editor de mazo del bot y vuelve a la lista de mazos.
+        function closeBotDeckEditor() {
+            botDeckBeingEdited = null;
+            devEditingChapterId = null;
+            devEditingOrderName = null;
+            switchView('view-decks');
         }
