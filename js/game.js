@@ -45,8 +45,17 @@ function killCard(card, side) {
 // fuente de daño (choques de Embestida y eventos) pasa por aquí para que
 // la reacción al daño (Titán Menor c12: +1 ATK permanente) no dependa de
 // quién golpea; la reacción solo dispara si el golpeado sobrevive.
-function dealDamage(target, amount, side) {
+function dealDamage(target, amount, side, sourcePlayer) {
     if (!target || target.dying || target.stunned) return;
+    // Reflejo: si el target tiene Reflejo y el atacante es un jugador concreto
+    // (sourcePlayer), se refleja el daño.
+    if (target.reflectCharges > 0 && sourcePlayer && !target.immuneThisTurn) {
+        if (tryReflect(target, sourcePlayer, (reflectedTarget) => {
+            reflectedTarget.hp -= amount;
+            if (reflectedTarget.hp <= 0) { reflectedTarget.hp = 0; killCard(reflectedTarget, ownerSideOf(reflectedTarget)); }
+            queueFx({ t: 'debuff', side: sideOf(sourcePlayer), uid: reflectedTarget.uid, text: '-' + amount + ' HP', icon: 'fa-heart-crack', overlay: 'hit' });
+        })) return;
+    }
     target.hp -= amount;
     if (target.hp <= 0) {
         target.hp = 0;
@@ -116,7 +125,8 @@ function summonCard(player, cardTemplate) {
         stunned: false,
         laberintoTurns: 0,
         petrifiedTurns: 0,
-        reflectCharges: 0
+        reflectCharges: 0,
+        bloqueo: cardTemplate.bloqueo || 0
     };
     player.activeBoard.unshift(inst);
     gameState.justDeployed.push(inst.uid);
@@ -241,8 +251,10 @@ function gameTick() {
                 });
             });
             // Reset de temp y expiración de HP temporal: solo no-stunned.
-            gameState.p1.activeBoard.forEach(c => { if (!c.stunned) { c.tempAtkMod = 0; expireTempHp(c); } });
-            gameState.p2.activeBoard.forEach(c => { if (!c.stunned) { c.tempAtkMod = 0; expireTempHp(c); } });
+            // Reflejo e inmunidad son "este turno" (b5/b7): expiran aquí igual
+            // que el ATK temporal, antes de que el nuevo turno resuelva.
+            gameState.p1.activeBoard.forEach(c => { if (!c.stunned) { c.tempAtkMod = 0; expireTempHp(c); c.reflectCharges = 0; c.immuneThisTurn = false; } });
+            gameState.p2.activeBoard.forEach(c => { if (!c.stunned) { c.tempAtkMod = 0; expireTempHp(c); c.reflectCharges = 0; c.immuneThisTurn = false; } });
 
             // Inicio de turno SIMULTÁNEO: los choques de Embestida se
             // registran contra el mismo estado del tablero y el daño se
@@ -349,7 +361,7 @@ function gameTick() {
             player.deckPointer++;
             return {
                 card: nextCard,
-                inst: { ...nextCard, uid: Math.random().toString(36).slice(2, 9), tempAtkMod: 0, stunned: false, petrifiedTurns: 0, reflectCharges: 0 },
+                inst: { ...nextCard, uid: Math.random().toString(36).slice(2, 9), tempAtkMod: 0, stunned: false, petrifiedTurns: 0, reflectCharges: 0, bloqueo: nextCard.bloqueo || 0 },
                 discount: oracleDiscount
             };
         }
@@ -521,9 +533,13 @@ function petrificar(player, opp, X) {
     let targets = opp.activeBoard.filter(c => !c.dying && !(c.petrifiedTurns > 0));
     if (!targets.length) return;
     let target = targets[Math.floor(Math.random() * targets.length)];
-    // Reflejo (Escudo Espejo b5): si el target tiene cargas, el efecto se
-    // refleja a una carta aleatoria del atacante y no petrifica.
-    if (tryReflect(target, player)) return;
+    // Reflejo: si el target tiene Reflejo, se refleja la petrificación.
+    if (target.reflectCharges > 0) {
+        if (tryReflect(target, player, (reflectedTarget) => {
+            reflectedTarget.petrifiedTurns = X;
+            queueFx({ t: 'petrificar', side: sideOf(player), uid: reflectedTarget.uid });
+        })) return;
+    }
     target.petrifiedTurns = X;
     queueFx({ t: 'petrificar', side: sideOf(opp), uid: target.uid });
 }
@@ -540,24 +556,24 @@ function serpientes(self, player, opp, X) {
     queueFx({ t: 'debuff', side: sideOf(opp), uid: target.uid, text: '-' + X + ' HP', icon: 'fa-snake', overlay: 'hit' });
 }
 
-// --- KEYWORD: REFLEJO X ---
-// Inmune al próximo efecto rival que targetee a esta carta. El efecto se
-// refleja y se aplica a una carta aleatoria del rival. X reflejos por turno
-// (temporal: este turno). Se consume al reflejar.
-// Implementación: campo reflectCharges. Los efectos que targeteen a la carta
-// con reflectCharges > 0 deben llamar a tryReflect() antes de aplicar.
-function tryReflect(card, opponent) {
+// --- KEYWORD: REFLEJO X (REAL) ---
+// Inmune al próximo efecto rival DIRIGIDO (que designe a esta carta) y lo
+// refleja al rival. Solo efectos hostiles dirigidos: petrificar, debuff de
+// ATK/HP, daño dirigido, destrucción directa. NO refleja AoE (no designa a
+// nadie concreto) ni buffs/gloria (no son hostiles).
+// El llamador pasa un callback applyEffect(reflectedTarget) que aplica el
+// efecto al target reflejado. Devuelve true si se reflejó (el efecto original
+// NO debe aplicarse al target original).
+function tryReflect(card, opponent, applyEffect) {
     if (!card || !(card.reflectCharges > 0)) return false;
+    // Si la carta es inmune, el reflejo no se consume (la inmunidad gana).
+    if (card.immuneThisTurn) return false;
     card.reflectCharges--;
-    // Elegir una carta aleatoria del rival (no dying, no petrificada).
     let targets = opponent.activeBoard.filter(c => !c.dying);
     if (!targets.length) return true; // refleja pero no hay a quién
     let target = targets[Math.floor(Math.random() * targets.length)];
-    // Aplicar un debuff genérico al target (el llamador decide el tipo).
-    // Para simplificar, el reflejo aplica -1 HP y un FX.
-    target.hp -= 1;
-    queueFx({ t: 'debuff', side: sideOf(opponent), uid: target.uid, text: 'REFLEJADO -1 HP', icon: 'fa-shield-halved', overlay: 'hit' });
-    if (target.hp <= 0) { target.hp = 0; killCard(target, sideOf(opponent)); }
+    if (typeof applyEffect === 'function') applyEffect(target);
+    queueFx({ t: 'debuff', side: sideOf(opponent), uid: target.uid, text: 'REFLEJADO', icon: 'fa-shield-halved', overlay: 'hit' });
     return true;
 }
 
@@ -568,4 +584,18 @@ function serpientesDeLaCabeza(owner, X) {
     let tpl = ALL_CARDS.find(c => c.id === 'b0');
     if (!tpl) return;
     for (let i = 0; i < X; i++) summonCard(owner, tpl);
+}
+
+// --- KEYWORD: BLOQUEO X ---
+// Amortigua hasta X puntos de reducción de stats (ATK o HP) sobre esta carta.
+// Solo absorbe efectos RIVALES (no costes propios). No absorbe daño directo.
+// Devuelve la cantidad NO absorbida (la que pasa).
+function bloqueoAbsorb(card, amount) {
+    if (!card || !(card.bloqueo > 0)) return amount;
+    let absorbed = Math.min(amount, card.bloqueo);
+    card.bloqueo -= absorbed;
+    if (absorbed > 0) {
+        queueFx({ t: 'bloqueo', side: ownerSideOf(card), uid: card.uid, text: 'BLOQUEADO ' + absorbed, icon: 'fa-shield' });
+    }
+    return amount - absorbed;
 }

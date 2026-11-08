@@ -7,6 +7,34 @@
 
 const PATCH_NOTES = [
     {
+        version: '1.7.1',
+        date: '2026-11-08',
+        title: 'Reflejo Real y Visuales de Estado',
+        highlights: [
+            'Reflejo ahora refleja el mismo efecto al rival',
+            'Bloqueo real: amortigua reducciones de ATK/HP',
+            'Los estados se ven en el tablero: reflejo, buff, debuff, inmune, bloqueo',
+            'Ajustes de balance en b2, b3, b5, b10'
+        ],
+        changes: {
+            new: [
+                'Indicadores visuales persistentes: reflejo (azul), buff ATK (verde), debuff ATK (rojo), inmune (blanco), bloqueo (dorado)',
+                'Reflejo real: refleja el mismo efecto (petrificar, debuff, daño dirigido) al rival',
+                'Bloqueo X: amortigua reducciones de ATK/HP de efectos rivales'
+            ],
+            buffs: [],
+            nerfs: [
+                'b2 (Medusa, la Gorgona): stats 3/4 → 2/2. startTurn con condición (Fila 1).',
+                'b10 (La Mirada de Piedra): quita +2 Gloria. Ahora petrifica 2 veces a un rival aleatorio.'
+            ],
+            fixes: [
+                'b5 (El Escudo Espejo): coste 3 → 2',
+                'Keywords Serpientes y Serpientes de la Cabeza eliminadas (efectos inline en b2)'
+            ],
+            removed: []
+        }
+    },
+    {
         version: '1.7.0',
         date: '2026-11-07',
         title: 'La Gorgona',

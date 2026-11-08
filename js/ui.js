@@ -83,10 +83,6 @@ function renderCardModalContent(card) {
         keywordExplanation = "<strong>Enfurecer X:</strong> Cada vez que esta carta recibe daño, gana +X ATK permanentemente.";
     } else if (card.desc && card.desc.includes('Petrificar')) {
         keywordExplanation = "<strong>Petrificar X:</strong> Convierte a un Ser rival aleatorio en piedra X turnos. Mientras esté petrificado, no puntúa (no suma su ATK a la Gloria), pero sigue atacando y recibiendo daño con normalidad.";
-    } else if (card.desc && card.desc.includes('Serpientes de la Cabeza')) {
-        keywordExplanation = "<strong>Serpientes de la Cabeza X:</strong> Al morir, invoca X Serpientes de la Cabeza (tokens 1/1) en tu tablero.";
-    } else if (card.desc && card.desc.includes('Serpientes')) {
-        keywordExplanation = "<strong>Serpientes X:</strong> Al inicio de cada turno, inflige X de daño al Ser rival de la Fila 1. No consume ATK ni HP.";
     } else if (card.desc && card.desc.includes('Reflejo')) {
         keywordExplanation = "<strong>Reflejo X:</strong> Inmune al próximo efecto rival que targetee a esta carta. El efecto se refleja y se aplica a una carta aleatoria del rival.";
     }
@@ -254,6 +250,10 @@ function syncBoard(prefix, cards, theme) {
             updateCardElement(el, card);
         } else {
             el = createCardElement(card, theme, gameState.justDeployed.includes(card.uid));
+            // Las cartas recién desplegadas también llevan sus estados
+            // persistentes (reflejo, buff/debuff, inmune, bloqueo, petrificado)
+            // desde el primer render, no solo a partir del siguiente tick.
+            updateCardElement(el, card);
         }
         // El orden del estado es la verdad: las nuevas cartas entran por la cima.
         let ref = board.children[idx] || null;
@@ -365,6 +365,82 @@ function updateCardElement(el, card) {
     } else {
         cardEl.classList.remove('fx-petrificado');
         let icon = cardEl.querySelector('.fx-petrified-icon');
+        if (icon) icon.remove();
+    }
+
+    // Reflejo persistente: glow azul + icono escudo.
+    if (card.reflectCharges > 0) {
+        if (!cardEl.classList.contains('fx-reflejo')) cardEl.classList.add('fx-reflejo');
+        if (!cardEl.querySelector('.fx-reflejo-icon')) {
+            let icon = document.createElement('div');
+            icon.className = 'fx-reflejo-icon';
+            icon.innerHTML = '<i class="fa-solid fa-shield-halved"></i>';
+            cardEl.appendChild(icon);
+        }
+    } else {
+        cardEl.classList.remove('fx-reflejo');
+        let icon = cardEl.querySelector('.fx-reflejo-icon');
+        if (icon) icon.remove();
+    }
+
+    // Buff ATK persistente: glow verde + icono flecha arriba.
+    let tempAtk = card.tempAtkMod || 0;
+    if (tempAtk > 0) {
+        if (!cardEl.classList.contains('fx-buff-atk')) cardEl.classList.add('fx-buff-atk');
+        if (!cardEl.querySelector('.fx-buff-atk-icon')) {
+            let icon = document.createElement('div');
+            icon.className = 'fx-buff-atk-icon';
+            icon.innerHTML = '<i class="fa-solid fa-arrow-up"></i>';
+            cardEl.appendChild(icon);
+        }
+    } else {
+        cardEl.classList.remove('fx-buff-atk');
+        let icon = cardEl.querySelector('.fx-buff-atk-icon');
+        if (icon) icon.remove();
+    }
+
+    // Debuff ATK persistente: glow rojo + icono flecha abajo.
+    if (tempAtk < 0) {
+        if (!cardEl.classList.contains('fx-debuff-atk')) cardEl.classList.add('fx-debuff-atk');
+        if (!cardEl.querySelector('.fx-debuff-atk-icon')) {
+            let icon = document.createElement('div');
+            icon.className = 'fx-debuff-atk-icon';
+            icon.innerHTML = '<i class="fa-solid fa-arrow-down"></i>';
+            cardEl.appendChild(icon);
+        }
+    } else {
+        cardEl.classList.remove('fx-debuff-atk');
+        let icon = cardEl.querySelector('.fx-debuff-atk-icon');
+        if (icon) icon.remove();
+    }
+
+    // Inmune persistente: glow blanco + icono fantasma.
+    if (card.immuneThisTurn) {
+        if (!cardEl.classList.contains('fx-inmune')) cardEl.classList.add('fx-inmune');
+        if (!cardEl.querySelector('.fx-inmune-icon')) {
+            let icon = document.createElement('div');
+            icon.className = 'fx-inmune-icon';
+            icon.innerHTML = '<i class="fa-solid fa-ghost"></i>';
+            cardEl.appendChild(icon);
+        }
+    } else {
+        cardEl.classList.remove('fx-inmune');
+        let icon = cardEl.querySelector('.fx-inmune-icon');
+        if (icon) icon.remove();
+    }
+
+    // Bloqueo persistente: glow dorado + icono escudo.
+    if (card.bloqueo > 0) {
+        if (!cardEl.classList.contains('fx-bloqueo')) cardEl.classList.add('fx-bloqueo');
+        if (!cardEl.querySelector('.fx-bloqueo-icon')) {
+            let icon = document.createElement('div');
+            icon.className = 'fx-bloqueo-icon';
+            icon.innerHTML = '<i class="fa-solid fa-shield"></i>';
+            cardEl.appendChild(icon);
+        }
+    } else {
+        cardEl.classList.remove('fx-bloqueo');
+        let icon = cardEl.querySelector('.fx-bloqueo-icon');
         if (icon) icon.remove();
     }
 }

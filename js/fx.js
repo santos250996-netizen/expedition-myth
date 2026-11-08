@@ -235,6 +235,10 @@
                                     el.appendChild(icon);
                                 }
                                 break;
+                            case 'bloqueo':
+                                fxFlash(fx.uid, 'gold');
+                                fxFloatOver(fx.side, fx.uid, fx.text, 'fx-gold fx-float-big', fx.icon);
+                                break;
                         }
                     } catch (e) { console.error('fx:', e); }
                 }, delay);

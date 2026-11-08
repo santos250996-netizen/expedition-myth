@@ -41,7 +41,9 @@ const ALL_CARDS = [
                 desc: 'Reduce en -2 el ATK de TODOS los Seres rivales (permanente).', 
                 lore: 'Una densa penumbra inexplorada desciende de los cielos y cubre los valles arcaicos de Grecia. Esta neblina antinatural nubla el juicio de las tribus y debilita los primeros asentamientos humanos, obligándolos a dar sus primeros pasos a ciegas en la oscuridad. Es el aliento de Cronos, el titán que devora a sus hijos, filtrándose desde el Tártaro.',
                 art: 'assets/cartas/carta-05-niebla-del-caos.webp',
-                effect: (p, opp) => { queueFx({ t: 'wave', side: sideOf(opp) }); opp.activeBoard.forEach(c => { if (!c.dying && !c.noAtkRed) { let d = colossusShieldFor(opp, 2); if (d > 0) { c.atk = Math.max(0, c.atk - d); queueFx({ t: 'debuff', side: sideOf(opp), uid: c.uid, text: '-' + d + ' ATK', icon: 'fa-cloud', overlay: 'fog', pulse: 'fx-pulse-gray', cls: 'fx-gray' }); } } }); } 
+                effect: (p, opp) => { queueFx({ t: 'wave', side: sideOf(opp) }); opp.activeBoard.forEach(c => { if (!c.dying && !c.noAtkRed) { let d = bloqueoAbsorb(c, 2);
+                if (d > 0) { d = colossusShieldFor(opp, d); }
+                if (d > 0) { c.atk = Math.max(0, c.atk - d); queueFx({ t: 'debuff', side: sideOf(opp), uid: c.uid, text: '-' + d + ' ATK', icon: 'fa-cloud', overlay: 'fog', pulse: 'fx-pulse-gray', cls: 'fx-gray' }); } } }); } 
             },
             { 
                 id: 'c6', name: 'Ninfas de las Fuentes Secas', kind: 'Ser', faction: 'Poseidón', cost: 2, atk: 1, hp: 2, 
@@ -49,7 +51,9 @@ const ALL_CARDS = [
                 desc: 'Al entrar: Reduce en -1 el ATK del Ser rival en la Fila 1 (permanente).', 
                 lore: 'Las protectoras de los manantiales sufren la corrupción de la niebla. Al verse marchitas y sin agua pura, pierden la razón y se convierten en espectros errantes que lloran desconsoladamente, confundiendo con sus cantos a cualquiera que se acerque. Son las ninfas de Poseidón, hijas del mar y de los ríos, ahora corrompidas por el Caos.',
                 art: 'assets/cartas/carta-06-ninfas-de-las-fuentes-secas.webp',
-                effect: (p, opp) => { let target = opp.activeBoard[0]; if (target && !target.dying && !target.noAtkRed) { let d = colossusShieldFor(opp, 1); if (d > 0) { target.atk = Math.max(0, target.atk - d); queueFx({ t: 'debuff', side: sideOf(opp), uid: target.uid, text: '-' + d + ' ATK', icon: 'fa-water', overlay: 'tears' }); } } }, startTurn: null 
+                effect: (p, opp) => { let target = opp.activeBoard[0]; if (target && !target.dying && !target.noAtkRed) { let d = bloqueoAbsorb(target, 1);
+                if (d > 0) { d = colossusShieldFor(opp, d); }
+                if (d > 0) { target.atk = Math.max(0, target.atk - d); queueFx({ t: 'debuff', side: sideOf(opp), uid: target.uid, text: '-' + d + ' ATK', icon: 'fa-water', overlay: 'tears' }); } } }, startTurn: null 
             },
             { 
                 id: 'c7', name: 'Jabalí de Erimanto', kind: 'Ser', cost: 5, atk: 4, hp: 6, faction: 'Artemisa',
@@ -101,7 +105,9 @@ const ALL_CARDS = [
                 desc: 'Reduce en -1 el ATK de TODOS los Seres (rivales y aliados), permanentemente.',
                 lore: 'Los robles milenarios de los bosques sagrados guardan secretos antiguos. Cuando los intrusos se adentran sin respeto, las hojas y el viento susurran nombres prohibidos que paralizan la voluntad y confunden las mentes de los enemigos. Es el santuario oracular más antiguo de Zeus, donde los robles susurran sus profecías y su poder debilita a los incrédulos.',
                 art: 'assets/cartas/carta-10-ecos-de-dodona.webp',
-                effect: (p, opp) => { [p, opp].forEach(owner => { queueFx({ t: 'wave', side: sideOf(owner) }); owner.activeBoard.forEach(c => { if (!c.dying && !c.noAtkRed) { let d = colossusShieldFor(owner, 1); if (d > 0) { c.atk = Math.max(0, c.atk - d); queueFx({ t: 'debuff', side: sideOf(owner), uid: c.uid, text: '-' + d + ' ATK', icon: 'fa-leaf', overlay: 'leaf' }); } } }); }); }
+                effect: (p, opp) => { [p, opp].forEach(owner => { queueFx({ t: 'wave', side: sideOf(owner) }); owner.activeBoard.forEach(c => { if (!c.dying && !c.noAtkRed) { let d = bloqueoAbsorb(c, 1);
+                if (d > 0) { d = colossusShieldFor(owner, d); }
+                if (d > 0) { c.atk = Math.max(0, c.atk - d); queueFx({ t: 'debuff', side: sideOf(owner), uid: c.uid, text: '-' + d + ' ATK', icon: 'fa-leaf', overlay: 'leaf' }); } } }); }); }
             },
 {
     id: 'a2', name: 'Asterión, Enfurecido', kind: 'Ser', faction: 'Poseidón', cost: 5, atk: 5, hp: 5,
@@ -266,18 +272,27 @@ const ALL_CARDS = [
     startTurn: null
 },
 {
-    id: 'b2', name: 'Medusa, la Gorgona', kind: 'Ser', faction: 'Atenea', cost: 6, atk: 3, hp: 4,
+    id: 'b2', name: 'Medusa, la Gorgona', kind: 'Ser', faction: 'Atenea', cost: 6, atk: 2, hp: 2,
     icon: 'fa-snake',
-    desc: 'Al entrar: Petrificar 2 (un rival aleatorio no puntúa 2 turnos). Serpientes 1 (al inicio de cada turno, 1 daño al rival de Fila 1). Serpientes de la Cabeza 2 (al morir, invoca 2 tokens 1/1).',
+    desc: 'Al entrar: Petrificar 2. Mientras esté en Fila 1, al inicio de cada turno, 1 daño al rival de Fila 1. Al morir: invoca 2 Serpientes de la Cabeza.',
     lore: 'Atenea no distinguió entre el culpable y la víctima. El cabello de Medusa se enroscó en serpientes, y su mirada se volvió piedra. Huyó al norte, donde las Gorgonas la acogieron, y desde entonces ningún hombre que la mirara volvió a contar lo que vio.',
     art: 'assets/cartas/medusa-b2-gorgona.webp',
     substory: 'medusa',
     effect: (p, opp) => { petrificar(p, opp, 2); },
-    startTurn: (self, player, opp) => { serpientes(self, player, opp, 1); },
-    onDeath: (owner) => { serpientesDeLaCabeza(owner, 2); }
+    startTurn: (self, player, opp) => {
+        if (player.activeBoard[0] !== self) return;
+        let target = opp.activeBoard[0];
+        if (!target || target.dying) return;
+        dealDamage(target, 1, sideOf(opp), player);
+        queueFx({ t: 'debuff', side: sideOf(opp), uid: target.uid, text: '-1 HP', icon: 'fa-snake', overlay: 'hit' });
+    },
+    onDeath: (owner) => {
+        let tpl = ALL_CARDS.find(c => c.id === 'b0');
+        if (tpl) { summonCard(owner, tpl); summonCard(owner, tpl); }
+    }
 },
 {
-    id: 'b3', name: 'Esteno, la Fuerte', kind: 'Ser', faction: 'Atenea', cost: 4, atk: 3, hp: 3,
+    id: 'b3', name: 'Esteno, la Fuerte', kind: 'Ser', faction: 'Atenea', cost: 4, atk: 3, hp: 3, bloqueo: 2,
     icon: 'fa-shield-halved',
     desc: 'Bloqueo 2.',
     lore: 'La mayor de las Gorgonas, hija de Forcis y Ceto. Su fuerza era tal que podía detener a un toro con una mano. Cuando Medusa llegó al norte, Esteno la abrazó como a una hermana y juró protegerla de los hombres que la buscaban.',
@@ -296,7 +311,7 @@ const ALL_CARDS = [
     startTurn: null
 },
 {
-    id: 'b5', name: 'El Escudo Espejo', kind: 'Evento', faction: 'Atenea', cost: 3, atk: 0, hp: 0,
+    id: 'b5', name: 'El Escudo Espejo', kind: 'Evento', faction: 'Atenea', cost: 2, atk: 0, hp: 0,
     icon: 'fa-shield-halved',
     desc: 'Tu Ser con más ATK gana Reflejo 1 este turno (refleja el próximo efecto rival que lo targetee).',
     lore: 'Atenea entregó a Perseo un escudo pulido como un espejo. "No la mires a los ojos", le dijo. "Mírala en el reflejo". El héroe avanzó por la cueva con el escudo en alto, y las serpientes de Medusa se reflejaron en el bronce antes de que pudieran alcanzarlo.',
@@ -371,19 +386,13 @@ const ALL_CARDS = [
 {
     id: 'b10', name: 'La Mirada de Piedra', kind: 'Evento', faction: 'Atenea', cost: 4, atk: 0, hp: 0,
     icon: 'fa-eye-slash',
-    desc: 'Petrificar 2 al Ser rival con más ATK (no puntúa 2 turnos). +2 Gloria.',
+    desc: 'Petrificar 2 a un rival aleatorio. Se repite 2 veces.',
     lore: 'Quien mire a los ojos de la Gorgona se convierte en piedra. No hay escudo que valga, no hay dios que proteja. La mirada de Medusa es la mirada de Atenea: fría, justa, implacable. Y la piedra que deja no es un castigo: es una advertencia.',
     art: 'assets/cartas/medusa-b10-mirada-piedra.webp',
     substory: 'medusa',
     effect: (p, opp) => {
-        let alive = opp.activeBoard.filter(c => !c.dying && !(c.petrifiedTurns > 0));
-        if (alive.length) {
-            let target = alive.reduce((max, c) => (c.atk + (c.tempAtkMod || 0)) > (max.atk + (max.tempAtkMod || 0)) ? c : max, alive[0]);
-            target.petrifiedTurns = 2;
-            queueFx({ t: 'petrificar', side: sideOf(opp), uid: target.uid });
-        }
-        p.score += 2;
-        queueFx({ t: 'gloria', side: sideOf(p), text: '+2 GLORIA', icon: 'fa-eye-slash', num: 2 });
+        petrificar(p, opp, 2);
+        petrificar(p, opp, 2);
     },
     startTurn: null
 }
