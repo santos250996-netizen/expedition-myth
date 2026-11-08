@@ -41,7 +41,7 @@ const CHAPTERS = [
         { icon: 'fa-scroll', title: 'El Hilo de Ariadna', text: 'Teseo entró con el hilo y sus aliados. No buscaba gloria: buscaba sobrevivir y liberar Atenas del tributo de sangre.' }
     ],
     epilogue: 'El laberinto quedó en silencio y el toro cayó. Pero el hilo de Ariadna solo marca la salida para quien ya conoce la entrada: los que entraron no volvieron igual, y Creta nunca olvidó el precio de su maldición.',
-    art: 'assets/capitulos/capitulo-1-3-el-eclipse-del-olimpo.webp',
+    art: 'assets/capitulos/evento-asterion-el-laberinto-de-creta.webp',
     rival: { name: 'Asterión', sub: 'LABERINTO' },
     isEvent: true,
     unlockedBy: 1,
@@ -64,7 +64,7 @@ const CHAPTERS = [
         { icon: 'fa-shield-halved', title: 'El Espejo de Perseo', text: 'El rey Polidectes envió a Perseo a matar a la Gorgona. Con el escudo espejo de Atenea, las sandalias aladas de Hermes y el casco de Hades, el héroe cruzó el mar. No la miró a los ojos: la vio en el reflejo.' }
     ],
     epilogue: 'La cabeza de Medusa fue entregada a Atenea, que la clavó en su égida para petrificar a sus enemigos. Pero el mito no termina con la muerte: Pegaso voló al Olimpo, Crisaor empuñó su espada, y las Gorgonas lloraron a su hermana. La piedra que una vez fue mujer sigue mirando desde el escudo de la diosa, y quien se atreva a mirarla de frente, aún hoy, se convierte en estatua.',
-    art: 'assets/capitulos/capitulo-1-3-el-eclipse-del-olimpo.webp',
+    art: 'assets/capitulos/evento-medusa-la-gorgona.webp',
     rival: { name: 'Medusa', sub: 'GORGONA' },
     isEvent: true,
     unlockedBy: 'asterion',

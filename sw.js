@@ -7,25 +7,25 @@
 //    revalidate: respuesta instantánea desde caché y refresco en segundo
 //    plano. Reabrir el juego no vuelve a descargar ninguna imagen.
 // Para publicar cambios: subir la versión de CACHE (y los ?v= del HTML).
-const CACHE = 'nexo-v20261118g';
+const CACHE = 'nexo-v20261118h';
 
 const PRECACHE = [
     './', './index.html', './manifest.json', './icon.svg',
-    './css/styles.css?v=20261118g',
-    './js/cards.js?v=20261118g',
-    './js/state.js?v=20261118g',
-    './js/fx.js?v=20261118g',
-    './js/deck.js?v=20261118g',
-    './js/chapters.js?v=20261118g',
-    './js/patchnotes.js?v=20261118g',
-    './js/ui.js?v=20261118g',
-    './js/game.js?v=20261118g',
-    './js/dev.js?v=20261118g',
-    './js/main.js?v=20261118g',
+    './css/styles.css?v=20261118h',
+    './js/cards.js?v=20261118h',
+    './js/state.js?v=20261118h',
+    './js/fx.js?v=20261118h',
+    './js/deck.js?v=20261118h',
+    './js/chapters.js?v=20261118h',
+    './js/patchnotes.js?v=20261118h',
+    './js/ui.js?v=20261118h',
+    './js/game.js?v=20261118h',
+    './js/dev.js?v=20261118h',
+    './js/main.js?v=20261118h',
     // Dependencias vendorizadas (antes CDN): Tailwind precompilado,
     // Font Awesome y Google Fonts. Sin ellas offline el juego perdería
     // estilos y tipografía.
-    './css/vendor/tailwind.min.css?v=20261118g',
+    './css/vendor/tailwind.min.css?v=20261118h',
     './css/vendor/all.min.css',
     './css/webfonts/fa-solid-900.woff2',
     './css/webfonts/fa-regular-400.woff2',
@@ -71,9 +71,15 @@ const PRECACHE = [
     './assets/cartas/medusa-b8-pegaso.webp',
     './assets/cartas/medusa-b9-crisaor.webp',
     './assets/cartas/medusa-b10-mirada-piedra.webp',
+    './assets/cartas/e1-leon-de-nemea.webp',
+    './assets/cartas/e2-equidna-madre-monstruos.webp',
+    './assets/cartas/e3-heracles-el-heroe.webp',
+    './assets/cartas/e5-hidra-de-lerna.webp',
     // Artes de capítulos
     './assets/capitulos/capitulo-01-el-despertar-en-la-helade.webp',
-    './assets/capitulos/capitulo-1-3-el-eclipse-del-olimpo.webp'
+    './assets/capitulos/capitulo-1-3-el-eclipse-del-olimpo.webp',
+    './assets/capitulos/evento-asterion-el-laberinto-de-creta.webp',
+    './assets/capitulos/evento-medusa-la-gorgona.webp'
 ];
 
 self.addEventListener('install', (event) => {

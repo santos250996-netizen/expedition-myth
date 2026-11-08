@@ -435,7 +435,7 @@ const ALL_CARDS = [
     icon: 'fa-paw',
     desc: 'Bloqueo 4.',
     lore: 'En los bosques entre Nemea y Cleone, en la Argólide, vive una bestia que no es un animal. Su pelaje dorado brilla como el oro bajo la luna, y su piel es tan dura que ninguna lanza, espada o flecha puede rasgarla. Es el hijo de Tifón y Equidna, engendrado por la sangre de los monstruos, pero fue Hera quien lo crió en los montes de Nemea y lo dejó crecer para castigar a los mortales que olvidaron rendirle culto. Los pastores han aprendido a no cruzar los límites del bosque, y los rebaños desaparecen uno a uno sin que nadie encuentre rastro. No es un depredador: es un castigo divino.',
-    art: '', // TODO: arte
+    art: 'assets/cartas/e1-leon-de-nemea.webp',
     effect: null, startTurn: null, bloqueo: 4
 },
 {
@@ -443,7 +443,7 @@ const ALL_CARDS = [
     icon: 'fa-snake',
     desc: 'Al inicio de cada turno, mientras sea la última carta de tu columna, invoca un Vástago aleatorio.',
     lore: 'En una cueva de la Argólide, entre rocas húmedas y sombras, vive Equidna: mitad mujer, mitad serpiente. Su cuerpo se arrastra por la piedra con un susurro húmedo, y sus ojos brillan en la oscuridad como ascuas. Su voz hiela la sangre de quien la escucha. No lucha, no caza, no huye: pare. Y cada cría que sale de su vientre es un nuevo terror para Grecia.',
-    art: '', // TODO: arte
+    art: 'assets/cartas/e2-equidna-madre-monstruos.webp',
     effect: null,
     startTurn: (self, player, opp) => {
         if (player.activeBoard[player.activeBoard.length - 1] !== self) return;
@@ -456,7 +456,7 @@ const ALL_CARDS = [
     icon: 'fa-user-shield',
     desc: 'Al entrar: destruye un Ser rival con coste ≥ 5.',
     lore: 'Heracles es un hombre de hombros anchos y músculos tensos como cuerdas de arco. Su piel curtida por el sol y el polvo de los caminos, y su mirada lleva el peso de las doce pruebas que Euristeo le impuso. Hijo de Zeus y de una mortal, cargó desde niño con la envidia de Hera, que lo persiguió incluso antes de nacer. No lucha por gloria: lucha por redención. Y cada monstruo que cae bajo su maza es un paso más hacia el Olimpo.',
-    art: '', // TODO: arte
+    art: 'assets/cartas/e3-heracles-el-heroe.webp',
     effect: (p, opp) => {
         destruirSerCosteAlto(opp, 5);
     },
@@ -467,7 +467,7 @@ const ALL_CARDS = [
     icon: 'fa-snake',
     desc: 'Al morir: invoca 3 Hidra de Lerna (tokens 2/1).',
     lore: 'En los pantanos de Lerna, entre aguas estancadas y juncos podridos, vive la Hidra: una serpiente de nueve cabezas, con escamas verdes como el musgo y aliento venenoso. Por cada cabeza que pierde, le nacen dos más. Su sangre es un veneno que no tiene cura, y su sola presencia envenena el aire. No es una bestia: es una plaga.',
-    art: '', // TODO: arte
+    art: 'assets/cartas/e5-hidra-de-lerna.webp',
     effect: null,
     startTurn: null,
     onDeath: (owner) => {
@@ -480,7 +480,8 @@ const ALL_CARDS = [
     icon: 'fa-snake',
     desc: 'Sin habilidades.',
     lore: 'Le cortaron una cabeza a la Hidra. Pero su cuerpo no cayó: se retorció, y de la herida brotó otra cabeza. Es la misma Hidra, más pequeña, más débil, pero viva. Y mientras quede una sola cabeza, la plaga no habrá terminado.',
-    art: '', // TODO: arte
+    // Mismo arte que e5: el token representa la misma Hidra renacida.
+    art: 'assets/cartas/e5-hidra-de-lerna.webp',
     effect: null, startTurn: null
 }
         ];
