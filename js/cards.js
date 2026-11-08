@@ -313,16 +313,17 @@ const ALL_CARDS = [
 {
     id: 'b5', name: 'El Escudo Espejo', kind: 'Evento', faction: 'Atenea', cost: 2, atk: 0, hp: 0,
     icon: 'fa-shield-halved',
-    desc: 'Tu Ser con más ATK gana Reflejo 1 este turno (refleja el próximo efecto rival que lo targetee).',
+    desc: 'Todos tus Seres ganan Reflejo 1 este turno (reflejan el próximo efecto rival que los targetee).',
     lore: 'Atenea entregó a Perseo un escudo pulido como un espejo. "No la mires a los ojos", le dijo. "Mírala en el reflejo". El héroe avanzó por la cueva con el escudo en alto, y las serpientes de Medusa se reflejaron en el bronce antes de que pudieran alcanzarlo.',
     art: 'assets/cartas/medusa-b5-escudo-espejo.webp',
     substory: 'medusa',
     effect: (p) => {
         let alive = p.activeBoard.filter(c => !c.dying);
         if (!alive.length) return;
-        let target = alive.reduce((max, c) => (c.atk + (c.tempAtkMod || 0)) > (max.atk + (max.tempAtkMod || 0)) ? c : max, alive[0]);
-        target.reflectCharges = (target.reflectCharges || 0) + 1;
-        queueFx({ t: 'buff', side: sideOf(p), uid: target.uid, text: 'REFLEJO 1', icon: 'fa-shield-halved' });
+        alive.forEach(c => {
+            c.reflectCharges = (c.reflectCharges || 0) + 1;
+            queueFx({ t: 'buff', side: sideOf(p), uid: c.uid, text: 'REFLEJO 1', icon: 'fa-shield-halved' });
+        });
     },
     startTurn: null
 },

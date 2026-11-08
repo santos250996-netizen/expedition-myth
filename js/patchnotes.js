@@ -22,7 +22,9 @@ const PATCH_NOTES = [
                 'Reflejo real: refleja el mismo efecto (petrificar, debuff, daño dirigido) al rival',
                 'Bloqueo X: amortigua reducciones de ATK/HP de efectos rivales'
             ],
-            buffs: [],
+            buffs: [
+                'b5 (El Escudo Espejo): Reflejo 1 a todos tus Seres (antes solo al de más ATK).'
+            ],
             nerfs: [
                 'b2 (Medusa, la Gorgona): stats 3/4 → 2/2. startTurn con condición (Fila 1).',
                 'b10 (La Mirada de Piedra): quita +2 Gloria. Ahora petrifica 2 veces a un rival aleatorio.'
