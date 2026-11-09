@@ -169,7 +169,7 @@ body {
     position: relative;
     width: 100%;
     max-width: 340px;
-    aspect-ratio: 1.5 / 1; /* Formato apaisado */
+    aspect-ratio: 1 / 1;
     background: #0f172a;
     border-radius: 1rem;
     overflow: hidden;
@@ -177,6 +177,11 @@ body {
     background-clip: padding-box;
     border-image: linear-gradient(135deg, #fbbf24, #3b82f6, #a855f7) 1;
     box-shadow: 0 0 30px rgba(59, 130, 246, 0.3);
+}
+
+.card-modal-lore-mode.card-modal-frame {
+    aspect-ratio: 3 / 4;
+    max-width: 360px;
 }
 
 .card-art-bg {

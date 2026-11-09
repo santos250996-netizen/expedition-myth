@@ -7,6 +7,28 @@
 
 const PATCH_NOTES = [
     {
+        version: '1.7.2',
+        date: '2026-11-09',
+        title: 'Navegacion de mazos y arte del modal',
+        highlights: [
+            'Entrar al deckbuilder desde la lista de mazos',
+            'Boton MAZOS: lista -> deckbuilder -> lista',
+            'Arte del modal recupera tamano grande en modo combate'
+        ],
+        changes: {
+            new: [],
+            buffs: [],
+            nerfs: [],
+            fixes: [
+                'Entrar al deckbuilder desde la lista de mazos (boton Editar y tarjeta).',
+                'Boton MAZOS: lista -> deckbuilder -> lista (ya no expulsa a home).',
+                'Arte del modal recupera tamano grande en modo combate.',
+                'openDeckbuilderFromGameover() recarga el mazo activo.'
+            ],
+            removed: []
+        }
+    },
+    {
         version: '1.7.1',
         date: '2026-11-08',
         title: 'Reflejo Real y Visuales de Estado',

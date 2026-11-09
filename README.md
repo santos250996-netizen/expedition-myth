@@ -9,7 +9,7 @@ Juego de cartas coleccionables **auto-batalla** inspirado en los mitos del mundo
 
 ## Cómo se juega
 
-1. **MAZOS:** arma tu mazo (máx. 10 copias de las 10 cartas). En móvil toca el botón **+** de la colección para añadir cartas, y usa **▲ ▼ ✕** sobre cada carta del mazo para reordenarla o quitarla. En escritorio también puedes arrastrarlas.
+1. **MAZOS:** puedes tener varios mazos guardados. En la lista, toca una tarjeta para activarla, el botón de editar (lápiz) para abrirla en el deckbuilder o el de eliminar (papelera) para borrarla. El botón MAZOS de la barra inferior alterna entre la lista y el deckbuilder del mazo activo. Dentro del deckbuilder, toca **+** en la colección para añadir, los botones de subir/bajar/quitar sobre cada carta del mazo para reordenar o quitarla, y desliza a la izquierda para quitar/añadir. En escritorio también puedes arrastrar.
 2. **JUGAR:** la partida corre sola — cada jugador despliega una carta por turno si tiene Energía suficiente.
 3. Cada turno, el **ATK** total de tu tablero se suma a tu marcador; el rival hace lo propio.
 4. La partida se decide por **diferencia de 50 Puntos de Gloria**. Y ojo al estancamiento: si ambos mazos se agotan y en los tableros ya no queda nada que pueda sumar gloria (sin ATK ni generadores periódicos), termina ahí mismo y gana quien tenga más Puntos de Gloria — con igualdad, empate. Guarda detalles de cada carta tocándola (con su lore).
@@ -28,7 +28,7 @@ expedition-myth/
 │   ├── cards.js        # Datos: plantillas de cartas (stats, arte, lore, efectos)
 │   ├── state.js        # Estado global de la partida
 │   ├── fx.js           # Motor de efectos visuales: cola por tick, proyección de eventos, textos flotantes
-│   ├── deck.js         # Constructor de mazos: persistencia, drag & drop y acciones táctiles
+│   ├── deck.js         # Constructor de mazos: múltiples mazos, persistencia, drag & drop y acciones táctiles
 │   ├── chapters.js     # Datos narrativos de la campaña y mazos del bot
 │   ├── ui.js           # Modal de carta, HUD, tableros (reconciliados por uid) y fin de partida
 │   ├── game.js         # Motor: reloj de turnos, despliegue, efectos y victoria

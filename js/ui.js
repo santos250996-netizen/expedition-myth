@@ -1367,6 +1367,7 @@ function checkNewVersion() {
 // Abre el deckbuilder desde el modal de gameover.
 function openDeckbuilderFromGameover() {
     closeGameOverModal();
+    loadDeck();
     switchView('view-deckbuilder');
     setTimeout(() => { renderDeckEditor(); renderCollection(); }, 50);
 }
@@ -1445,9 +1446,14 @@ function initCardModalSwipe() {
 function handleNavClick(viewId, opener) {
     let currentView = document.querySelector('.view-section:not(.hidden-view)');
     let currentId = currentView ? currentView.id : null;
-    let isCurrent = (currentId === viewId) ||
-        (viewId === 'view-chapters' && currentId === 'view-chapters') ||
-        (viewId === 'view-decks' && (currentId === 'view-decks' || currentId === 'view-deckbuilder'));
+
+    if (viewId === 'view-decks') {
+        if (currentId === 'view-deckbuilder') { switchView('view-decks'); renderDeckSelect(); return; }
+        if (currentId === 'view-decks') { openDeckForEdit(getActiveDeckId()); return; }
+        opener(); return;
+    }
+
+    let isCurrent = (currentId === viewId);
     if (isCurrent) switchView('view-home');
     else opener();
 }
@@ -1466,19 +1472,29 @@ function renderDeckSelect() {
         if (family) firstCard = ALL_CARDS.find(c => c.id === getSelectedPhase(family.id));
         let art = firstCard ? firstCard.art : 'assets/cartas/carta-01-mortales-de-arcadia.webp';
         html += `
-            <div class="relative rounded-xl overflow-hidden border-2 ${isActive ? 'border-amber-400' : 'border-slate-700'} mb-2">
-                <div class="flex items-center gap-2 p-2" onclick="setActiveDeckId('${deck.id}'); loadDeck(); renderDeckSelect();">
-                    <div class="w-16 h-12 rounded overflow-hidden bg-cover bg-center shrink-0 border border-slate-600" style="background-image:url('${art}')"></div>
-                    <div class="flex-1">
-                        <input type="text" value="${deck.name}" onclick="event.stopPropagation()" onchange="renameDeck('${deck.id}', this.value); renderDeckSelect();" class="w-full bg-slate-800 border border-slate-600 rounded px-2 py-1 text-white text-xs font-bold">
-                        <div class="text-[9px] text-slate-400 mt-0.5">${deck.cards.length}/10 cartas ${isActive ? '· ACTIVO' : ''}</div>
-                    </div>
-                    ${decks.length > 1 ? `<button onclick="event.stopPropagation(); if(deleteDeck('${deck.id}')) { loadDeck(); renderDeckSelect(); }" class="w-8 h-8 rounded-full bg-red-950/60 border border-red-500/50 text-red-300 text-xs shrink-0"><i class="fa-solid fa-trash"></i></button>` : ''}
+            <div class="flex items-center gap-2 p-2">
+                <div class="w-16 h-12 rounded overflow-hidden bg-cover bg-center shrink-0 border border-slate-600" style="background-image:url('${art}')"></div>
+                <div class="flex-1" onclick="openDeckForEdit('${deck.id}')">
+                    <input type="text" value="${deck.name}" onclick="event.stopPropagation()" onchange="renameDeck('${deck.id}', this.value); renderDeckSelect();" class="w-full bg-slate-800 border border-slate-600 rounded px-2 py-1 text-white text-xs font-bold">
+                    <div class="text-[9px] text-slate-400 mt-0.5">${deck.cards.length}/10 cartas ${isActive ? '· ACTIVO' : ''}</div>
                 </div>
+                <button onclick="event.stopPropagation(); openDeckForEdit('${deck.id}')" class="w-8 h-8 rounded-full bg-blue-900/60 border border-blue-500/50 text-blue-300 text-xs shrink-0" aria-label="Editar mazo">
+                    <i class="fa-solid fa-pen"></i>
+                </button>
+                ${decks.length > 1 ? `<button onclick="event.stopPropagation(); if(deleteDeck('${deck.id}')) { loadDeck(); renderDeckSelect(); }" class="w-8 h-8 rounded-full bg-red-950/60 border border-red-500/50 text-red-300 text-xs shrink-0" aria-label="Eliminar mazo"><i class="fa-solid fa-trash"></i></button>` : ''}
             </div>
         `;
     });
     html += `<button onclick="createDeck(); renderDeckSelect();" class="w-full bg-emerald-700 text-white font-bold py-2 rounded-lg text-xs mt-2"><i class="fa-solid fa-plus"></i> Crear mazo nuevo</button>`;
     container.innerHTML = html;
+}
+
+// Abre el deckbuilder con el mazo indicado (botón lápiz de la lista).
+function openDeckForEdit(deckId) {
+    setActiveDeckId(deckId);
+    loadDeck();
+    renderDeckEditor();
+    renderCollection();
+    switchView('view-deckbuilder');
 }
 
