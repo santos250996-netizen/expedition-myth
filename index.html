@@ -12,9 +12,9 @@
          Tailwind va precompilado (solo las clases usadas): el runtime del
          Play CDN recompilaba estilos en cada mutación del DOM y lastraba
          el render. -->
-    <link rel="stylesheet" href="css/vendor/tailwind.min.css?v=20261119e">
+    <link rel="stylesheet" href="css/vendor/tailwind.min.css?v=20261119h">
     <link href="css/vendor/all.min.css" rel="stylesheet">
-    <link rel="stylesheet" href="css/styles.css?v=20261119e">
+    <link rel="stylesheet" href="css/styles.css?v=20261119h">
 </head>
 <body class="bg-black flex justify-center items-center">
 
@@ -362,24 +362,14 @@
                 </div>
             </div>
 
-            <!-- Bloque de keyword (solo en modo combate) -->
-            <div id="modal-keyword-box" class="w-full max-w-xs mt-3 bg-slate-900/90 border border-slate-700 p-2 rounded-lg hidden-view">
-                <p class="text-[8px] font-orbitron font-bold uppercase tracking-[0.2em] text-amber-300 text-center mb-1">KEYWORD</p>
-                <p id="modal-keyword-text" class="text-[10px] text-slate-300 leading-tight text-center"></p>
+            <!-- Panel de información (altura fija, contenido intercambiable) -->
+            <div id="modal-info-panel" class="w-full max-w-xs mt-3 bg-slate-900/90 border border-slate-700 rounded-lg overflow-hidden">
+                <div id="modal-info-content" class="p-2 overflow-y-auto h-full">
+                    <!-- Renderizado JS (keyword, lore o misión según el modo) -->
+                </div>
             </div>
 
-            <!-- Bloque de lore (solo en modo lore) -->
-            <div id="card-modal-lore-box" class="w-full max-w-xs mt-4 bg-slate-900/90 border border-slate-700 p-3 rounded-lg hidden-view">
-                <p class="text-[9px] font-orbitron font-bold uppercase tracking-[0.25em] text-amber-300 text-center mb-1">LORE</p>
-                <p class="text-[10px] text-slate-400 italic leading-tight text-center" id="modal-card-lore"></p>
-            </div>
-
-            <!-- Bloque de misión -->
-            <div id="modal-mission-box" class="w-full max-w-xs mt-2 bg-slate-900/90 border border-purple-700/50 p-2 rounded-lg hidden-view">
-                <!-- Renderizado JS -->
-            </div>
-
-            <!-- Selector de fases -->
+            <!-- Selector de formas (familias; bloque estable fuera del panel) -->
             <div id="modal-phase-selector" class="w-full max-w-xs mt-2 bg-slate-900/90 border border-amber-700/50 p-2 rounded-lg hidden-view">
                 <!-- Renderizado JS -->
             </div>
@@ -473,15 +463,15 @@
     </div>
 
 
-    <script src="js/cards.js?v=20261119e"></script>
-    <script src="js/state.js?v=20261119e"></script>
-    <script src="js/fx.js?v=20261119e"></script>
-    <script src="js/deck.js?v=20261119e"></script>
-    <script src="js/chapters.js?v=20261119e"></script>
-    <script src="js/patchnotes.js?v=20261119e"></script>
-    <script src="js/ui.js?v=20261119e"></script>
-    <script src="js/game.js?v=20261119e"></script>
-    <script src="js/dev.js?v=20261119e"></script>
-<script src="js/main.js?v=20261119e"></script>
+    <script src="js/cards.js?v=20261119h"></script>
+    <script src="js/state.js?v=20261119h"></script>
+    <script src="js/fx.js?v=20261119h"></script>
+    <script src="js/deck.js?v=20261119h"></script>
+    <script src="js/chapters.js?v=20261119h"></script>
+    <script src="js/patchnotes.js?v=20261119h"></script>
+    <script src="js/ui.js?v=20261119h"></script>
+    <script src="js/game.js?v=20261119h"></script>
+    <script src="js/dev.js?v=20261119h"></script>
+<script src="js/main.js?v=20261119h"></script>
 </body>
 </html>

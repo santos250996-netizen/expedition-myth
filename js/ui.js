@@ -56,7 +56,6 @@ function renderCardModalContent(card) {
     let loreName = document.getElementById('modal-card-lore-name');
     if (loreName) loreName.innerText = displayCard.name;
     document.getElementById('modal-card-desc').innerText = displayCard.desc;
-    document.getElementById('modal-card-lore').innerText = displayCard.lore || '';
 
     // Ocultar facción si no existe.
     let factionEl = document.getElementById('modal-card-faction');
@@ -103,8 +102,6 @@ function renderCardModalContent(card) {
     }
 
     // Keyword (usa displayCard.desc).
-    let keywordBox = document.getElementById('modal-keyword-box');
-    let keywordText = document.getElementById('modal-keyword-text');
     let keywordExplanation = '';
     if (displayCard.desc && displayCard.desc.includes('Embestida')) {
         keywordExplanation = "<strong>Embestida X:</strong> Consume X ATK y HP para infligir X de daño al Ser rival de su misma fila.";
@@ -121,39 +118,44 @@ function renderCardModalContent(card) {
     } else if (displayCard.subtype === 'Vástago') {
         keywordExplanation = "<strong>Vástago:</strong> Ser invocado por Equidna, la Madre de Monstruos. Los Vástagos son hijos de Equidna y se comportan como Seres normales (atacan, reciben daño, puntúan).";
     }
-    if (keywordExplanation) {
-        keywordText.innerHTML = keywordExplanation;
-        cardModalHasKeyword = true;
-        keywordBox.classList.remove('hidden-view');
-    } else {
-        cardModalHasKeyword = false;
-        keywordBox.classList.add('hidden-view');
-    }
+    // PANEL ÚNICO: la explicación se guarda en el window; el panel de
+    // información (#modal-info-content, más abajo) la pinta según el modo.
+    cardModalHasKeyword = !!keywordExplanation;
+    window._modalKeywordExplanation = keywordExplanation;
 
-    // --- MISIÓN DE LA CARTA (si la carta mostrada tiene misión) ---
-    let missionBox = document.getElementById('modal-mission-box');
-    if (missionBox) {
+    // --- PANEL DE INFORMACIÓN (keyword, lore o misión según el modo) ---
+    let infoPanel = document.getElementById('modal-info-content');
+    if (infoPanel) {
         let mission = getMissionFor(displayCard.id);
-        if (mission) {
-            let progress = getProgressFor(displayCard.id);
-            let current = 0;
-            if (mission.type === 'wins') current = progress.wins || 0;
-            if (mission.type === 'laberinto_received') current = progress.laberintoReceived || 0;
-            if (mission.type === 'games_with') current = progress.gamesWith || 0;
-            let completed = current >= mission.count;
-            let pct = Math.min(100, (current / mission.count) * 100);
-            missionBox.innerHTML = `
-                <div class="text-[8px] font-orbitron font-bold uppercase tracking-[0.2em] text-purple-300 text-center mb-1">MISIÓN</div>
-                <p class="text-[10px] text-slate-300 leading-tight text-center mb-1">${mission.description}</p>
-                <div class="w-full h-2 bg-slate-800 rounded-full overflow-hidden mb-1">
-                    <div class="h-full ${completed ? 'bg-emerald-500' : 'bg-purple-500'}" style="width:${pct}%"></div>
-                </div>
-                <p class="text-[9px] text-center ${completed ? 'text-emerald-400' : 'text-slate-400'}">${current}/${mission.count} ${completed ? '— ¡COMPLETADA!' : ''}</p>
-            `;
-            missionBox.classList.remove('hidden-view');
+        let html = '';
+
+        // Modo combate: keyword + misión (si tiene).
+        // Modo lore: lore (ocupa todo el panel).
+        if (cardModalMode === 'lore') {
+            html = `<p class="text-[10px] text-slate-400 italic leading-tight text-center">${displayCard.lore || ''}</p>`;
         } else {
-            missionBox.classList.add('hidden-view');
+            // Keyword
+            if (cardModalHasKeyword) {
+                html += `<div class="mb-1"><p class="text-[8px] font-orbitron font-bold uppercase tracking-[0.2em] text-amber-300 text-center mb-1">KEYWORD</p>`;
+                html += `<p id="modal-keyword-text" class="text-[10px] text-slate-300 leading-tight text-center">${window._modalKeywordExplanation || ''}</p></div>`;
+            }
+            // Misión
+            if (mission) {
+                let progress = getProgressFor(displayCard.id);
+                let current = 0;
+                if (mission.type === 'wins') current = progress.wins || 0;
+                if (mission.type === 'laberinto_received') current = progress.laberintoReceived || 0;
+                if (mission.type === 'games_with') current = progress.gamesWith || 0;
+                let completed = current >= mission.count;
+                let pct = Math.min(100, (current / mission.count) * 100);
+                html += `<div class="mt-1"><p class="text-[8px] font-orbitron font-bold uppercase tracking-[0.2em] text-purple-300 text-center mb-1">MISIÓN</p>`;
+                html += `<p class="text-[10px] text-slate-300 leading-tight text-center mb-1">${mission.description}</p>`;
+                html += `<div class="w-full h-1.5 bg-slate-800 rounded-full overflow-hidden mb-1"><div class="h-full ${completed ? 'bg-emerald-500' : 'bg-purple-500'}" style="width:${pct}%"></div></div>`;
+                html += `<p class="text-[9px] text-center ${completed ? 'text-emerald-400' : 'text-slate-400'}">${current}/${mission.count} ${completed ? '— ¡COMPLETADA!' : ''}</p></div>`;
+            }
+            if (!html) html = '<p class="text-[10px] text-slate-500 text-center">Sin información.</p>';
         }
+        infoPanel.innerHTML = html;
     }
 
     // --- SELECTOR DE FORMAS (solo si la carta pertenece a una familia) ---
@@ -267,6 +269,9 @@ function applyCardModalMode() {
 // Toggle entre modos al tocar la carta.
 function toggleCardModalMode() {
     cardModalMode = cardModalMode === 'combat' ? 'lore' : 'combat';
+    // PANEL ÚNICO: el contenido del panel cambia con el modo (lore frente a
+    // keyword/misión), así que hay que re-renderizarlo.
+    if (window._modalActiveCard) renderCardModalContent(window._modalActiveCard);
     applyCardModalMode();
 }
 

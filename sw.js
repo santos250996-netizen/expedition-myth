@@ -7,25 +7,25 @@
 //    revalidate: respuesta instantánea desde caché y refresco en segundo
 //    plano. Reabrir el juego no vuelve a descargar ninguna imagen.
 // Para publicar cambios: subir la versión de CACHE (y los ?v= del HTML).
-const CACHE = 'nexo-v20261119e';
+const CACHE = 'nexo-v20261119h';
 
 const PRECACHE = [
     './', './index.html', './manifest.json', './icon.svg',
-    './css/styles.css?v=20261119e',
-    './js/cards.js?v=20261119e',
-    './js/state.js?v=20261119e',
-    './js/fx.js?v=20261119e',
-    './js/deck.js?v=20261119e',
-    './js/chapters.js?v=20261119e',
-    './js/patchnotes.js?v=20261119e',
-    './js/ui.js?v=20261119e',
-    './js/game.js?v=20261119e',
-    './js/dev.js?v=20261119e',
-    './js/main.js?v=20261119e',
+    './css/styles.css?v=20261119h',
+    './js/cards.js?v=20261119h',
+    './js/state.js?v=20261119h',
+    './js/fx.js?v=20261119h',
+    './js/deck.js?v=20261119h',
+    './js/chapters.js?v=20261119h',
+    './js/patchnotes.js?v=20261119h',
+    './js/ui.js?v=20261119h',
+    './js/game.js?v=20261119h',
+    './js/dev.js?v=20261119h',
+    './js/main.js?v=20261119h',
     // Dependencias vendorizadas (antes CDN): Tailwind precompilado,
     // Font Awesome y Google Fonts. Sin ellas offline el juego perdería
     // estilos y tipografía.
-    './css/vendor/tailwind.min.css?v=20261119e',
+    './css/vendor/tailwind.min.css?v=20261119h',
     './css/vendor/all.min.css',
     './css/webfonts/fa-solid-900.woff2',
     './css/webfonts/fa-regular-400.woff2',
@@ -59,6 +59,8 @@ const PRECACHE = [
     './assets/cartas/asterion-a9-nacimiento-minotauro.webp',
     './assets/cartas/asterion-a10-construccion-laberinto.webp',
     './assets/cartas/asterion-a11-muerte-minotauro.webp',
+    // Arte de El Talos (forma III de Dédalo).
+    './assets/cartas/dedalo-talos-guardian-de-creta.webp',
     // Artes del mazo de Medusa (subhistoria; placeholders hasta tener arte)
     './assets/cartas/medusa-b0-serpientes-cabeza.webp',
     './assets/cartas/medusa-b1-doncella.webp',

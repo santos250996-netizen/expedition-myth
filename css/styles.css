@@ -936,3 +936,23 @@ main,
 /* FIX: z-[90] (valor arbitrario) tampoco existe en el build estático; esta
    regla pone el modal dev de mazos de bots por encima del resto (z-50/70). */
 #dev-botdecks-modal { z-index: 90; }
+
+/* --- MODAL DE CARTA: PANEL ÚNICO (altura fija, sin saltos) --- */
+/* El panel de información tiene un alto fijo. El contenido (keyword, lore,
+   misión) se intercambia dentro, pero el panel nunca cambia de tamaño. */
+#modal-info-panel {
+    height: 100px; /* Alto fijo: ajusta si hace falta más espacio */
+    flex-shrink: 0;
+}
+#modal-info-content {
+    height: 100%;
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+}
+#modal-info-content::-webkit-scrollbar {
+    display: none;
+    width: 0;
+    height: 0;
+}
+
+/* --- FIN PANEL ÚNICO --- */

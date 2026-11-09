@@ -489,7 +489,7 @@ const ALL_CARDS = [
     icon: 'fa-robot',
     desc: 'Al entrar: 2 daño a todos los rivales.',
     lore: 'En las costas de Creta, un gigante de bronce patrulla la isla. Su cuerpo es metal pulido, sus ojos son ascuas, y su piel no conoce el dolor. Tres veces al día recorre las playas, y a quien se acerca a la orilla le lanza rocas del tamaño de un hombre. No es un dios ni un monstruo: es una máquina, la obra maestra de Dédalo. Y como toda obra maestra, tiene un punto débil: un clavo en el tobillo que guarda su vida.',
-    art: '', // TODO: arte (ya tienes la imagen)
+    art: 'assets/cartas/dedalo-talos-guardian-de-creta.webp',
     effect: (p, opp) => {
         opp.activeBoard.filter(c => !c.dying).slice().forEach(c => {
             dealDamage(c, 2, sideOf(opp));
