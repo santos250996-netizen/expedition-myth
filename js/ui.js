@@ -452,8 +452,8 @@ function createCardElement(card, theme, animate) {
         <div class="absolute inset-x-0 top-0 h-5 bg-gradient-to-b from-black/75 to-transparent pointer-events-none"></div>
         <div class="absolute top-0.5 left-1 w-full text-[7px] text-white/90 font-bold truncate pointer-events-none px-1 drop-shadow-md">${card.name}</div>
         <div class="absolute bottom-1 right-1 flex gap-1 z-10 pointer-events-none">
-            <div class="stat-atk w-5 h-5 rounded-full bg-blue-950/90 border border-cyan-400 flex items-center justify-center text-white font-bold text-[9px] shadow-lg">${displayAtk}</div>
-            <div class="stat-hp w-5 h-5 rounded-full bg-red-950/90 border border-red-400 flex items-center justify-center text-white font-bold text-[9px] shadow-lg">${card.hp}</div>
+            <div class="stat-atk"><span>${displayAtk}</span></div>
+            <div class="stat-hp"><span>${card.hp}</span></div>
         </div>
     `;
     wrap.appendChild(cardDiv);
@@ -482,12 +482,12 @@ function updateCardElement(el, card) {
     let hpEl = el.querySelector('.stat-hp');
     if (atkEl && +atkEl.innerText !== displayAtk) {
         let rose = displayAtk > +atkEl.innerText;
-        atkEl.innerText = displayAtk;
+        (atkEl.querySelector('span') || atkEl).innerText = displayAtk;
         flashStat(atkEl, rose);
     }
     if (hpEl && +hpEl.innerText !== card.hp) {
         let rose = card.hp > +hpEl.innerText;
-        hpEl.innerText = card.hp;
+        (hpEl.querySelector('span') || hpEl).innerText = card.hp;
         flashStat(hpEl, rose);
     }
     // El badge de gloria refleja el ATK efectivo y se atenúa si el Ser no
@@ -825,15 +825,17 @@ function openChapters() {
 
 function openEvents() {
     if (!isChapterCompleted(1)) {
-        // Bloqueado: el botón ya se ve gris con candado (CSS). No hacer nada.
-        // Si quieres feedback, puedes vibrar ligeramente en móvil.
         if (navigator.vibrate) navigator.vibrate(30);
         return;
     }
     switchView('view-chapters');
     setTimeout(() => {
+        let scrollContainer = document.querySelector('#view-chapters .overflow-y-auto');
         let el = document.getElementById('events-section');
-        if (el) el.scrollIntoView({ behavior: 'smooth' });
+        if (scrollContainer && el) {
+            let top = el.offsetTop - scrollContainer.offsetTop;
+            scrollContainer.scrollTo({ top: top, behavior: 'smooth' });
+        }
     }, 120);
 }
 
