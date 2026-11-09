@@ -39,6 +39,8 @@ function openCardModal(cardIdOrFamilyId) {
     applyCardModalMode();
 
     document.getElementById('card-modal').classList.remove('hidden-view');
+    // Inicializar el gesto de deslizar (solo si es familia).
+    if (family) initCardModalSwipe();
 }
 
 // Renderiza el contenido del modal (arte, coste, nombre, tipo, stats, desc,
@@ -1335,5 +1337,75 @@ function openDeckbuilderFromGameover() {
     closeGameOverModal();
     switchView('view-deckbuilder');
     setTimeout(() => { renderDeckEditor(); renderCollection(); }, 50);
+}
+
+// --- GESTO DE DESLIZAR EN EL MODAL DE FAMILIA ---
+// Deslizar izquierda/derecha cambia entre las formas de la familia.
+// Solo funciona si el modal tiene una familia activa (window._modalActiveFamilyId).
+// Umbral: 50px. La carta sigue al dedo mientras se desliza.
+
+let _swipeStartX = null;
+let _swipeCurrentFormIndex = -1;
+let _swipeMaxDistance = 0;
+
+function initCardModalSwipe() {
+    let frame = document.querySelector('.card-modal-frame');
+    if (!frame || frame._swipeInitialized) return;
+    frame._swipeInitialized = true;
+
+    frame.addEventListener('touchstart', (e) => {
+        if (!window._modalActiveFamilyId) return;
+        _swipeStartX = e.touches[0].clientX;
+        _swipeMaxDistance = 0;
+        // Índice actual de la forma mostrada.
+        let family = CARD_FAMILIES[window._modalActiveFamilyId];
+        if (!family) return;
+        let currentForm = window._modalActiveCard ? window._modalActiveCard.id : family.forms[0];
+        _swipeCurrentFormIndex = family.forms.indexOf(currentForm);
+        if (_swipeCurrentFormIndex === -1) _swipeCurrentFormIndex = 0;
+    }, { passive: true });
+
+    frame.addEventListener('touchmove', (e) => {
+        if (_swipeStartX === null) return;
+        let dx = e.touches[0].clientX - _swipeStartX;
+        // La carta sigue al dedo (máx 30px para no romper el layout).
+        let limitedDx = Math.max(-30, Math.min(30, dx));
+        frame.style.transform = `translateX(${limitedDx}px)`;
+        frame.style.transition = 'none';
+        _swipeMaxDistance = Math.abs(dx);
+    }, { passive: true });
+
+    frame.addEventListener('touchend', (e) => {
+        if (_swipeStartX === null) return;
+        let dx = e.changedTouches[0].clientX - _swipeStartX;
+        _swipeStartX = null;
+
+        // Reset visual.
+        frame.style.transition = 'transform 0.2s ease';
+        frame.style.transform = '';
+
+        // Umbral: 50px.
+        if (Math.abs(dx) < 50) return;
+
+        let family = CARD_FAMILIES[window._modalActiveFamilyId];
+        if (!family) return;
+
+        let newIndex = _swipeCurrentFormIndex;
+        if (dx < 0) {
+            // Deslizar a la izquierda: forma siguiente.
+            newIndex = Math.min(family.forms.length - 1, _swipeCurrentFormIndex + 1);
+        } else {
+            // Deslizar a la derecha: forma anterior.
+            newIndex = Math.max(0, _swipeCurrentFormIndex - 1);
+        }
+
+        if (newIndex === _swipeCurrentFormIndex) return; // no hay cambio
+
+        let newFormId = family.forms[newIndex];
+        let card = ALL_CARDS.find(c => c.id === newFormId);
+        if (card) {
+            markPhase(window._modalActiveFamilyId, newFormId);
+        }
+    }, { passive: true });
 }
 
