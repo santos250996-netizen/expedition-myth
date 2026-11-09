@@ -197,9 +197,8 @@ function applyHpReduction(owner, target, amount, fxIcon) {
 
 // ¿Todavía puede este lado sumar gloria en algún turno futuro? Es fuente de
 // gloria: tener mazo por jugar, o un Ser vivo con ATK permanente que puntúe
-// el tick. Los generadores periódicos también: Guardián c15 (+8 PG en
-// cualquier fila), Sátiro c2 (+1 ATK por cada otro Ser aliado vivo, cualquier
-// fila) y Centinela c18 (solo se re-crecen desde la Fila 1).
+// el tick. Los generadores periódicos también: Sátiro c2 (+1 ATK por cada
+// otro Ser aliado vivo, cualquier fila).
 // El ATK temporal (Bendición c37) NO cuenta: se resetea antes de puntuar el
 // próximo tick.
 function canStillScore(player) {
@@ -207,11 +206,10 @@ function canStillScore(player) {
     let alive = player.activeBoard.filter(c => !c.dying);
     return alive.some(c => {
         if (c.stunned) return (c.laberintoTurns || 0) > 0;
-        if (c.petrifiedTurns > 0) return true; // petrificado puede despertar
+        if (c.petrifiedTurns > 0) return true;
         if (c.atk > 0) return true;
-        if (c.id === 'c15') return true;
         if (c.id === 'c2' && alive.some(o => o !== c && o.kind === 'Ser')) return true;
-        return alive[0] === c && c.id === 'c18';
+        return false;
     });
 }
 

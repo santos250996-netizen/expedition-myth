@@ -28,7 +28,7 @@ expedition-myth/
 │   ├── cards.js        # Datos: plantillas de cartas (stats, arte, lore, efectos)
 │   ├── state.js        # Estado global de la partida
 │   ├── fx.js           # Motor de efectos visuales: cola por tick, proyección de eventos, textos flotantes
-│   ├── deck.js         # Constructor de mazos: múltiples mazos, persistencia, drag & drop y acciones táctiles
+│   ├── deck.js         # Constructor de mazos (múltiples): persistencia, drag & drop y acciones táctiles
 │   ├── chapters.js     # Datos narrativos de la campaña y mazos del bot
 │   ├── ui.js           # Modal de carta, HUD, tableros (reconciliados por uid) y fin de partida
 │   ├── game.js         # Motor: reloj de turnos, despliegue, efectos y victoria

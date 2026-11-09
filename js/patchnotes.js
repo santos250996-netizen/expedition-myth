@@ -7,6 +7,38 @@
 
 const PATCH_NOTES = [
     {
+        version: '1.7.3',
+        date: '2026-11-09',
+        title: 'Estructura de mazos y pulido de progreso',
+        highlights: [
+            'Entrar al deckbuilder desde la lista de mazos',
+            'Boton MAZOS: lista -> deckbuilder -> lista',
+            'Arte del modal recupera tamano grande',
+            'Reiniciar Progreso borra TODO el progreso real',
+            'Combates ganados se cuentan en el perfil'
+        ],
+        changes: {
+            new: [],
+            buffs: [],
+            nerfs: [],
+            fixes: [
+                'Entrar al deckbuilder desde la lista de mazos (boton Editar y tarjeta).',
+                'Boton MAZOS: lista -> deckbuilder -> lista (ya no expulsa a home).',
+                'Arte del modal recupera tamano grande en modo combate.',
+                'closeCardModal no reanuda una partida ya terminada.',
+                'Reiniciar Progreso borra mazos, formas, misiones y stats.',
+                'Renombrar mazo ya no pierde el foco del input.',
+                'Combates ganados se cuentan correctamente en el perfil.',
+                'openDeckbuilderFromGameover y switchView recargan el mazo activo.',
+                'Limpiado codigo muerto: faction, c15, c18.'
+            ],
+            removed: [
+                'Bloque faction del modal de carta (ninguna carta lo usa).',
+                'Referencias a c15 y c18 en canStillScore (cartas eliminadas en v1.1.0).'
+            ]
+        }
+    },
+    {
         version: '1.7.2',
         date: '2026-11-09',
         title: 'Navegacion de mazos y arte del modal',

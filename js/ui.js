@@ -62,17 +62,6 @@ function renderCardModalContent(card) {
     if (loreName) loreName.innerText = displayCard.name;
     document.getElementById('modal-card-desc').innerText = displayCard.desc;
 
-    // Ocultar facción si no existe.
-    let factionEl = document.getElementById('modal-card-faction');
-    if (factionEl) {
-        if (displayCard.faction) {
-            factionEl.innerText = displayCard.faction.toUpperCase();
-            factionEl.style.display = '';
-        } else {
-            factionEl.style.display = 'none';
-        }
-    }
-
     let typeIcon = document.getElementById('modal-card-type-icon');
     let typeText = document.getElementById('modal-card-type');
     let statsBox = document.querySelector('.card-stats-box');
@@ -301,12 +290,14 @@ function closeCardModal() {
         renderDeckEditor();
         renderCollection();
     }
-    // FIX: reanudar solo si esta modal fue quien pausó el juego.
+    // Reanudar solo si el modal pauso la partida, la vista de juego
+    // sigue activa y NO hay gameover visible (evita reanudar una
+    // partida ya terminada por un tick que cayo con el modal abierto).
     if (modalAutoPaused) {
         modalAutoPaused = false;
-        if (!document.getElementById('view-game').classList.contains('hidden-view')) {
-            startGame();
-        }
+        let inGame = !document.getElementById('view-game').classList.contains('hidden-view');
+        let gameOver = !document.getElementById('gameover-modal').classList.contains('hidden-view');
+        if (inGame && !gameOver) startGame();
     }
 }
 
@@ -637,6 +628,7 @@ function showGameOver() {
 
     let epilogueBox = document.getElementById('gameover-epilogue');
     let won = p1Score > p2Score;
+    if (won) incrementWin();
     let isEvent = currentChapter && currentChapter.isEvent;
     let isTutorial = currentChapter && currentChapter.id === 1;
     let progressDone = false;
@@ -1232,13 +1224,15 @@ function confirmResetProgress() {
         safeStorageSet('nexo_chapters_v1', '[]');
         safeStorageSet('nexo_events_v1', '[]');
         safeStorageSet('nexo_profile_v1', 'null');
-        // El mazo guardado también se borra: al recargar se reconstruye el
-        // starter con las cartas del Capítulo 1.0 (el aviso promete perder
-        // "mazos" también, no solo cartas).
         safeStorageSet('nexo_deck_v1', '');
-        // Notas del parche: al reiniciar, el banner vuelve a aparecer.
+        safeStorageSet('nexo_decks_v1', '');
+        safeStorageSet('nexo_active_deck_v1', '');
+        safeStorageSet('nexo_unlocked_forms_v1', '');
+        safeStorageSet('nexo_selected_phases_v1', '');
+        safeStorageSet('nexo_card_progress_v1', '');
+        safeStorageSet('nexo_stats_v1', '');
         safeStorageSet('nexo_last_seen_version', '');
-        location.reload(); // Recargar la app para reiniciar todo
+        location.reload();
     }
 }
 
@@ -1474,8 +1468,8 @@ function renderDeckSelect() {
         html += `
             <div class="flex items-center gap-2 p-2">
                 <div class="w-16 h-12 rounded overflow-hidden bg-cover bg-center shrink-0 border border-slate-600" style="background-image:url('${art}')"></div>
-                <div class="flex-1" onclick="openDeckForEdit('${deck.id}')">
-                    <input type="text" value="${deck.name}" onclick="event.stopPropagation()" onchange="renameDeck('${deck.id}', this.value); renderDeckSelect();" class="w-full bg-slate-800 border border-slate-600 rounded px-2 py-1 text-white text-xs font-bold">
+                <div class="flex-1" onclick="setActiveDeckId('${deck.id}'); loadDeck(); renderDeckSelect();">
+                    <input type="text" value="${deck.name}" data-deck-name="${deck.id}" onclick="event.stopPropagation()" onchange="renameDeck('${deck.id}', this.value);" class="w-full bg-slate-800 border border-slate-600 rounded px-2 py-1 text-white text-xs font-bold">
                     <div class="text-[9px] text-slate-400 mt-0.5">${deck.cards.length}/10 cartas ${isActive ? '· ACTIVO' : ''}</div>
                 </div>
                 <button onclick="event.stopPropagation(); openDeckForEdit('${deck.id}')" class="w-8 h-8 rounded-full bg-blue-900/60 border border-blue-500/50 text-blue-300 text-xs shrink-0" aria-label="Editar mazo">

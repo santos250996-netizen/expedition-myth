@@ -18,7 +18,7 @@ function switchView(viewId) {
     if (viewId === 'view-home') updateHomeChapterLabel();
     if (viewId === 'view-game') resetMatch();
     if (viewId === 'view-chapters') renderChapterSelect();
-    if (viewId === 'view-deckbuilder') { renderDeckEditor(); renderCollection(); }
+    if (viewId === 'view-deckbuilder') { loadDeck(); renderDeckEditor(); renderCollection(); }
     if (viewId === 'view-decks') renderDeckSelect();
 
     // --- Ocultar botones globales ---
