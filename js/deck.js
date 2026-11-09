@@ -15,12 +15,10 @@ function safeStorageSet(key, value) {
 
 // --- INICIALIZACIÓN ---
 function loadDeck() {
-    // Inicializar el inventario del jugador (cartas del Capítulo 1.0).
     initOwnedCards();
+    let activeDeck = getActiveDeck();
+    let savedIds = activeDeck.cards || [];
 
-    // SISTEMA DE FAMILIAS: el mazo guarda familyId ('asterion', 'dedalo') para
-    // familias y el id de la carta para cartas sueltas. Los ids legados de
-    // fases ('c3', 'a2', 'a7'...) se normalizan al familyId de su familia.
     let normalizeIds = (ids) => {
         let out = [];
         (ids || []).forEach(id => {
@@ -30,29 +28,19 @@ function loadDeck() {
         });
         return out;
     };
-    // Entrada válida: carta suelta poseída, o familia cuya base se posee.
     let isValidEntry = (id) => {
         let family = getFamilyById(id);
         if (family) return ownedCardIds.includes(family.forms[0]);
         return ownedCardIds.includes(id);
     };
 
-    let saved = safeStorageGet('nexo_deck_v1');
-    if (saved) {
-        try {
-            let savedIds = JSON.parse(saved);
-            playerDeck = normalizeIds(savedIds).filter(isValidEntry);
-        } catch(e) { console.error("Error loading deck", e); }
-    }
+    playerDeck = normalizeIds(savedIds).filter(isValidEntry);
 
-    // Sin mazo guardado (o vacío): starter con las cartas que se poseen.
     if (!playerDeck || playerDeck.length === 0) {
         playerDeck = normalizeIds(ALL_CARDS.filter(c => ownedCardIds.includes(c.id)).map(c => c.id)).slice(0, 10);
     }
     if (playerDeck.length > 10) playerDeck = playerDeck.slice(0, 10);
 
-    // Override dev: si el mazo guardado tiene menos de 10 cartas, se rellena
-    // con el resto de cartas disponibles hasta 10. Solo en modo dev.
     if (isDevMode() && playerDeck.length < 10) {
         let used = new Set(playerDeck);
         for (let c of ALL_CARDS) {
@@ -63,9 +51,6 @@ function loadDeck() {
         }
     }
 
-    // Validación: si alguna entrada del mazo guardado ya no es válida (por
-    // reinicio de progreso, migración, etc.), se elimina. Si el mazo queda
-    // vacío tras la validación, se reconstruye el starter.
     if (!isDevMode()) {
         playerDeck = playerDeck.filter(isValidEntry);
         if (playerDeck.length === 0) {
@@ -74,16 +59,18 @@ function loadDeck() {
     }
 }
 
-        function saveDeck() {
-            try {
-                // SISTEMA DE FAMILIAS: el mazo ya guarda ids (familyId o id de
-                // carta suelta), no objetos.
-                safeStorageSet('nexo_deck_v1', JSON.stringify(playerDeck));
-                let indicator = document.getElementById('save-indicator');
-                indicator.style.opacity = '1';
-                setTimeout(() => { indicator.style.opacity = '0'; }, 2000);
-            } catch(e) {}
+function saveDeck() {
+    try {
+        let decks = getDecks();
+        let activeDeck = decks.find(d => d.id === getActiveDeckId());
+        if (activeDeck) {
+            activeDeck.cards = [...playerDeck];
+            saveDecks(decks);
         }
+        let indicator = document.getElementById('save-indicator');
+        if (indicator) { indicator.style.opacity = '1'; setTimeout(() => { indicator.style.opacity = '0'; }, 2000); }
+    } catch(e) { console.error('saveDeck:', e); }
+}
         // --- DRAG & DROP ---
         function handleDragStart(e, cardId, source) {
             draggedCardId = cardId;
@@ -203,6 +190,9 @@ function loadDeck() {
             let container = document.getElementById('deck-list-container');
             container.innerHTML = '';
             document.getElementById('builder-deck-count').innerText = playerDeck.length;
+            // Antes del return temprano (mazo vacío): inicializar el gesto de
+            // swipe para que también la colección lo tenga disponible.
+            initDeckSwipe();
 
             if(playerDeck.length === 0) {
                 container.innerHTML = `<div class="text-center text-slate-500 text-xs p-4">Toca el botón + de la colección para añadir cartas a tu mazo.</div>`;
@@ -224,6 +214,7 @@ function loadDeck() {
                 let item = document.createElement('div');
                 item.className = "relative rounded-lg overflow-hidden border border-slate-700 cursor-grab hover:border-blue-500 transition-colors h-14";
                 item.draggable = true;
+                item.dataset.swipeId = idOrCard;
                 item.ondragstart = (e) => handleDragStart(e, idOrCard, 'deck');
                 item.ondragend = handleDragEnd;
                 item.ondragover = (e) => { e.preventDefault(); item.classList.add('border-cyan-400'); };
@@ -261,6 +252,7 @@ function loadDeck() {
         function renderCollection() {
             let container = document.getElementById('collection-container');
             container.innerHTML = '';
+            initDeckSwipe();
             let seenRaw = safeStorageGet('nexo_seen_cards_v1');
             let seenCards = seenRaw ? (JSON.parse(seenRaw) || []) : [];
 
@@ -295,6 +287,7 @@ function loadDeck() {
                 let el = document.createElement('div');
                 el.className = "relative rounded-lg overflow-hidden border border-slate-700 cursor-grab hover:border-blue-500 transition-colors h-14";
                 el.draggable = true;
+                el.dataset.swipeId = idOrCard;
                 el.ondragstart = (e) => handleDragStart(e, idOrCard, 'collection');
                 el.ondragend = handleDragEnd;
                 el.ondragover = (e) => { e.preventDefault(); el.classList.add('border-cyan-400'); };
@@ -329,3 +322,51 @@ function loadDeck() {
             let updatedSeen = [...new Set([...seenCards, ...allIds])];
             safeStorageSet('nexo_seen_cards_v1', JSON.stringify(updatedSeen));
         }
+
+// --- SWIPE EN EL DECKBUILDER ---
+// Deslizar a la IZQUIERDA sobre una tira: en el mazo la QUITA, en la
+// colección la AÑADE. La tira sigue al dedo (hasta -80px) y se atenúa.
+
+function initDeckSwipe() {
+    let deckContainer = document.getElementById('deck-list-container');
+    let collectionContainer = document.getElementById('collection-container');
+    [deckContainer, collectionContainer].forEach(container => {
+        if (!container || container._swipeInitialized) return;
+        container._swipeInitialized = true;
+        let startX = null, startY = null, currentEl = null;
+        let isDeck = container.id === 'deck-list-container';
+
+        container.addEventListener('touchstart', (e) => {
+            let target = e.target.closest('[data-swipe-id]');
+            if (!target) return;
+            startX = e.touches[0].clientX;
+            startY = e.touches[0].clientY;
+            currentEl = target;
+            currentEl.style.transition = 'none';
+        }, { passive: true });
+
+        container.addEventListener('touchmove', (e) => {
+            if (startX === null || !currentEl) return;
+            let dx = e.touches[0].clientX - startX;
+            let dy = e.touches[0].clientY - startY;
+            if (Math.abs(dy) > Math.abs(dx)) return;
+            let limitedDx = Math.min(0, Math.max(-80, dx));
+            currentEl.style.transform = `translateX(${limitedDx}px)`;
+            currentEl.style.opacity = String(1 + limitedDx / 120);
+        }, { passive: true });
+
+        container.addEventListener('touchend', (e) => {
+            if (startX === null || !currentEl) return;
+            let dx = e.changedTouches[0].clientX - startX;
+            startX = null; startY = null;
+            let cardId = currentEl.dataset.swipeId;
+            currentEl.style.transition = 'transform 0.2s ease, opacity 0.2s ease';
+            currentEl.style.transform = '';
+            currentEl.style.opacity = '';
+            if (dx > -60) { currentEl = null; return; }
+            if (isDeck) removeCardFromDeck(cardId);
+            else addCardToDeck(cardId);
+            currentEl = null;
+        }, { passive: true });
+    });
+}

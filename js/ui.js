@@ -11,6 +11,9 @@ let cardModalMode = 'combat';
 // sin keyword (c1) al volver a modo combate.
 let cardModalHasKeyword = false;
 
+// Vista activa dentro de la pantalla de capítulos: campaña o eventos.
+let currentChapterView = 'campaign';
+
 function openCardModal(cardIdOrFamilyId) {
     // SISTEMA DE FAMILIAS: acepta familyId ('asterion') o id de carta suelta.
     let family = getFamilyById(cardIdOrFamilyId);
@@ -804,6 +807,16 @@ function updateGlobalBackground(viewId) {
     let art;
     if (viewId === 'view-chapter-intro' || viewId === 'view-game') {
         art = currentChapter ? currentChapter.art : (getProgressChapter() || {}).art;
+    } else if (viewId === 'view-chapters') {
+        if (currentChapterView === 'events') {
+            let events = CHAPTERS.filter(c => c.isEvent);
+            let nextEvent = events.find(e => !isEventCompleted(e.id)) || events[events.length - 1];
+            if (nextEvent) art = nextEvent.art;
+            else { let ch = getProgressChapter(); art = ch ? ch.art : null; }
+        } else {
+            let ch = getProgressChapter();
+            art = ch ? ch.art : null;
+        }
     } else {
         let ch = getProgressChapter();
         art = ch ? ch.art : null;
@@ -820,25 +833,20 @@ function updateHomeChapterLabel() {
 // Selección de capítulos, intro narrativa y lanzamiento del combate
 // con el arte y el mazo del bot del capítulo activo.
 function openChapters() {
-    // Tutorial: abrir la pantalla de capítulos avanza al paso 2.
+    currentChapterView = 'campaign';
     if (tutorialActive && tutorialStep === 1) setTutorialStep(2);
     switchView('view-chapters');
+    updateGlobalBackground('view-chapters');
 }
 
 function openEvents() {
+    currentChapterView = 'events';
     if (!isChapterCompleted(1)) {
         if (navigator.vibrate) navigator.vibrate(30);
         return;
     }
     switchView('view-chapters');
-    setTimeout(() => {
-        let scrollContainer = document.querySelector('#view-chapters .overflow-y-auto');
-        let el = document.getElementById('events-section');
-        if (scrollContainer && el) {
-            let top = el.offsetTop - scrollContainer.offsetTop;
-            scrollContainer.scrollTo({ top: top, behavior: 'smooth' });
-        }
-    }, 120);
+    updateGlobalBackground('view-chapters');
 }
 
 // Actualiza el estado visual del botón de eventos (con o sin candado) según
@@ -853,74 +861,73 @@ function updateEventsButtonState() {
 function renderChapterSelect() {
     let container = document.getElementById('chapters-list');
     let eventsContainer = document.getElementById('events-list');
-    // A prueba de fallos: si algo rompe (p. ej. un JS viejo en caché)
-    // se muestra un aviso visible en lugar de una lista vacía.
-    try {
-        let frag = document.createDocumentFragment();
-        let campaign = CHAPTERS.filter(ch => !ch.isEvent);
-        let events = CHAPTERS.filter(ch => ch.isEvent);
+    let titleEl = document.getElementById('chapters-title');
+    let subtitleEl = document.getElementById('chapters-subtitle');
 
-        // Los completados se desplazan al fondo: arriba queda siempre
-        // el próximo capítulo a jugar (orden estable entre iguales).
-        let ordered = [...campaign].sort((a, b) =>
-            (isChapterCompleted(a.id) ? 1 : 0) - (isChapterCompleted(b.id) ? 1 : 0)
-        );
+    if (currentChapterView === 'campaign') {
+        if (titleEl) titleEl.innerText = 'CAPÍTULOS';
+        if (subtitleEl) subtitleEl.innerText = 'La campaña se narra capítulo a capítulo';
+        // ADAPTACIÓN: en el HTML ambas listas comparten el contenedor de
+        // scroll, así que se alterna la lista de capítulos directamente (y la
+        // sección de eventos, que sí tiene un padre propio con su título).
+        if (eventsContainer) eventsContainer.parentElement.style.display = 'none';
+        if (container) container.style.display = '';
+    } else {
+        if (titleEl) titleEl.innerText = 'EVENTOS';
+        if (subtitleEl) subtitleEl.innerText = 'Subhistorias paralelas';
+        if (eventsContainer) eventsContainer.parentElement.style.display = '';
+        if (container) container.style.display = 'none';
+    }
 
-        ordered.forEach((ch, index) => {
-            let done = isChapterCompleted(ch.id);
-            // Un capítulo está desbloqueado si es el primero, si el anterior
-            // (en la lista ordenada) ya está completado o si él mismo lo está.
-            let unlocked = isDevMode() || (index === 0) || isChapterCompleted(ordered[index - 1].id) || done;
-            let item = document.createElement('div');
-            item.className = "active:scale-[0.98] transition-transform cursor-pointer";
-            item.onclick = () => {
-                if (unlocked) openChapterIntro(ch.id);
-                else alert("Completa el capítulo anterior para desbloquear este.");
-            };
-            item.innerHTML = `
-                <div class="relative rounded-xl overflow-hidden border-2 ${done ? 'border-amber-400/70 shadow-[0_0_15px_rgba(251,191,36,0.25)]' : (unlocked ? 'border-blue-500/70 shadow-[0_0_15px_rgba(59,130,246,0.25)]' : 'border-slate-700 opacity-50')}">
-                    <div class="aspect-[16/10] bg-cover bg-center" style="background-image:url('${ch.art}')"></div>
-                    <div class="absolute inset-0 bg-gradient-to-t from-black/90 via-black/25 to-black/45"></div>
-                    <div class="absolute top-2 left-3 right-3 flex items-center justify-between">
-                        <span class="text-[9px] font-orbitron tracking-[0.25em] text-amber-300 font-bold">CAPÍTULO ${ch.number}</span>
-                        ${done
-                            ? '<span class="text-[8px] bg-green-600/90 text-white px-1.5 py-0.5 rounded font-bold">✓ COMPLETADO</span>'
-                            : (unlocked
-                                ? '<span class="text-[8px] bg-blue-600/90 text-white px-1.5 py-0.5 rounded font-bold">DISPONIBLE</span>'
-                                : '<span class="text-[8px] bg-slate-600/90 text-white px-1.5 py-0.5 rounded font-bold"><i class="fa-solid fa-lock"></i> BLOQUEADO</span>')}
-                    </div>
-                    <div class="absolute bottom-2 left-3 right-3">
-                        <div class="text-white font-orbitron font-black text-base leading-tight">${ch.title}</div>
-                        <div class="text-[10px] text-slate-300 font-bold mt-0.5">
-                            <i class="fa-solid fa-user-ninja text-fuchsia-300"></i> Rival: ${ch.rival.name} · ${(ch.botDecks && ch.botDecks[0] ? ch.botDecks[0].length : (ch.botDeck ? ch.botDeck.length : 0))} cartas
+    if (currentChapterView === 'campaign' && container) {
+        try {
+            let frag = document.createDocumentFragment();
+            let campaign = CHAPTERS.filter(ch => !ch.isEvent);
+            let ordered = [...campaign].sort((a, b) =>
+                (isChapterCompleted(a.id) ? 1 : 0) - (isChapterCompleted(b.id) ? 1 : 0)
+            );
+            ordered.forEach((ch, index) => {
+                let done = isChapterCompleted(ch.id);
+                let unlocked = isDevMode() || (index === 0) || isChapterCompleted(ordered[index - 1].id) || done;
+                let item = document.createElement('div');
+                item.className = "active:scale-[0.98] transition-transform cursor-pointer";
+                item.onclick = () => {
+                    if (unlocked) openChapterIntro(ch.id);
+                    else alert("Completa el capítulo anterior para desbloquear este.");
+                };
+                item.innerHTML = `
+                    <div class="relative rounded-xl overflow-hidden border-2 ${done ? 'border-amber-400/70 shadow-[0_0_15px_rgba(251,191,36,0.25)]' : (unlocked ? 'border-blue-500/70 shadow-[0_0_15px_rgba(59,130,246,0.25)]' : 'border-slate-700 opacity-50')}">
+                        <div class="aspect-[16/10] bg-cover bg-center" style="background-image:url('${ch.art}')"></div>
+                        <div class="absolute inset-0 bg-gradient-to-t from-black/90 via-black/25 to-black/45"></div>
+                        <div class="absolute top-2 left-3 right-3 flex items-center justify-between">
+                            <span class="text-[9px] font-orbitron tracking-[0.25em] text-amber-300 font-bold">CAPÍTULO ${ch.number}</span>
+                            ${done
+                                ? '<span class="text-[8px] bg-green-600/90 text-white px-1.5 py-0.5 rounded font-bold">✓ COMPLETADO</span>'
+                                : (unlocked
+                                    ? '<span class="text-[8px] bg-blue-600/90 text-white px-1.5 py-0.5 rounded font-bold">DISPONIBLE</span>'
+                                    : '<span class="text-[8px] bg-slate-600/90 text-white px-1.5 py-0.5 rounded font-bold"><i class="fa-solid fa-lock"></i> BLOQUEADO</span>')}
+                        </div>
+                        <div class="absolute bottom-2 left-3 right-3">
+                            <div class="text-white font-orbitron font-black text-base leading-tight">${ch.title}</div>
+                            <div class="text-[10px] text-slate-300 font-bold mt-0.5">
+                                <i class="fa-solid fa-user-ninja text-fuchsia-300"></i> Rival: ${ch.rival.name} · ${(ch.botDecks && ch.botDecks[0] ? ch.botDecks[0].length : (ch.botDeck ? ch.botDeck.length : 0))} cartas
+                            </div>
                         </div>
                     </div>
-                </div>
-            `;
-            frag.appendChild(item);
-        });
+                `;
+                frag.appendChild(item);
+            });
+            container.innerHTML = '';
+            container.appendChild(frag);
+        } catch (e) { console.error('renderChapterSelect:', e); }
+    }
 
-        // Hueco para capítulos futuros: la campaña crecerá.
-        let locked = document.createElement('div');
-        locked.className = "relative rounded-xl border-2 border-dashed border-slate-800 bg-slate-900/60 overflow-hidden aspect-[16/10] flex flex-col items-center justify-center gap-2 opacity-70";
-        locked.innerHTML = `
-            <i class="fa-solid fa-lock text-2xl text-slate-600"></i>
-            <span class="text-slate-400 font-orbitron font-bold text-xs tracking-widest">PRÓXIMAMENTE</span>
-            <span class="text-[10px] text-slate-500">Nuevos capítulos, mazos y lore en camino...</span>
-        `;
-        frag.appendChild(locked);
-
-        container.innerHTML = '';
-        container.appendChild(frag);
-
-        // --- EVENTOS ---
-        if (eventsContainer) {
+    if (currentChapterView === 'events' && eventsContainer) {
+        try {
             let efrag = document.createDocumentFragment();
+            let events = CHAPTERS.filter(ch => ch.isEvent);
             events.forEach(ev => {
                 let done = isEventCompleted(ev.id);
-                // El desbloqueo mira el registro correcto: si lo referenciado
-                // es un evento, su victoria se guarda en nexo_events_v1
-                // (markEventCompleted); si es capítulo, en nexo_chapters_v1.
                 let src = ev.unlockedBy ? CHAPTERS.find(c => c.id === ev.unlockedBy) : null;
                 let unlocked = isDevMode() || !ev.unlockedBy || (src && src.isEvent ? isEventCompleted(ev.unlockedBy) : isChapterCompleted(ev.unlockedBy));
                 let item = document.createElement('div');
@@ -953,10 +960,7 @@ function renderChapterSelect() {
             });
             eventsContainer.innerHTML = '';
             eventsContainer.appendChild(efrag);
-        }
-    } catch (e) {
-        console.error('renderChapterSelect:', e);
-        container.innerHTML = '<div class="bg-slate-900 border border-red-500/60 rounded-xl p-4 text-center"><div class="text-red-400 font-orbitron font-bold text-sm">No se pudieron cargar los capítulos</div><p class="text-slate-400 text-xs mt-1">Fuerza la recarga de la página (Ctrl+Shift+R) e inténtalo de nuevo.</p></div>';
+        } catch (e) { console.error('renderChapterSelect events:', e); }
     }
 }
 
@@ -1160,6 +1164,34 @@ function renderProfile() {
         };
         gallery.appendChild(el);
     });
+
+    let statsBox = document.getElementById('profile-stats-box');
+    if (statsBox) {
+        let stats = getPlayerStats();
+        let chapters = getCompletedChapters().length;
+        let events = getCompletedEvents().length;
+        let cards = ownedCardIds.length;
+        statsBox.innerHTML = `
+            <div class="grid grid-cols-2 gap-2">
+                <div class="bg-slate-900 border border-slate-700 rounded-lg p-2 text-center">
+                    <div class="text-lg font-orbitron font-black text-amber-400">${stats.wins || 0}</div>
+                    <div class="text-[9px] text-slate-400 font-bold uppercase">Combates ganados</div>
+                </div>
+                <div class="bg-slate-900 border border-slate-700 rounded-lg p-2 text-center">
+                    <div class="text-lg font-orbitron font-black text-emerald-400">${chapters}</div>
+                    <div class="text-[9px] text-slate-400 font-bold uppercase">Capítulos</div>
+                </div>
+                <div class="bg-slate-900 border border-slate-700 rounded-lg p-2 text-center">
+                    <div class="text-lg font-orbitron font-black text-fuchsia-400">${events}</div>
+                    <div class="text-[9px] text-slate-400 font-bold uppercase">Eventos</div>
+                </div>
+                <div class="bg-slate-900 border border-slate-700 rounded-lg p-2 text-center">
+                    <div class="text-lg font-orbitron font-black text-cyan-400">${cards}</div>
+                    <div class="text-[9px] text-slate-400 font-bold uppercase">Cartas</div>
+                </div>
+            </div>
+        `;
+    }
 }
 
 function saveProfileName() {
@@ -1407,5 +1439,46 @@ function initCardModalSwipe() {
             markPhase(window._modalActiveFamilyId, newFormId);
         }
     }, { passive: true });
+}
+
+// --- NAVEGACIÓN: TOCAR EL BOTÓN ACTIVO VUELVE A HOME ---
+function handleNavClick(viewId, opener) {
+    let currentView = document.querySelector('.view-section:not(.hidden-view)');
+    let currentId = currentView ? currentView.id : null;
+    let isCurrent = (currentId === viewId) ||
+        (viewId === 'view-chapters' && currentId === 'view-chapters') ||
+        (viewId === 'view-decks' && (currentId === 'view-decks' || currentId === 'view-deckbuilder'));
+    if (isCurrent) switchView('view-home');
+    else opener();
+}
+
+// --- LISTA DE MAZOS (CREAR / RENOMBRAR / ELIMINAR / ACTIVAR) ---
+function renderDeckSelect() {
+    let container = document.getElementById('decks-list');
+    if (!container) return;
+    let decks = getDecks();
+    let activeId = getActiveDeckId();
+    let html = '';
+    decks.forEach(deck => {
+        let isActive = deck.id === activeId;
+        let firstCard = deck.cards.length > 0 ? ALL_CARDS.find(c => c.id === deck.cards[0]) : null;
+        let family = deck.cards.length > 0 ? getFamilyById(deck.cards[0]) : null;
+        if (family) firstCard = ALL_CARDS.find(c => c.id === getSelectedPhase(family.id));
+        let art = firstCard ? firstCard.art : 'assets/cartas/carta-01-mortales-de-arcadia.webp';
+        html += `
+            <div class="relative rounded-xl overflow-hidden border-2 ${isActive ? 'border-amber-400' : 'border-slate-700'} mb-2">
+                <div class="flex items-center gap-2 p-2" onclick="setActiveDeckId('${deck.id}'); loadDeck(); renderDeckSelect();">
+                    <div class="w-16 h-12 rounded overflow-hidden bg-cover bg-center shrink-0 border border-slate-600" style="background-image:url('${art}')"></div>
+                    <div class="flex-1">
+                        <input type="text" value="${deck.name}" onclick="event.stopPropagation()" onchange="renameDeck('${deck.id}', this.value); renderDeckSelect();" class="w-full bg-slate-800 border border-slate-600 rounded px-2 py-1 text-white text-xs font-bold">
+                        <div class="text-[9px] text-slate-400 mt-0.5">${deck.cards.length}/10 cartas ${isActive ? '· ACTIVO' : ''}</div>
+                    </div>
+                    ${decks.length > 1 ? `<button onclick="event.stopPropagation(); if(deleteDeck('${deck.id}')) { loadDeck(); renderDeckSelect(); }" class="w-8 h-8 rounded-full bg-red-950/60 border border-red-500/50 text-red-300 text-xs shrink-0"><i class="fa-solid fa-trash"></i></button>` : ''}
+                </div>
+            </div>
+        `;
+    });
+    html += `<button onclick="createDeck(); renderDeckSelect();" class="w-full bg-emerald-700 text-white font-bold py-2 rounded-lg text-xs mt-2"><i class="fa-solid fa-plus"></i> Crear mazo nuevo</button>`;
+    container.innerHTML = html;
 }
 

@@ -12,9 +12,9 @@
          Tailwind va precompilado (solo las clases usadas): el runtime del
          Play CDN recompilaba estilos en cada mutación del DOM y lastraba
          el render. -->
-    <link rel="stylesheet" href="css/vendor/tailwind.min.css?v=20261120g">
+    <link rel="stylesheet" href="css/vendor/tailwind.min.css?v=20261120l">
     <link href="css/vendor/all.min.css" rel="stylesheet">
-    <link rel="stylesheet" href="css/styles.css?v=20261120g">
+    <link rel="stylesheet" href="css/styles.css?v=20261120l">
 </head>
 <body class="bg-black flex justify-center items-center">
 
@@ -53,8 +53,8 @@
         <!-- SELECCIÓN DE CAPÍTULOS -->
         <div id="view-chapters" class="view-section hidden-view z-10">
             <div class="flex items-center justify-between px-4 pt-6 pb-2 border-b border-slate-800">
-                <span class="text-blue-400 font-bold border-b-2 border-blue-400 pb-1 font-orbitron">CAPÍTULOS</span>
-                <span class="text-[10px] text-slate-500 font-bold">La campaña se narra capítulo a capítulo</span>
+                <span id="chapters-title" class="text-blue-400 font-bold border-b-2 border-blue-400 pb-1 font-orbitron">CAPÍTULOS</span>
+                <span id="chapters-subtitle" class="text-[10px] text-slate-500 font-bold">La campaña se narra capítulo a capítulo</span>
             </div>
             <div class="flex-1 p-4 overflow-y-auto pb-20">
                 <div id="chapters-list" class="space-y-5">
@@ -96,24 +96,10 @@
         <!-- LISTA DE MAZOS -->
         <div id="view-decks" class="view-section hidden-view z-10">
             <div class="flex items-center justify-between px-4 pt-6 pb-2 border-b border-slate-800">
-                <div class="flex gap-4">
-                    <span class="text-blue-400 font-bold border-b-2 border-blue-400 pb-1 font-orbitron">MAZOS</span>
-                </div>
+                <span class="text-blue-400 font-bold border-b-2 border-blue-400 pb-1 font-orbitron">MAZOS</span>
             </div>
             <div class="flex-1 p-4 overflow-y-auto pb-20">
-                <div class="grid grid-cols-2 gap-4">
-                    <div onclick="switchView('view-deckbuilder')" class="flex flex-col items-center gap-2 cursor-pointer active:scale-95 transition-transform">
-                        <div class="w-full aspect-[4/3] rounded-xl border-2 border-blue-500 relative overflow-hidden bg-slate-800" style="background-image: url('assets/cartas/carta-01-mortales-de-arcadia.webp'); background-size: cover; background-position: center;">
-                            <div class="absolute inset-0 bg-black/20"></div>
-                        </div>
-                        <div class="text-center">
-                            <div class="text-sm font-bold text-white font-orbitron">MAZO HELÁDICO</div>
-                            <div class="text-[10px] text-slate-400 font-bold flex items-center justify-center gap-1">
-                                <span id="deck-count-label">10</span>/10
-                            </div>
-                        </div>
-                    </div>
-                </div>
+                <div id="decks-list" class="space-y-2"></div>
             </div>
         </div>
 
@@ -190,6 +176,10 @@
                 <div>
                     <label class="text-[10px] text-slate-400 font-bold uppercase tracking-wider">Avatares Desbloqueados</label>
                     <div id="profile-avatar-gallery" class="grid grid-cols-4 gap-2 mt-2"></div>
+                </div>
+                <div class="mt-6">
+                    <label class="text-[10px] text-slate-400 font-bold uppercase tracking-wider">Estadísticas</label>
+                    <div id="profile-stats-box" class="mt-2"></div>
                 </div>
             </div>
         </div>
@@ -430,19 +420,19 @@
 
         <nav id="bottom-nav" class="absolute bottom-0 w-full bg-slate-950 border-t border-slate-800 flex justify-around items-end pb-2 pt-1 z-40 h-16">
             <!-- Botón 1: Eventos (subhistorias) -->
-            <button id="btn-events" onclick="openEvents()" class="flex flex-col items-center gap-1 w-1/5 text-slate-400 hover:text-emerald-400">
+            <button id="btn-events" onclick="handleNavClick('view-chapters', openEvents)" class="flex flex-col items-center gap-1 w-1/5 text-slate-400 hover:text-emerald-400">
                 <i class="fa-solid fa-calendar-days text-xl"></i>
                 <span class="text-[9px] font-bold">EVENTOS</span>
             </button>
             
             <!-- Botón 2: Mazos -->
-            <button id="btn-decks" onclick="switchView('view-decks')" class="flex flex-col items-center gap-1 w-1/5 text-slate-400 hover:text-blue-400">
+            <button id="btn-decks" onclick="handleNavClick('view-decks', () => { switchView('view-decks'); renderDeckSelect(); })" class="flex flex-col items-center gap-1 w-1/5 text-slate-400 hover:text-blue-400">
                 <i class="fa-solid fa-layer-group text-xl"></i>
                 <span class="text-[9px] font-bold">MAZOS</span>
             </button>
             
             <!-- Botón 3: Campaña (mismo diseño que el resto) -->
-            <button id="btn-campaign" onclick="openChapters()" class="flex flex-col items-center gap-1 w-1/5 text-slate-400 hover:text-blue-400">
+            <button id="btn-campaign" onclick="handleNavClick('view-chapters', openChapters)" class="flex flex-col items-center gap-1 w-1/5 text-slate-400 hover:text-blue-400">
                 <i class="fa-solid fa-bolt text-xl"></i>
                 <span class="text-[9px] font-bold">CAMPAÑA</span>
             </button>
@@ -463,15 +453,15 @@
     </div>
 
 
-    <script src="js/cards.js?v=20261120g"></script>
-    <script src="js/state.js?v=20261120g"></script>
-    <script src="js/fx.js?v=20261120g"></script>
-    <script src="js/deck.js?v=20261120g"></script>
-    <script src="js/chapters.js?v=20261120g"></script>
-    <script src="js/patchnotes.js?v=20261120g"></script>
-    <script src="js/ui.js?v=20261120g"></script>
-    <script src="js/game.js?v=20261120g"></script>
-    <script src="js/dev.js?v=20261120g"></script>
-<script src="js/main.js?v=20261120g"></script>
+    <script src="js/cards.js?v=20261120l"></script>
+    <script src="js/state.js?v=20261120l"></script>
+    <script src="js/fx.js?v=20261120l"></script>
+    <script src="js/deck.js?v=20261120l"></script>
+    <script src="js/chapters.js?v=20261120l"></script>
+    <script src="js/patchnotes.js?v=20261120l"></script>
+    <script src="js/ui.js?v=20261120l"></script>
+    <script src="js/game.js?v=20261120l"></script>
+    <script src="js/dev.js?v=20261120l"></script>
+<script src="js/main.js?v=20261120l"></script>
 </body>
 </html>

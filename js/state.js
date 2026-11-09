@@ -340,3 +340,62 @@ function unlockCard(cardId) {
     return true;
 }
 
+// --- MÚLTIPLES MAZOS ---
+function getDecks() {
+    let raw = safeStorageGet('nexo_decks_v1');
+    if (!raw) {
+        let oldDeck = safeStorageGet('nexo_deck_v1');
+        let cards = oldDeck ? (JSON.parse(oldDeck) || []) : [];
+        let migrated = [{ id: 'default', name: 'Mazo Heládico', cards: cards }];
+        safeStorageSet('nexo_decks_v1', JSON.stringify(migrated));
+        safeStorageSet('nexo_active_deck_v1', 'default');
+        return migrated;
+    }
+    try { return JSON.parse(raw) || []; } catch(e) { return []; }
+}
+
+function saveDecks(decks) { safeStorageSet('nexo_decks_v1', JSON.stringify(decks)); }
+function getActiveDeckId() { return safeStorageGet('nexo_active_deck_v1') || 'default'; }
+function setActiveDeckId(id) { safeStorageSet('nexo_active_deck_v1', id); }
+
+function getActiveDeck() {
+    let decks = getDecks();
+    return decks.find(d => d.id === getActiveDeckId()) || decks[0] || { id: 'default', name: 'Mazo Heládico', cards: [] };
+}
+
+function createDeck(name) {
+    let decks = getDecks();
+    let id = 'deck_' + Date.now();
+    decks.push({ id, name: name || ('Mazo ' + (decks.length + 1)), cards: [] });
+    saveDecks(decks);
+    return id;
+}
+
+function renameDeck(id, newName) {
+    let decks = getDecks();
+    let deck = decks.find(d => d.id === id);
+    if (deck) { deck.name = newName; saveDecks(decks); }
+}
+
+function deleteDeck(id) {
+    let decks = getDecks();
+    if (decks.length <= 1) { alert('No puedes eliminar el último mazo.'); return false; }
+    decks = decks.filter(d => d.id !== id);
+    saveDecks(decks);
+    if (getActiveDeckId() === id) setActiveDeckId(decks[0].id);
+    return true;
+}
+
+// --- ESTADÍSTICAS DEL JUGADOR ---
+function getPlayerStats() {
+    let raw = safeStorageGet('nexo_stats_v1');
+    if (!raw) return { wins: 0, losses: 0 };
+    try { return JSON.parse(raw) || { wins: 0, losses: 0 }; } catch(e) { return { wins: 0, losses: 0 }; }
+}
+function savePlayerStats(stats) { safeStorageSet('nexo_stats_v1', JSON.stringify(stats)); }
+function incrementWin() {
+    let stats = getPlayerStats();
+    stats.wins = (stats.wins || 0) + 1;
+    savePlayerStats(stats);
+}
+
