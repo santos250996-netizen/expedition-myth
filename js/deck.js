@@ -239,8 +239,8 @@ function loadDeck() {
                         <span class="text-[10px] text-white font-bold truncate drop-shadow-md">${displayCard.name}</span>
                         <div class="flex gap-1">
                             ${displayCard.kind === 'Ser' ? `
-                                <span class="w-4 h-4 rounded-full bg-blue-900/90 border border-blue-400 text-white text-[8px] flex items-center justify-center">${displayCard.atk}</span>
-                                <span class="w-4 h-4 rounded-full bg-red-900/90 border border-red-400 text-white text-[8px] flex items-center justify-center">${displayCard.hp}</span>
+                                <span class="stat-atk" style="width:18px;height:18px;font-size:8px;">${displayCard.atk}</span>
+                                <span class="stat-hp" style="width:18px;height:18px;font-size:8px;">${displayCard.hp}</span>
                             ` : ''}
                         </div>
                     </div>
@@ -311,8 +311,8 @@ function loadDeck() {
                         <span class="text-[10px] text-white font-bold truncate drop-shadow-md">${card.name}</span>
                         <div class="flex gap-1">
                             ${card.kind === 'Ser' ? `
-                                <span class="w-4 h-4 rounded-full bg-blue-900/90 border border-blue-400 text-white text-[8px] flex items-center justify-center">${card.atk}</span>
-                                <span class="w-4 h-4 rounded-full bg-red-900/90 border border-red-400 text-white text-[8px] flex items-center justify-center">${card.hp}</span>
+                                <span class="stat-atk" style="width:18px;height:18px;font-size:8px;">${card.atk}</span>
+                                <span class="stat-hp" style="width:18px;height:18px;font-size:8px;">${card.hp}</span>
                             ` : ''}
                         </div>
                     </div>

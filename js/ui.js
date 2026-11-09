@@ -75,22 +75,22 @@ function renderCardModalContent(card) {
         typeIcon.className = "fa-solid fa-paw text-[8px] text-amber-400";
         typeText.innerText = "VÁSTAGO";
         typeText.className = "bg-amber-600 text-white text-[8px] px-1 rounded font-bold uppercase";
-        document.getElementById('modal-card-atk').innerText = displayCard.atk;
-        document.getElementById('modal-card-hp').innerText = displayCard.hp;
+        document.getElementById('modal-card-atk').innerHTML = displayCard.atk;
+        document.getElementById('modal-card-hp').innerHTML = displayCard.hp;
         if (statsBox) statsBox.style.display = 'flex';
     } else if (displayCard.kind === 'Ser') {
         typeIcon.className = "fa-solid fa-shield-halved text-[8px] text-blue-400";
         typeText.innerText = "SER";
         typeText.className = "bg-blue-600 text-white text-[8px] px-1 rounded font-bold uppercase";
-        document.getElementById('modal-card-atk').innerText = displayCard.atk;
-        document.getElementById('modal-card-hp').innerText = displayCard.hp;
+        document.getElementById('modal-card-atk').innerHTML = displayCard.atk;
+        document.getElementById('modal-card-hp').innerHTML = displayCard.hp;
         if (statsBox) statsBox.style.display = 'flex';
     } else if (displayCard.kind === 'Token') {
         typeIcon.className = "fa-solid fa-shield-halved text-[8px] text-emerald-400";
         typeText.innerText = "TOKEN";
         typeText.className = "bg-emerald-600 text-white text-[8px] px-1 rounded font-bold uppercase";
-        document.getElementById('modal-card-atk').innerText = displayCard.atk;
-        document.getElementById('modal-card-hp').innerText = displayCard.hp;
+        document.getElementById('modal-card-atk').innerHTML = displayCard.atk;
+        document.getElementById('modal-card-hp').innerHTML = displayCard.hp;
         if (statsBox) statsBox.style.display = 'flex';
     } else {
         typeIcon.className = "fa-solid fa-bolt text-[8px] text-amber-400";
@@ -741,8 +741,8 @@ function renderRewardCard(cardId) {
     let statsHtml = '';
     if (card.kind === 'Ser' || card.kind === 'Token') {
         statsHtml = `<div class="flex gap-1 mt-1">
-            <span class="w-5 h-5 rounded-full bg-blue-950 border border-cyan-400 flex items-center justify-center text-white font-bold text-[9px]">${card.atk}</span>
-            <span class="w-5 h-5 rounded-full bg-red-950 border border-red-400 flex items-center justify-center text-white font-bold text-[9px]">${card.hp}</span>
+            <span class="stat-atk" style="width:20px;height:20px;font-size:9px;">${card.atk}</span>
+            <span class="stat-hp" style="width:20px;height:20px;font-size:9px;">${card.hp}</span>
         </div>`;
     }
     container.innerHTML = `
