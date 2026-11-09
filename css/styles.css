@@ -60,6 +60,53 @@
   unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
 }
 
+/* --- SISTEMA DE DISEÑO (TOKENS) --- */
+/* Todos los colores, radios, sombras y espaciados salen de aquí. */
+:root {
+    /* Colores base */
+    --bg-void: #020617;
+    --bg-deep: #0f172a;
+    --bg-panel: #1e293b;
+    --bg-panel-soft: #334155;
+
+    /* Acentos */
+    --accent-blue: #3b82f6;
+    --accent-cyan: #06b6d4;
+    --accent-amber: #fbbf24;
+    --accent-emerald: #10b981;
+    --accent-red: #ef4444;
+    --accent-purple: #a855f7;
+
+    /* Texto */
+    --text-primary: #e2e8f0;
+    --text-secondary: #94a3b8;
+    --text-muted: #64748b;
+
+    /* Radios (unificados) */
+    --radius-sm: 8px;
+    --radius-md: 12px;
+    --radius-lg: 16px;
+    --radius-full: 9999px;
+
+    /* Sombras (unificadas) */
+    --shadow-sm: 0 1px 2px rgba(0,0,0,0.4);
+    --shadow-md: 0 4px 12px rgba(0,0,0,0.5);
+    --shadow-glow-blue: 0 0 12px rgba(59,130,246,0.4);
+    --shadow-glow-amber: 0 0 12px rgba(251,191,36,0.4);
+
+    /* Espaciados */
+    --space-xs: 4px;
+    --space-sm: 8px;
+    --space-md: 12px;
+    --space-lg: 16px;
+    --space-xl: 24px;
+
+    /* Altura mínima de target táctil (iOS HIG / Material) */
+    --tap-min: 44px;
+}
+
+/* --- FIN SISTEMA DE DISEÑO --- */
+
 body {
     font-family: 'Rajdhani', sans-serif;
     background-color: #020617;
@@ -956,3 +1003,108 @@ main,
 }
 
 /* --- FIN PANEL ÚNICO --- */
+
+/* --- BOTONES UNIFICADOS --- */
+/* Todos los botones del juego comparten la misma base. */
+.btn-base {
+    min-height: var(--tap-min);
+    border-radius: var(--radius-md);
+    font-family: 'Orbitron', sans-serif;
+    font-weight: 700;
+    letter-spacing: 0.05em;
+    transition: transform 0.15s ease, box-shadow 0.15s ease, filter 0.15s ease;
+    cursor: pointer;
+    -webkit-tap-highlight-color: transparent;
+    user-select: none;
+}
+.btn-base:active {
+    transform: scale(0.96);
+    filter: brightness(1.15);
+}
+
+/* Botón primario */
+.btn-primary {
+    background: linear-gradient(135deg, var(--accent-blue), var(--accent-cyan));
+    color: #fff;
+    border: 1px solid rgba(255,255,255,0.2);
+    box-shadow: var(--shadow-glow-blue);
+}
+.btn-primary:active {
+    box-shadow: 0 0 20px rgba(59,130,246,0.8);
+}
+
+/* Botón secundario */
+.btn-secondary {
+    background: rgba(30,41,59,0.9);
+    color: var(--text-primary);
+    border: 1px solid var(--bg-panel-soft);
+}
+.btn-secondary:active {
+    border-color: var(--accent-cyan);
+}
+
+/* Botón peligro */
+.btn-danger {
+    background: rgba(127,29,29,0.4);
+    color: #fca5a5;
+    border: 1px solid rgba(239,68,68,0.5);
+}
+.btn-danger:active {
+    background: rgba(127,29,29,0.6);
+}
+
+/* --- FIN BOTONES UNIFICADOS --- */
+
+/* --- JERARQUÍA: GLORIA MÁS VISIBLE --- */
+#p1-score, #p2-score {
+    font-size: 1.75rem !important; /* antes text-xl (1.25rem) */
+    text-shadow: 0 0 12px currentColor;
+}
+#p1-bar, #p2-bar {
+    height: 100%;
+}
+/* La barra de Gloria, más gruesa */
+.flex-1.h-4.bg-slate-800 {
+    height: 1.25rem !important; /* antes h-4 (1rem) */
+}
+/* --- FIN JERARQUÍA GLORIA --- */
+
+/* --- FONDO ANIMADO (CSS Mesh, sin WebGL) --- */
+/* Gradiente animado sutil en el fondo de la app. Puro CSS, ligero.
+   NOTA: la regla de guardia del paquete (#app-container > * { position:
+   relative; z-index: 1 }) se OMITE a propósito: .view-section ya es
+   position:absolute (forzar relative rompería las vistas) y .hidden-view
+   depende de z-index:-1 (una regla con más especificidad lo anularía y las
+   vistas ocultas pintarían encima de la visible). Todos los hijos
+   interactivos ya son posicionados con z-index 10-50, así que pintan sobre
+   este ::before (z-index 0, pointer-events:none) sin regla extra. */
+@keyframes meshFloat1 {
+    0%, 100% { transform: translate(0, 0) scale(1); }
+    50% { transform: translate(30px, -20px) scale(1.1); }
+}
+@keyframes meshFloat2 {
+    0%, 100% { transform: translate(0, 0) scale(1); }
+    50% { transform: translate(-25px, 25px) scale(1.15); }
+}
+@keyframes meshFloat3 {
+    0%, 100% { transform: translate(0, 0) scale(1); }
+    50% { transform: translate(20px, 30px) scale(0.95); }
+}
+
+#app-container::before {
+    content: '';
+    position: absolute;
+    inset: -20%;
+    z-index: 0;
+    pointer-events: none;
+    background:
+        radial-gradient(ellipse 40% 35% at 20% 30%, rgba(59,130,246,0.12), transparent 70%),
+        radial-gradient(ellipse 35% 40% at 80% 70%, rgba(168,85,247,0.10), transparent 70%),
+        radial-gradient(ellipse 30% 30% at 50% 50%, rgba(6,182,212,0.08), transparent 70%);
+    animation: meshFloat1 18s ease-in-out infinite, meshFloat2 22s ease-in-out infinite, meshFloat3 26s ease-in-out infinite;
+}
+/* --- FIN FONDO ANIMADO --- */
+
+/* Utilidad ausente en el build estático de Tailwind (necesaria para los
+   botones globales y las flechas del combate a 48px). */
+.h-12 { height: 3rem; }

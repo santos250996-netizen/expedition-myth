@@ -145,3 +145,12 @@ if (window.Capacitor && window.Capacitor.Plugins && window.Capacitor.Plugins.App
         }
     });
 }
+
+// --- FEEDBACK TÁCTIL UNIFICADO ---
+// Cualquier botón con .btn-base vibra ligeramente al tocarlo.
+document.addEventListener('DOMContentLoaded', () => {
+    document.body.addEventListener('touchstart', (e) => {
+        let btn = e.target.closest('.btn-base');
+        if (btn && navigator.vibrate) navigator.vibrate(8);
+    }, { passive: true });
+});
