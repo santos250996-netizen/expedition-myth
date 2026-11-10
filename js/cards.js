@@ -136,20 +136,23 @@ const ALL_CARDS = [
                 }
             },
 {
-    id: 'a2', name: 'Asterión, Enfurecido', kind: 'Ser', cost: 5, atk: 5, hp: 5,
+    id: 'a2', name: 'Asterion, Enfurecido', kind: 'Ser', cost: 5, atk: 2, hp: 4,
     icon: 'fa-cow',
-    desc: 'Embestida 1: Daño 2 a 1 rival aleatorio.',
-    lore: 'El cachorro se convirtió en una bestia. Asterión probó la sangre humana y algo se rompió en su interior: ya no distinguía entre el hambre y la furia. Minos, aterrado por lo que su propio pecado había engendrado, ordenó a Dédalo construir un laberinto para encerrarlo.',
+    desc: 'Enfurecer 4: Destruir 1 rival aleatorio.',
+    lore: 'El cachorro se convirtio en una bestia. Asterion probo la sangre humana y algo se rompio en su interior: ya no distinguia entre el hambre y la furia. Minos, aterrado por lo que su propio pecado habia engendrado, ordeno a Dedalo construir un laberinto para encerrarlo.',
     art: 'assets/cartas/asterion-a2-enfurecido.webp',
     substory: 'asterion',
     effect: null,
-    startTurn: (self, player, opp) => { embestida(self, player, opp, 1); },
-    embestidaEffect: (self, player, opp) => {
-        let targets = opp.activeBoard.filter(c => !c.dying);
-        if (!targets.length) return;
-        let target = targets[Math.floor(Math.random() * targets.length)];
-        dealDamage(target, 2, sideOf(opp));
-        queueFx({ t: 'clash', side: sideOf(opp), uidA: self.uid, uidB: target.uid });
+    startTurn: null,
+    enfurecerThreshold: 4,
+    enfurecerEffect: (self, player) => {
+        // El motor pasa (target, owner): el lado rival se deriva del owner.
+        let opp = (player === gameState.p1) ? gameState.p2 : gameState.p1;
+        let alive = opp.activeBoard.filter(c => !c.dying && !c.noDestroy && !c.stunned);
+        if (!alive.length) return;
+        let target = alive[Math.floor(Math.random() * alive.length)];
+        killCard(target, sideOf(opp));
+        queueFx({ t: 'sacrifice', side: sideOf(opp), uid: target.uid });
     }
 },
 {

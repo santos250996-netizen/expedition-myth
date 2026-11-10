@@ -7,6 +7,27 @@
 
 const PATCH_NOTES = [
     {
+        version: '1.9.3',
+        date: '2026-11-10',
+        title: 'Asterion Enfurecido con Enfurecer',
+        highlights: [
+            'a2 Asterion Enfurecido: Embestida -> Enfurecer 4',
+            'Stats: 5/5 -> 2/4 (cuadra PPT)'
+        ],
+        changes: {
+            new: [],
+            buffs: [],
+            nerfs: [],
+            fixes: [
+                'a2 Asterion Enfurecido: ahora usa Enfurecer 4: Destruir 1 rival aleatorio (antes Embestida 1: Daño 2).',
+                'a2 stats: 5/5 -> 2/4 para cuadrar el presupuesto (coste 5 = 10 PPT; Destruir 8/2 = 4 PPT; stats 6 PPT).'
+            ],
+            removed: [
+                'Embestida de a2 (reemplazada por Enfurecer).'
+            ]
+        }
+    },
+    {
         version: '1.9.2',
         date: '2026-11-10',
         title: 'Sistema de efectos cerrado',
