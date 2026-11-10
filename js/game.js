@@ -101,30 +101,29 @@ function embestida(self, player, opp, X) {
 // a 0, no ataca, no puntúa, no recibe daño ni efectos, no es elegido por
 // efectos dirigidos. Al expirar, recupera sus stats guardados. La carta
 // atrapada NO muere aunque su HP llegue a 0 (stunned la protege).
-function laberinto(player, opp, X) {
-    let targets = opp.activeBoard.filter(c => !c.dying && !c.stunned && !c.noLaberinto);
+function exilio(player, opp, X) {
+    let targets = opp.activeBoard.filter(c => !c.dying && !c.stunned && !c.noExilio);
     if (!targets.length) return;
     let target = targets[Math.floor(Math.random() * targets.length)];
     target.stunned = true;
-    target.laberintoTurns = X;
-    target._savedAtk = target.atk;
-    target._savedHp = target.hp;
+    target.exilioTurns = X;
+    target._exilioSavedAtk = target.atk;
+    target._exilioSavedHp = target.hp;
     target.atk = 0;
     target.hp = 0;
-    queueFx({ t: 'laberinto', side: sideOf(opp), uid: target.uid });
+    queueFx({ t: 'exilio', side: sideOf(opp), uid: target.uid });
 
-    // SISTEMA DE FAMILIAS: la misión "laberinto_received" vive en la forma que
-    // se desbloquea; previousCardId es la que RECIBE el Laberinto.
+    // SISTEMA DE FAMILIAS: mision exilio_received
     for (let missionCardId in CARD_MISSIONS) {
         let mission = CARD_MISSIONS[missionCardId];
-        if (mission.previousCardId === target.id && mission.type === 'laberinto_received') {
+        if (mission.previousCardId === target.id && mission.type === 'exilio_received') {
             let progress = getProgressFor(missionCardId);
-            let newCount = (progress.laberintoReceived || 0) + 1;
-            updateProgressFor(missionCardId, { laberintoReceived: newCount });
+            let newCount = (progress.exilioReceived || 0) + 1;
+            updateProgressFor(missionCardId, { exilioReceived: newCount });
             if (newCount >= mission.count) {
                 if (unlockCard(missionCardId)) {
                     let cardData = ALL_CARDS.find(c => c.id === missionCardId);
-                    showTutorialMessage("¡Misión completada!", "Has desbloqueado la forma: " + (cardData ? cardData.name : missionCardId));
+                    showTutorialMessage("¡Mision completada!", "Has desbloqueado la forma: " + (cardData ? cardData.name : missionCardId));
                 }
             }
         }
@@ -144,8 +143,7 @@ function summonCard(player, cardTemplate) {
         tempAtkMod: 0,
         tempHpMod: 0,
         stunned: false,
-        laberintoTurns: 0,
-        petrifiedTurns: 0,
+        exilioTurns: 0,
         reflectCharges: 0,
         bloqueo: cardTemplate.bloqueo || 0,
         immuneThisTurn: false
@@ -205,8 +203,7 @@ function canStillScore(player) {
     if (player.deckPointer < player.deck.length) return true;
     let alive = player.activeBoard.filter(c => !c.dying);
     return alive.some(c => {
-        if (c.stunned) return (c.laberintoTurns || 0) > 0;
-        if (c.petrifiedTurns > 0) return true;
+        if (c.stunned) return (c.exilioTurns || 0) > 0;
         if (c.atk > 0) return true;
         if (c.id === 'c2' && alive.some(o => o !== c && o.kind === 'Ser')) return true;
         return false;
@@ -284,7 +281,7 @@ function gameTick() {
             // Las cartas muriendo o aturdidas este turno ya no suman gloria:
 // aturdir = no atacar = no puntuar un tick.
             let boardPoints = (board) => board.reduce((sum, card) => {
-                if (card.dying || card.stunned || (card.petrifiedTurns > 0)) return sum;
+                if (card.dying || card.stunned) return sum;
                 let atk = (typeof card.atk === 'number') ? card.atk : 0;
                 let mod = (typeof card.tempAtkMod === 'number') ? card.tempAtkMod : 0;
                 return sum + Math.max(0, atk + mod);
@@ -307,27 +304,20 @@ function gameTick() {
                 .filter(c => c && c.kind === 'Ser')
                 .map(c => c.uid);
 
-            // Decremento de Laberinto y Petrificar AL FINAL del tick: así el
-            // render del tick siguiente ya ve el valor correcto (evita que el
-            // icono dure un turno más).
+            // Decremento de Exilio AL FINAL del tick: así el render del tick
+            // siguiente ya ve el valor correcto (evita que el icono dure un
+            // turno más).
             [gameState.p1, gameState.p2].forEach(owner => {
                 owner.activeBoard.forEach(c => {
                     if (c.stunned && !c.dying) {
-                        c.laberintoTurns = (c.laberintoTurns || 0) - 1;
-                        if (c.laberintoTurns <= 0) {
+                        c.exilioTurns = (c.exilioTurns || 0) - 1;
+                        if (c.exilioTurns <= 0) {
                             c.stunned = false;
-                            c.laberintoTurns = 0;
-                            c.atk = c._savedAtk || 0;
-                            c.hp = c._savedHp || 0;
-                            c._savedAtk = undefined;
-                            c._savedHp = undefined;
-                            queueFx({ t: 'liberado', side: sideOf(owner), uid: c.uid });
-                        }
-                    }
-                    if (c.petrifiedTurns > 0 && !c.dying) {
-                        c.petrifiedTurns = (c.petrifiedTurns || 0) - 1;
-                        if (c.petrifiedTurns <= 0) {
-                            c.petrifiedTurns = 0;
+                            c.exilioTurns = 0;
+                            c.atk = c._exilioSavedAtk || 0;
+                            c.hp = c._exilioSavedHp || 0;
+                            c._exilioSavedAtk = undefined;
+                            c._exilioSavedHp = undefined;
                             queueFx({ t: 'liberado', side: sideOf(owner), uid: c.uid });
                         }
                     }
@@ -384,7 +374,7 @@ function gameTick() {
             player.deckPointer++;
             return {
                 card: nextCard,
-                inst: { ...nextCard, uid: Math.random().toString(36).slice(2, 9), tempAtkMod: 0, stunned: false, petrifiedTurns: 0, reflectCharges: 0, bloqueo: nextCard.bloqueo || 0 },
+                inst: { ...nextCard, uid: Math.random().toString(36).slice(2, 9), tempAtkMod: 0, tempHpMod: 0, stunned: false, exilioTurns: 0, reflectCharges: 0, bloqueo: nextCard.bloqueo || 0 },
                 discount: oracleDiscount
             };
         }
@@ -548,7 +538,7 @@ function gameTick() {
                     board: gameState.p1.activeBoard.map(c => ({
                         id: c.id, name: c.name, atk: c.atk, hp: c.hp,
                         stunned: !!c.stunned, dying: !!c.dying,
-                        laberintoTurns: c.laberintoTurns || 0
+                        exilioTurns: c.exilioTurns || 0
                     }))
                 },
                 p2: {
@@ -559,7 +549,7 @@ function gameTick() {
                     board: gameState.p2.activeBoard.map(c => ({
                         id: c.id, name: c.name, atk: c.atk, hp: c.hp,
                         stunned: !!c.stunned, dying: !!c.dying,
-                        laberintoTurns: c.laberintoTurns || 0
+                        exilioTurns: c.exilioTurns || 0
                     }))
                 },
                 chapter: currentChapter ? { id: currentChapter.id, title: currentChapter.title, isEvent: !!currentChapter.isEvent } : null
@@ -567,31 +557,12 @@ function gameTick() {
             return snap;
         }
 
-// --- KEYWORD: PETRIFICAR X ---
-// Convierte a un Ser rival aleatorio en piedra X turnos. Mientras esté
-// petrificado: SOLO no puntúa (no suma su ATK a la Gloria al final del turno).
-// El resto de su comportamiento es normal: ataca, recibe daño, es target de
-// efectos. No toca ATK/HP. Se decrementa en gameTick (junto a laberinto).
-function petrificar(player, opp, X) {
-    let targets = opp.activeBoard.filter(c => !c.dying && !(c.petrifiedTurns > 0));
-    if (!targets.length) return;
-    let target = targets[Math.floor(Math.random() * targets.length)];
-    if (target.reflectCharges > 0 && !target.immuneThisTurn) {
-        if (tryReflect(target, player, (reflectedTarget) => {
-            reflectedTarget.petrifiedTurns = X;
-            queueFx({ t: 'petrificar', side: sideOf(player), uid: reflectedTarget.uid });
-        })) return;
-    }
-    target.petrifiedTurns = X;
-    queueFx({ t: 'petrificar', side: sideOf(opp), uid: target.uid });
-}
-
 // --- KEYWORD: SERPIENTES X ---
 // Al inicio de cada turno, inflige X de daño al Ser rival de la Fila 1.
 // Si no hay rival, no se activa. No consume ATK/HP (las serpientes atacan
 // solas). Se llama desde el startTurn de la carta que la tiene.
 function serpientes(self, player, opp, X) {
-    if (self.dying || self.petrifiedTurns > 0) return;
+    if (self.dying || self.stunned) return;
     let target = opp.activeBoard[0];
     if (!target || target.dying) return;
     dealDamage(target, X, sideOf(opp));

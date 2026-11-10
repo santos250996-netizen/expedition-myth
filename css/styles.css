@@ -669,15 +669,15 @@ main,
 .fx-flash-blue   { animation: fxFlashBlue   calc(0.6s * var(--fx-k, 1)) ease-out; }
 .fx-flash-gray   { animation: fxFlashGray   calc(0.6s * var(--fx-k, 1)) ease-out; }
 
-/* Laberinto: la carta se encoge y oscurece. Sin texto. */
-@keyframes fxLaberinto {
+/* Exilio: la carta se encoge y oscurece. Sin texto. */
+@keyframes fxExilio {
     0%   { transform: scale(1) rotate(0deg); filter: brightness(1); }
     40%  { transform: scale(0.82) rotate(-3deg); filter: brightness(0.35) grayscale(0.7); }
     100% { transform: scale(0.82) rotate(-3deg); filter: brightness(0.35) grayscale(0.7); }
 }
-.fx-lab { animation: fxLaberinto calc(0.7s * var(--fx-k, 1)) ease-out forwards; }
+.fx-exilio { animation: fxExilio calc(0.7s * var(--fx-k, 1)) ease-out forwards; }
 
-/* Laberinto liberado: vuelve a tamaño normal con flash verde. */
+/* Exilio liberado: vuelve a tamaño normal con flash verde. */
 @keyframes fxLiberado {
     0%   { transform: scale(0.82) rotate(-3deg); filter: brightness(0.35) grayscale(0.7); }
     50%  { transform: scale(1.08) rotate(0deg); filter: brightness(1.3) grayscale(0); }
@@ -685,8 +685,8 @@ main,
 }
 .fx-liberado { animation: fxLiberado calc(0.6s * var(--fx-k, 1)) ease-out forwards; }
 
-/* Icono grande de laberinto sobre la carta atrapada (sin texto). */
-.fx-lab-icon {
+/* Icono grande de exilio sobre la carta exiliada (sin texto). */
+.fx-exilio-icon {
     position: absolute;
     inset: 0;
     display: flex;
@@ -697,9 +697,9 @@ main,
     text-shadow: 0 0 8px rgba(0,0,0,0.9);
     pointer-events: none;
     z-index: 20;
-    animation: fxLabIconPulse calc(1.2s * var(--fx-k, 1)) ease-in-out infinite;
+    animation: fxExilioIconPulse calc(1.2s * var(--fx-k, 1)) ease-in-out infinite;
 }
-@keyframes fxLabIconPulse {
+@keyframes fxExilioIconPulse {
     0%, 100% { opacity: 0.55; transform: scale(1); }
     50%      { opacity: 0.95; transform: scale(1.15); }
 }
@@ -893,28 +893,6 @@ main,
 }
 
 /* --- FIN UX MEJORADO --- */
-
-/* --- PETRIFICAR: carta gris con icono de ojo tachado --- */
-@keyframes fxPetrificar {
-    0%   { filter: grayscale(0) brightness(1); }
-    100% { filter: grayscale(1) brightness(0.6); }
-}
-.fx-petrificado {
-    animation: fxPetrificar calc(0.5s * var(--fx-k, 1)) ease-out forwards;
-    filter: grayscale(1) brightness(0.6);
-}
-.fx-petrified-icon {
-    position: absolute;
-    inset: 0;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 26px;
-    color: rgba(203,213,225,0.9);
-    text-shadow: 0 0 8px rgba(0,0,0,0.9);
-    pointer-events: none;
-    z-index: 20;
-}
 
 /* --- ESTADOS PERSISTENTES EN EL TABLERO --- */
 /* Reflejo: glow azul. */

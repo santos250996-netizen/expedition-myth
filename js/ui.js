@@ -97,20 +97,36 @@ function renderCardModalContent(card) {
 
     // Keyword (usa displayCard.desc).
     let keywordExplanation = '';
-    if (displayCard.desc && displayCard.desc.includes('Embestida')) {
-        keywordExplanation = "<strong>Embestida X:</strong> Consume X ATK y HP para infligir X de daño al Ser rival de su misma fila.";
-    } else if (displayCard.desc && displayCard.desc.includes('Laberinto')) {
-        keywordExplanation = "<strong>Laberinto X:</strong> Atrapa a un Ser rival aleatorio X turnos. Mientras esté atrapado, su ATK y HP son 0 y no puede ser afectado por nada.";
-    } else if (displayCard.desc && displayCard.desc.includes('Bloqueo')) {
-        keywordExplanation = "<strong>Bloqueo X:</strong> Amortigua hasta X puntos de reducción (ATK o HP) sobre tus cartas. Al agotarse, el efecto se desactiva.";
-    } else if (displayCard.desc && displayCard.desc.includes('Enfurecer')) {
-        keywordExplanation = "<strong>Enfurecer X:</strong> Cada vez que esta carta recibe daño, gana +X ATK permanentemente.";
-    } else if (displayCard.desc && displayCard.desc.includes('Petrificar')) {
-        keywordExplanation = "<strong>Petrificar X:</strong> Convierte a un Ser rival aleatorio en piedra X turnos. Mientras esté petrificado, no puntúa (no suma su ATK a la Gloria), pero sigue atacando y recibiendo daño con normalidad.";
-    } else if (displayCard.desc && displayCard.desc.includes('Reflejo')) {
-        keywordExplanation = "<strong>Reflejo X:</strong> Inmune al próximo efecto rival que targetee a esta carta. El efecto se refleja y se aplica a una carta aleatoria del rival.";
-    } else if (displayCard.subtype === 'Vástago') {
-        keywordExplanation = "<strong>Vástago:</strong> Ser invocado por Equidna, la Madre de Monstruos. Los Vástagos son hijos de Equidna y se comportan como Seres normales (atacan, reciben daño, puntúan).";
+    if (displayCard.desc) {
+        if (displayCard.desc.includes('Exilio')) {
+            keywordExplanation = "<strong>Exilio X:</strong> Exilia a un Ser rival X turnos. Mientras este exiliado: ATK y HP a 0, no ataca, no puntua, no recibe daño ni efectos, no es target de nada.";
+        } else if (displayCard.desc.includes('Embestida')) {
+            keywordExplanation = "<strong>Embestida X:</strong> Al inicio de cada turno, consume X ATK y X HP para infligir X de daño al Ser rival de su fila.";
+        } else if (displayCard.desc.includes('Enfurecer')) {
+            keywordExplanation = "<strong>Enfurecer X:</strong> Cada vez que esta carta recibe daño, gana +X ATK permanentemente.";
+        } else if (displayCard.desc.includes('Bloqueo')) {
+            keywordExplanation = "<strong>Bloqueo X:</strong> Amortigua hasta X puntos de reduccion de ATK o HP sobre esta carta. Al agotarse, el efecto se desactiva.";
+        } else if (displayCard.desc.includes('Reflejo')) {
+            keywordExplanation = "<strong>Reflejo X:</strong> Inmune al proximo efecto rival que targetee a esta carta. El efecto se refleja y se aplica a una carta aleatoria del rival.";
+        } else if (displayCard.desc.includes('Daño')) {
+            keywordExplanation = "<strong>Daño X:</strong> Inflige X de daño a un objetivo.";
+        } else if (displayCard.desc.includes('Debilitar')) {
+            keywordExplanation = "<strong>Debilitar X:</strong> Reduce X ATK de un objetivo.";
+        } else if (displayCard.desc.includes('Fortalecer')) {
+            keywordExplanation = "<strong>Fortalecer X:</strong> Aumenta X ATK de un objetivo.";
+        } else if (displayCard.desc.includes('Blindar')) {
+            keywordExplanation = "<strong>Blindar X:</strong> Aumenta X HP de un objetivo.";
+        } else if (displayCard.desc.includes('Gloria')) {
+            keywordExplanation = "<strong>Gloria X:</strong> Otorga X Puntos de Gloria.";
+        } else if (displayCard.desc.includes('Destruir')) {
+            keywordExplanation = "<strong>Destruir:</strong> Destruye instantaneamente a un objetivo.";
+        } else if (displayCard.desc.includes('Invocar')) {
+            keywordExplanation = "<strong>Invocar X:</strong> Invoca X copias de una carta en tu tablero.";
+        } else if (displayCard.desc.includes('Inmune')) {
+            keywordExplanation = "<strong>Inmune X:</strong> Inmune a efectos rivales X turnos.";
+        } else if (displayCard.desc.includes('Descuento')) {
+            keywordExplanation = "<strong>Descuento X:</strong> Reduce en X el coste de tu proxima carta.";
+        }
     }
     // PANEL ÚNICO: la explicación se guarda en el window; el panel de
     // información (#modal-info-content, más abajo) la pinta según el modo.
@@ -138,7 +154,7 @@ function renderCardModalContent(card) {
                 let progress = getProgressFor(displayCard.id);
                 let current = 0;
                 if (mission.type === 'wins') current = progress.wins || 0;
-                if (mission.type === 'laberinto_received') current = progress.laberintoReceived || 0;
+                if (mission.type === 'exilio_received') current = progress.exilioReceived || 0;
                 if (mission.type === 'games_with') current = progress.gamesWith || 0;
                 let completed = current >= mission.count;
                 let pct = Math.min(100, (current / mission.count) * 100);
@@ -458,7 +474,7 @@ function createCardElement(card, theme, animate) {
     // fuera del marco, cuánta gloria suma al final del turno (su ATK
     // efectivo). Los Eventos no puntúan por turno → sin badge.
     if (card.kind === 'Ser') {
-        let noScore = card.dying || card.stunned || (card.petrifiedTurns > 0);
+        let noScore = card.dying || card.stunned;
         let badge = document.createElement('div');
         badge.className = 'glory-badge ' + (isBlue ? 'side-left' : 'side-right') + (noScore ? ' glory-dim' : '');
         badge.innerHTML = `<i class="fa-solid fa-bolt"></i><span class="glory-badge-val">+${noScore ? 0 : displayAtk}</span>`;
@@ -488,44 +504,27 @@ function updateCardElement(el, card) {
     }
     // El badge de gloria refleja el ATK efectivo y se atenúa si el Ser no
     // puntúa este turno (aturdido o muriendo).
-    let noScore = card.dying || card.stunned || (card.petrifiedTurns > 0);
+    let noScore = card.dying || card.stunned;
     let badgeVal = el.querySelector('.glory-badge-val');
     let expectedBadge = '+' + (noScore ? 0 : displayAtk);
     if (badgeVal && badgeVal.innerText !== expectedBadge) badgeVal.innerText = expectedBadge;
     let badge = el.querySelector('.glory-badge');
     if (badge) badge.classList.toggle('glory-dim', noScore);
 
-    // Laberinto persistente: el render reconstruye el DOM en cada tick, así
-    // que el FX transitorio (fx-lab) se perdería. Se deriva del estado
-    // lógico (card.stunned) y se reaplica en cada render.
-    if (card.stunned) {
-        if (!cardEl.classList.contains('fx-lab')) cardEl.classList.add('fx-lab');
-        if (!cardEl.querySelector('.fx-lab-icon')) {
+    // Exilio persistente: el render reconstruye el DOM en cada tick, así
+    // que el FX transitorio (fx-exilio) se perdería. Se deriva del estado
+    // lógico (card.stunned + card.exilioTurns) y se reaplica en cada render.
+    if (card.stunned && card.exilioTurns > 0) {
+        if (!cardEl.classList.contains('fx-exilio')) cardEl.classList.add('fx-exilio');
+        if (!cardEl.querySelector('.fx-exilio-icon')) {
             let icon = document.createElement('div');
-            icon.className = 'fx-lab-icon';
+            icon.className = 'fx-exilio-icon';
             icon.innerHTML = '<i class="fa-solid fa-maze"></i>';
             cardEl.appendChild(icon);
         }
     } else {
-        cardEl.classList.remove('fx-lab');
-        let icon = cardEl.querySelector('.fx-lab-icon');
-        if (icon) icon.remove();
-    }
-
-    // Petrificado persistente: solo no puntúa, pero el estado visual (gris +
-    // icono de ojo tachado) se reaplica en cada render para que se vea
-    // mientras dure.
-    if (card.petrifiedTurns > 0) {
-        if (!cardEl.classList.contains('fx-petrificado')) cardEl.classList.add('fx-petrificado');
-        if (!cardEl.querySelector('.fx-petrified-icon')) {
-            let icon = document.createElement('div');
-            icon.className = 'fx-petrified-icon';
-            icon.innerHTML = '<i class="fa-solid fa-eye-slash"></i>';
-            cardEl.appendChild(icon);
-        }
-    } else {
-        cardEl.classList.remove('fx-petrificado');
-        let icon = cardEl.querySelector('.fx-petrified-icon');
+        cardEl.classList.remove('fx-exilio');
+        let icon = cardEl.querySelector('.fx-exilio-icon');
         if (icon) icon.remove();
     }
 

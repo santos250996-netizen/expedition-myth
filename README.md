@@ -14,7 +14,7 @@ Juego de cartas coleccionables **auto-batalla** inspirado en los mitos del mundo
 3. Cada turno, el **ATK** total de tu tablero se suma a tu marcador; el rival hace lo propio.
 4. La partida se decide por **diferencia de 50 Puntos de Gloria**. Y ojo al estancamiento: si ambos mazos se agotan y en los tableros ya no queda nada que pueda sumar gloria (sin ATK ni generadores periódicos), termina ahí mismo y gana quien tenga más Puntos de Gloria — con igualdad, empate. Guarda detalles de cada carta tocándola (con su lore).
 
-El juego usa **familias de cartas**: una misma entrada del mazo puede tener varias formas desbloqueables. Familias actuales: Asterión (c3 -> a2 -> a3), Dédalo (a7 -> a10 -> talos) y Mortales (c1 -> fuego -> muros). Las formas se desbloquean completando misiones con la forma anterior.
+El juego usa **familias de cartas**: una misma entrada del mazo puede tener varias formas desbloqueables. Familias actuales: Asterión (c3 -> a2 -> a3), Dédalo (a7 -> a10 -> talos), Mortales (c1 -> fuego -> muros) y Sátiro (c2 -> sat_cortejo / sat_pan, ramas de especialización). Las formas se desbloquean completando misiones con la forma anterior.
 
 ## Estructura del proyecto
 
@@ -50,6 +50,8 @@ expedition-myth/
 * **[docs/capitulo-1.0-cartas.md](docs/capitulo-1.0-cartas.md)** — lore y especificación original de las 10 cartas del capítulo 1.0. Canon **aplicado al juego** desde `v20261106j`, con el historial de la realineación.
 * **[docs/capitulo-1.1-cartas.md](docs/capitulo-1.1-cartas.md)** — lore y especificación del capítulo 1.1 (canon aplicado), auditoría por carta y la regla definitiva de valoración de energía: cualquier efecto de Energía (positivo o negativo) vale 2 de presupuesto, ×2 si es pasivo.
 * **[docs/capitulo-1.2-cartas.md](docs/capitulo-1.2-cartas.md)** — lore y especificación del capítulo 1.2 (canon aplicado en `v20261106l/m`), reglas completas del escudo del Coloso, la regla de Energía y del turno 1, y auditoría por carta.
+* **[docs/sistema-de-efectos.md](docs/sistema-de-efectos.md)** — el sistema de efectos del juego: 3 triggers, 12 keywords puras, 2 compuestas, 9 alcances, fórmula de PPT. Referencia normativa.
+* **[docs/arquetipos.md](docs/arquetipos.md)** — los 23 arquetipos del juego. Herramienta de diseño para clasificar cartas y familias.
 
 ## Caché y rendimiento
 

@@ -207,33 +207,19 @@
                             case 'discount':
                                 fxDiscountPop(fx.side, fx.text || '−1');
                                 break;
-                            case 'laberinto':
+                            case 'exilio':
                                 // Atrapar: encoge + oscurece + icono. SIN texto.
-                                fxLaberintoTrap(fx.uid);
+                                fxExilioTrap(fx.uid);
                                 break;
                             case 'liberado':
                                 // Liberar: vuelve a tamaño + flash verde.
-                                fxLaberintoRelease(fx.uid);
+                                fxExilioRelease(fx.uid);
                                 break;
                             case 'summon':
                                 // Invocación: la carta cae con rebote + flash azul.
                                 fxDropIn(fx.uid);
                                 fxFlash(fx.uid, 'blue');
                                 fxFloatOver(fx.side, fx.uid, 'INVOCADO', 'fx-blue fx-float-big', 'fa-wand-sparkles');
-                                break;
-                            case 'petrificar':
-                                // La carta se vuelve gris y se queda quieta (sin
-                                // encoger, a diferencia de Laberinto). Icono de
-                                // ojo tachado.
-                                fxFlash(fx.uid, 'gray');
-                                if (cardElByUid(fx.uid)) {
-                                    let el = cardElByUid(fx.uid);
-                                    el.classList.add('fx-petrificado');
-                                    let icon = document.createElement('div');
-                                    icon.className = 'fx-petrified-icon';
-                                    icon.innerHTML = '<i class="fa-solid fa-eye-slash"></i>';
-                                    el.appendChild(icon);
-                                }
                                 break;
                             case 'bloqueo':
                                 fxFlash(fx.uid, 'gold');
@@ -258,26 +244,26 @@
             setTimeout(() => el.classList.remove(cls), fxDurationMs(0.7));
         }
 
-        // Laberinto: encoge + oscurece + icono grande (sin texto). Se queda así
-        // mientras dure el atrapamiento (la clase no se quita hasta fxLiberado).
-        function fxLaberintoTrap(uid) {
+        // Exilio: encoge + oscurece + icono grande (sin texto). Se queda así
+        // mientras dure el exilio (la clase no se quita hasta fxLiberado).
+        function fxExilioTrap(uid) {
             let el = cardElByUid(uid);
             if (!el) return;
-            el.classList.add('fx-lab');
+            el.classList.add('fx-exilio');
             let icon = document.createElement('div');
-            icon.className = 'fx-lab-icon';
+            icon.className = 'fx-exilio-icon';
             icon.innerHTML = '<i class="fa-solid fa-maze"></i>';
             el.appendChild(icon);
             fxFlash(uid, 'gray');
         }
 
-        // Laberinto liberado: vuelve a tamaño + flash verde + quita icono.
-        function fxLaberintoRelease(uid) {
+        // Exilio liberado: vuelve a tamaño + flash verde + quita icono.
+        function fxExilioRelease(uid) {
             let el = cardElByUid(uid);
             if (!el) return;
-            el.classList.remove('fx-lab');
+            el.classList.remove('fx-exilio');
             el.classList.add('fx-liberado');
-            let icon = el.querySelector('.fx-lab-icon');
+            let icon = el.querySelector('.fx-exilio-icon');
             if (icon) icon.remove();
             setTimeout(() => el.classList.remove('fx-liberado'), fxDurationMs(0.7));
         }

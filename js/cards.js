@@ -30,7 +30,7 @@ const ALL_CARDS = [
             { 
                 id: 'c4', name: 'Plegaria Arcana', kind: 'Evento', cost: 1, atk: 0, hp: 0, 
                 icon: 'fa-hands-praying', 
-                desc: 'Otorga +4 Puntos de Gloria instantáneos.', 
+                desc: 'Al entrar: Gloria 4.', 
                 lore: 'Ante el terror de la oscuridad, los jefes de las tribus alzan las manos al cielo estrellado y elevan sus primeros cánticos y ofrendas. Esta devoción pura resuena por primera vez en las alturas, atrayendo la atención de fuerzas invisibles. Es la primera vez que los mortales invocan a Zeus, el rey de los dioses.',
                 art: 'assets/cartas/carta-04-plegaria-arcana.webp',
                 effect: (p) => { p.score += 4; queueFx({ t: 'gloria', side: sideOf(p), text: '+4 GLORIA', icon: 'fa-hands-praying', num: 4 }); }
@@ -38,7 +38,7 @@ const ALL_CARDS = [
             { 
                 id: 'c5', name: 'Niebla del Caos', kind: 'Evento', cost: 2, atk: 0, hp: 0, 
                 icon: 'fa-cloud', 
-                desc: 'Reduce en -2 el ATK de TODOS los Seres rivales (permanente).', 
+                desc: 'Al entrar: Debilitar 2 a todos los rivales.', 
                 lore: 'Una densa penumbra inexplorada desciende de los cielos y cubre los valles arcaicos de Grecia. Esta neblina antinatural nubla el juicio de las tribus y debilita los primeros asentamientos humanos, obligándolos a dar sus primeros pasos a ciegas en la oscuridad. Es el aliento de Cronos, el titán que devora a sus hijos, filtrándose desde el Tártaro.',
                 art: 'assets/cartas/carta-05-niebla-del-caos.webp',
                 effect: (p, opp) => {
@@ -91,7 +91,7 @@ const ALL_CARDS = [
             { 
                 id: 'c9', name: 'Pacto de Sangre en el Altar de Piedra', kind: 'Evento', cost: 3, atk: 0, hp: 0, 
                 icon: 'fa-droplet', 
-                desc: 'Destruye el Ser rival con menos HP, otorga +4 Puntos de Gloria y resta 4 HP a tu Ser con más HP. Sin Ser aliado, el ritual no se activa.', 
+                desc: 'Al entrar: Gloria 4. Destruir al rival con menos HP. Daño 4 a tu Ser con mas HP.', 
                 lore: 'Desesperados por detener las malas cosechas y los ataques, los mortales construyen altares toscos de roca y entregan la vida de sus cazadores en un ritual oscuro para apaciguar a las fuerzas que los acechan. Es un pacto con Hades, el dios del inframundo, que acepta la sangre como moneda de cambio.',
                 art: 'assets/cartas/carta-09-pacto-de-sangre.webp',
                 effect: (p, opp) => {
@@ -116,7 +116,7 @@ const ALL_CARDS = [
             {
                 id: 'c10', name: 'Ecos del Bosque de Dodona', kind: 'Evento', cost: 1, atk: 0, hp: 0,
                 icon: 'fa-tree',
-                desc: 'Reduce en -1 el ATK de TODOS los Seres (rivales y aliados), permanentemente.',
+                desc: 'Al entrar: Debilitar 1 a todos (rivales + aliados).',
                 lore: 'Los robles milenarios de los bosques sagrados guardan secretos antiguos. Cuando los intrusos se adentran sin respeto, las hojas y el viento susurran nombres prohibidos que paralizan la voluntad y confunden las mentes de los enemigos. Es el santuario oracular más antiguo de Zeus, donde los robles susurran sus profecías y su poder debilita a los incrédulos.',
                 art: 'assets/cartas/carta-10-ecos-de-dodona.webp',
                 effect: (p, opp) => {
@@ -147,11 +147,11 @@ const ALL_CARDS = [
 {
     id: 'a3', name: 'Asterión, el Señor del Laberinto', kind: 'Ser', cost: 7, atk: 6, hp: 4,
     icon: 'fa-maze',
-    desc: 'Al entrar: Laberinto 2.',
+    desc: 'Al entrar: Exilio 2 a 1 rival aleatorio.',
     lore: 'Encerrado en el laberinto de Cnosos, Asterión aprendió a moverse entre sus muros como si fueran una extensión de su propio cuerpo. Conocía cada rincón, cada trampa, cada sombra. Los que osaban entrar en su dominio no encontraban la salida, y la bestia los acechaba desde la oscuridad.',
     art: 'assets/cartas/asterion-a3-senor-laberinto.webp',
     substory: 'asterion',
-    effect: (p, opp) => { laberinto(p, opp, 2); },
+    effect: (p, opp) => { exilio(p, opp, 2); },
     startTurn: null
 },
 {
@@ -167,7 +167,7 @@ const ALL_CARDS = [
 {
     id: 'a5', name: 'Teseo en el Laberinto', kind: 'Ser', cost: 5, atk: 4, hp: 4,
     icon: 'fa-scroll',
-    desc: 'Al entrar: +2 Gloria por cada aliado en el tablero.',
+    desc: 'Al entrar: Gloria 2 por cada aliado en el tablero.',
     lore: 'Teseo y sus aliados se adentraron en la oscuridad del laberinto con el hilo de Ariadna como única guía. Asterión los acechaba desde las sombras, y cada paso que daban juntos era un latido de esperanza. Cada vida que lograba escapar de las sombras era una victoria para Atenas.',
     art: 'assets/cartas/asterion-a5-teseo-laberinto.webp',
     substory: 'asterion',
@@ -183,7 +183,7 @@ const ALL_CARDS = [
 {
     id: 'a6', name: 'Pasífae, la Reina de Creta', kind: 'Ser', cost: 2, atk: 0, hp: 2,
     icon: 'fa-crown',
-    desc: 'Al entrar: +1 HP a todos tus Asterión (en tablero o en mazo).',
+    desc: 'Al entrar: Blindar 1 a todos tus Asterion (tablero + mazo).',
     lore: 'Pasífae, esposa de Minos, caminaba por los jardines de Cnosos con la mirada perdida, ajena al hechizo que Poseidón había tejido sobre ella. Una pasión prohibida por el toro blanco encendió su corazón, y de esa unión contra natura nació Asterión. Aterrorizada por lo que había engendrado, la reina se retiró a las sombras del palacio, pero su amor de madre aún protege a su hijo, dondequiera que esté.',
     art: 'assets/cartas/asterion-a6-pasifae.webp',
     substory: 'asterion',
@@ -211,7 +211,7 @@ const ALL_CARDS = [
 {
     id: 'a7', name: 'Dédalo, el Arquitecto', kind: 'Ser', cost: 3, atk: 1, hp: 4,
     icon: 'fa-compass-drafting',
-    desc: 'Al entrar: invoca una Vaca de Madera Hueca (0/1) en tu tablero.',
+    desc: 'Al entrar: Invocar 1 Vaca de Madera Hueca.',
     lore: 'Dédalo era el artesano más brillante de Grecia, capaz de construir estructuras imposibles y artilugios que desafiaban a los dioses. Minos le ordenó diseñar un laberinto del que nadie pudiera escapar, y Dédalo obedeció, aunque sabía que estaba creando una prisión para una criatura inocente. Su genio lo condenó a vivir con el peso de su obra, y desde entonces, sus manos nunca volvieron a crear nada que no fuera una jaula.',
     art: 'assets/cartas/asterion-a7-dedalo.webp',
     substory: 'asterion',
@@ -224,7 +224,7 @@ const ALL_CARDS = [
 {
     id: 'a8', name: 'Vaca de Madera Hueca', kind: 'Token', cost: 0, atk: 0, hp: 1,
     icon: 'fa-horse',
-    desc: 'Al ser destruida: invoca un Asterión, el Minotauro.',
+    desc: 'Al morir: Invocar 1 Asterion, el Minotauro.',
     lore: 'Una vaca de madera hueca, construida por Dédalo para que Pasífae pudiera consumar su pasión prohibida por el Toro Blanco. En su interior, la reina se ocultó para engendrar a Asterión. La vaca es el símbolo del engaño y la tragedia que envolvió a la casa de Minos.',
     art: 'assets/cartas/asterion-a8-vaca-madera.webp',
     substory: 'asterion',
@@ -238,7 +238,7 @@ const ALL_CARDS = [
 {
     id: 'a9', name: 'El Nacimiento del Minotauro', kind: 'Evento', cost: 3, atk: 0, hp: 0,
     icon: 'fa-egg',
-    desc: 'Invoca un Asterión, el Minotauro en tu tablero.',
+    desc: 'Al entrar: Invocar 1 Asterion, el Minotauro.',
     lore: 'En la oscuridad de la noche, Pasífae dio a luz a una criatura de cuerpo humano y cabeza de toro. Los gritos de la reina resonaron en los pasillos del palacio, y los dioses guardaron silencio. Asterión había nacido, y con él, la vergüenza y el castigo divino se instalaron en Creta.',
     art: 'assets/cartas/asterion-a9-nacimiento-minotauro.webp',
     substory: 'asterion',
@@ -251,17 +251,17 @@ const ALL_CARDS = [
 {
     id: 'a10', name: 'El Laberinto de Creta', kind: 'Evento', cost: 4, atk: 0, hp: 0,
     icon: 'fa-dungeon',
-    desc: 'Laberinto 2.',
+    desc: 'Al entrar: Exilio 2 a 1 rival aleatorio.',
     lore: 'En las profundidades del palacio de Cnosos, bajo los cimientos de piedra, se extiende una red de pasillos que no llevan a ninguna parte. Sus muros son fríos, sus antorchas no dan calor, y el aire huele a polvo y a miedo. Quien entra en el Laberinto de Creta no encuentra la salida: encuentra el silencio, y luego los pasos de algo que se arrastra en la oscuridad.',
     art: 'assets/cartas/asterion-a10-construccion-laberinto.webp',
     substory: 'asterion',
-    effect: (p, opp) => { laberinto(p, opp, 2); },
+    effect: (p, opp) => { exilio(p, opp, 2); },
     startTurn: null
 },
 {
     id: 'a11', name: 'La Muerte del Minotauro', kind: 'Evento', cost: 2, atk: 0, hp: 0,
     icon: 'fa-skull',
-    desc: 'Inflige 4 de daño al Ser rival con más ATK.',
+    desc: 'Al entrar: Daño 4 al rival con mas ATK.',
     lore: 'En el centro del Laberinto, Teseo se enfrentó a Asterión. La bestia rugió y cargó contra él, pero el héroe ateniense esquivó sus embestidas y, con un golpe certero, puso fin a la vida del Minotauro. La sangre de Asterión empapó la piedra del laberinto, y el silencio se instaló en Creta.',
     art: 'assets/cartas/asterion-a11-muerte-minotauro.webp',
     substory: 'asterion',
@@ -286,12 +286,12 @@ const ALL_CARDS = [
 {
     id: 'b1', name: 'Medusa, la Doncella', kind: 'Ser', cost: 2, atk: 0, hp: 3,
     icon: 'fa-user',
-    desc: 'Al entrar: +1 Gloria por cada Ser aliado en el tablero.',
+    desc: 'Al entrar: Gloria 1 por cada Ser aliado en el tablero.',
     lore: 'Antes de la maldición, Medusa era la más bella de las sacerdotisas de Atenea. Su cabello dorado caía como una cascada y su voz calmaba a las bestias. Los hombres cruzaban el mar solo para verla, y ella, orgullosa, se atrevió a compararse con la diosa.',
     art: 'assets/cartas/medusa-b1-doncella.webp',
     substory: 'medusa',
     effect: (p) => {
-        let n = p.activeBoard.filter(c => !c.dying && !c.stunned && !(c.petrifiedTurns > 0)).length;
+        let n = p.activeBoard.filter(c => !c.dying && !c.stunned).length;
         if (n > 0) { p.score += n; queueFx({ t: 'gloria', side: sideOf(p), text: '+' + n + ' GLORIA', icon: 'fa-user', num: n }); }
     },
     startTurn: null
@@ -299,11 +299,11 @@ const ALL_CARDS = [
 {
     id: 'b2', name: 'Medusa, la Gorgona', kind: 'Ser', cost: 6, atk: 2, hp: 2,
     icon: 'fa-snake',
-    desc: 'Al entrar: Petrificar 2. Mientras esté en Fila 1, al inicio de cada turno, 1 daño al rival de Fila 1. Al morir: invoca 2 Serpientes de la Cabeza.',
+    desc: 'Al entrar: Exilio 2. Inicio de turno (si esta en Fila 1 y hay rival): Daño 1 a Fila 1 rival. Al morir: Invocar 2 Serpientes de la Cabeza.',
     lore: 'Atenea no distinguió entre el culpable y la víctima. El cabello de Medusa se enroscó en serpientes, y su mirada se volvió piedra. Huyó al norte, donde las Gorgonas la acogieron, y desde entonces ningún hombre que la mirara volvió a contar lo que vio.',
     art: 'assets/cartas/medusa-b2-gorgona.webp',
     substory: 'medusa',
-    effect: (p, opp) => { petrificar(p, opp, 2); },
+    effect: (p, opp) => { exilio(p, opp, 2); },
     startTurn: (self, player, opp) => {
         if (player.activeBoard[0] !== self) return;
         let target = opp.activeBoard[0];
@@ -328,7 +328,7 @@ const ALL_CARDS = [
 {
     id: 'b4', name: 'Euríale, la Errante', kind: 'Ser', cost: 3, atk: 2, hp: 3,
     icon: 'fa-eye',
-    desc: 'Al entrar: -1 ATK al Ser rival en la Fila 1.',
+    desc: 'Al entrar: Debilitar 1 a Fila 1 rival.',
     lore: 'La tercera Gorgona, errante y silenciosa. Se dice que podía ver el futuro en el vuelo de los cuervos. Fue ella quien advirtió a Medusa de que un héroe con sandalias aladas cruzaba el mar, pero Medusa ya no podía escuchar.',
     art: 'assets/cartas/medusa-b4-euriale.webp',
     substory: 'medusa',
@@ -346,7 +346,7 @@ const ALL_CARDS = [
 {
     id: 'b5', name: 'El Escudo Espejo', kind: 'Evento', cost: 2, atk: 0, hp: 0,
     icon: 'fa-shield-halved',
-    desc: 'Todos tus Seres ganan Reflejo 1 este turno (reflejan el próximo efecto rival que los targetee).',
+    desc: 'Al entrar: Reflejo 1 a todos los aliados.',
     lore: 'Atenea entregó a Perseo un escudo pulido como un espejo. "No la mires a los ojos", le dijo. "Mírala en el reflejo". El héroe avanzó por la cueva con el escudo en alto, y las serpientes de Medusa se reflejaron en el bronce antes de que pudieran alcanzarlo.',
     art: 'assets/cartas/medusa-b5-escudo-espejo.webp',
     substory: 'medusa',
@@ -363,7 +363,7 @@ const ALL_CARDS = [
 {
     id: 'b6', name: 'Las Sandalias Aladas', kind: 'Evento', cost: 2, atk: 0, hp: 0,
     icon: 'fa-shoe-prints',
-    desc: 'Tu Ser con más ATK gana +2 ATK este turno.',
+    desc: 'Al entrar: Fortalecer 2 al aliado con mas ATK.',
     lore: 'Hermes, el mensajero de los dioses, prestó a Perseo sus sandalias aladas. Con ellas, el héroe podía volar sobre el mar y escapar de cualquier enemigo. Pero las sandalias no protegían de la mirada de la Gorgona: solo de sus garras.',
     art: 'assets/cartas/medusa-b6-sandalias-aladas.webp',
     substory: 'medusa',
@@ -379,7 +379,7 @@ const ALL_CARDS = [
 {
     id: 'b7', name: 'El Casco de Invisibilidad', kind: 'Evento', cost: 2, atk: 0, hp: 0,
     icon: 'fa-ghost',
-    desc: 'Tus Seres son inmunes a efectos rivales este turno (no pueden ser target de debuffs, petrificar ni destruir).',
+    desc: 'Al entrar: Inmune 1 a todos los aliados.',
     lore: 'Hades, el dios del inframundo, prestó a Perseo su casco de invisibilidad. Con él, el héroe podía caminar entre los monstruos sin ser visto. Pero el casco no lo hacía invisible a los dioses: solo a los ojos de los mortales.',
     art: 'assets/cartas/medusa-b7-casco-invisibilidad.webp',
     substory: 'medusa',
@@ -394,7 +394,7 @@ const ALL_CARDS = [
 {
     id: 'b8', name: 'Pegaso, el Nacido de la Sangre', kind: 'Ser', cost: 5, atk: 3, hp: 4,
     icon: 'fa-horse',
-    desc: 'Al entrar: +2 Gloria y +1 ATK a todos tus Seres.',
+    desc: 'Al entrar: Gloria 2 + Fortalecer 1 a todos los aliados.',
     lore: 'Cuando la cabeza de Medusa cayó, de su sangre brotaron dos criaturas: Crisaor, el de la espada de oro, y Pegaso, el caballo alado. Pegaso voló al Olimpo y se convirtió en el corcel de Zeus. Pero su sangre era la de Poseidón, y su alma, la de Medusa.',
     art: 'assets/cartas/medusa-b8-pegaso.webp',
     substory: 'medusa',
@@ -408,7 +408,7 @@ const ALL_CARDS = [
 {
     id: 'b9', name: 'Crisaor, el de la Espada de Oro', kind: 'Ser', cost: 4, atk: 3, hp: 3,
     icon: 'fa-sword',
-    desc: 'Al entrar: +1 ATK permanente a todos tus Seres.',
+    desc: 'Al entrar: Fortalecer 1 a todos los aliados.',
     lore: 'El hermano de Pegaso, nacido de la misma sangre. Crisaor empuñaba una espada de oro que ningún mortal podía mirar sin deslumbrarse. Se dice que fue él quien recogió la cabeza de Medusa del suelo, y que la entregó a Atenea con sus propias manos.',
     art: 'assets/cartas/medusa-b9-crisaor.webp',
     substory: 'medusa',
@@ -420,13 +420,13 @@ const ALL_CARDS = [
 {
     id: 'b10', name: 'La Mirada de Piedra', kind: 'Evento', cost: 4, atk: 0, hp: 0,
     icon: 'fa-eye-slash',
-    desc: 'Petrificar 2 a un rival aleatorio. Se repite 2 veces.',
+    desc: 'Al entrar x2: Exilio 2 a 1 rival aleatorio.',
     lore: 'Quien mire a los ojos de la Gorgona se convierte en piedra. No hay escudo que valga, no hay dios que proteja. La mirada de Medusa es la mirada de Atenea: fría, justa, implacable. Y la piedra que deja no es un castigo: es una advertencia.',
     art: 'assets/cartas/medusa-b10-mirada-piedra.webp',
     substory: 'medusa',
     effect: (p, opp) => {
-        petrificar(p, opp, 2);
-        petrificar(p, opp, 2);
+        exilio(p, opp, 2);
+        exilio(p, opp, 2);
     },
     startTurn: null
 },
@@ -441,7 +441,7 @@ const ALL_CARDS = [
 {
     id: 'e2', name: 'Equidna, la Madre de Monstruos', kind: 'Ser', cost: 7, atk: 0, hp: 4,
     icon: 'fa-snake',
-    desc: 'Al inicio de cada turno, mientras sea la última carta de tu columna, invoca un Vástago aleatorio.',
+    desc: 'Inicio de turno (si es la ultima carta de tu columna): Invocar 1 Vastago aleatorio.',
     lore: 'En una cueva de la Argólide, entre rocas húmedas y sombras, vive Equidna: mitad mujer, mitad serpiente. Su cuerpo se arrastra por la piedra con un susurro húmedo, y sus ojos brillan en la oscuridad como ascuas. Su voz hiela la sangre de quien la escucha. No lucha, no caza, no huye: pare. Y cada cría que sale de su vientre es un nuevo terror para Grecia.',
     art: 'assets/cartas/e2-equidna-madre-monstruos.webp',
     effect: null,
@@ -454,7 +454,7 @@ const ALL_CARDS = [
 {
     id: 'e3', name: 'Heracles, el Héroe', kind: 'Ser', cost: 8, atk: 3, hp: 5,
     icon: 'fa-user-shield',
-    desc: 'Al entrar: destruye un Ser rival con coste ≥ 5.',
+    desc: 'Al entrar: Destruir 1 rival con coste >= 5.',
     lore: 'Heracles es un hombre de hombros anchos y músculos tensos como cuerdas de arco. Su piel curtida por el sol y el polvo de los caminos, y su mirada lleva el peso de las doce pruebas que Euristeo le impuso. Hijo de Zeus y de una mortal, cargó desde niño con la envidia de Hera, que lo persiguió incluso antes de nacer. No lucha por gloria: lucha por redención. Y cada monstruo que cae bajo su maza es un paso más hacia el Olimpo.',
     art: 'assets/cartas/e3-heracles-el-heroe.webp',
     effect: (p, opp) => {
@@ -465,7 +465,7 @@ const ALL_CARDS = [
 {
     id: 'e5', name: 'Hidra de Lerna', kind: 'Ser', subtype: 'Vástago', cost: 5, atk: 0, hp: 1,
     icon: 'fa-snake',
-    desc: 'Al morir: invoca 3 Hidra de Lerna (tokens 2/1).',
+    desc: 'Al morir: Invocar 3 Hidra de Lerna (tokens 2/1).',
     lore: 'En los pantanos de Lerna, entre aguas estancadas y juncos podridos, vive la Hidra: una serpiente de nueve cabezas, con escamas verdes como el musgo y aliento venenoso. Por cada cabeza que pierde, le nacen dos más. Su sangre es un veneno que no tiene cura, y su sola presencia envenena el aire. No es una bestia: es una plaga.',
     art: 'assets/cartas/e5-hidra-de-lerna.webp',
     effect: null,
@@ -487,7 +487,7 @@ const ALL_CARDS = [
 {
     id: 'talos', name: 'El Talos', kind: 'Ser', cost: 8, atk: 5, hp: 7,
     icon: 'fa-robot',
-    desc: 'Al entrar: 2 daño a todos los rivales.',
+    desc: 'Al entrar: Daño 2 a todos los rivales.',
     lore: 'En las costas de Creta, un gigante de bronce patrulla la isla. Su cuerpo es metal pulido, sus ojos son ascuas, y su piel no conoce el dolor. Tres veces al día recorre las playas, y a quien se acerca a la orilla le lanza rocas del tamaño de un hombre. No es un dios ni un monstruo: es una máquina, la obra maestra de Dédalo. Y como toda obra maestra, tiene un punto débil: un clavo en el tobillo que guarda su vida.',
     art: 'assets/cartas/dedalo-talos-guardian-de-creta.webp',
     effect: (p, opp) => {
@@ -501,7 +501,7 @@ const ALL_CARDS = [
 {
     id: 'fuego', name: 'Mortales del Fuego', kind: 'Ser', cost: 3, atk: 2, hp: 2,
     icon: 'fa-fire',
-    desc: 'Al entrar: +1 ATK a todos tus Mortales (en tablero).',
+    desc: 'Al entrar: Fortalecer 1 a todos tus Mortales.',
     lore: 'Prometeo robo una chispa del carro de Helios y la escondio en una cana hueca. Cuando la entrego a los mortales, les dio el primer poder divino: el fuego. Con el aprendieron a forjar el bronce, a cocinar el grano y a iluminar la noche. Pero cada llama que encendian era una afrenta a Zeus, y el titan pagaria su osadia con una condena eterna.',
     art: 'assets/cartas/mortales-fuego.webp',
     substory: 'mortales',
@@ -524,6 +524,32 @@ const ALL_CARDS = [
     art: 'assets/cartas/mortales-muros.webp',
     substory: 'mortales',
     effect: null,
+    startTurn: null
+},
+{
+    id: 'sat_cortejo', name: 'Satiro del Cortejo', kind: 'Ser', cost: 3, atk: 1, hp: 3,
+    icon: 'fa-wine-glass',
+    desc: 'Al entrar: Fortalecer 1 a todos los aliados.',
+    lore: 'Cuando el vino corre y la flauta suena, el satiro deja de ser un pastor solitario y se convierte en el alma del cortejo. Con los cuernos mas largos y la mirada encendida, lidera a los demas satiros en danzas que duran hasta el amanecer. Los que lo siguen no envejecen, pero tampoco recuerdan su nombre al dia siguiente. Dioniso lo ama, y por eso le concede el don de encender la sangre de sus hermanos.',
+    art: 'assets/cartas/satiro-sat-cortejo.webp',
+    substory: 'satiro',
+    effect: (p) => {
+        p.activeBoard.forEach(c => {
+            if (c.dying) return;
+            c.atk += 1;
+            queueFx({ t: 'buff', side: sideOf(p), uid: c.uid, text: '+1 ATK', icon: 'fa-wine-glass' });
+        });
+    },
+    startTurn: null
+},
+{
+    id: 'sat_pan', name: 'Pan, el del Grito', kind: 'Ser', cost: 4, atk: 1, hp: 5,
+    icon: 'fa-bullhorn',
+    desc: 'Al entrar: Exilio 1 a Fila 1 rival.',
+    lore: 'Pan es el mas antiguo de los satiros, el que tocaba la flauta en las cumbres de Arcadia cuando los dioses aun no tenian nombre. Los pastores le ofrecen leche y miel para que cuide de sus rebanos, y el, a cambio, les ensena los secretos de la musica. Pero Pan es tambien el dios del panico: cuando grita, los ejercitos huyen sin saber por que. En la Batalla de Maraton, su voz helo la sangre de los persas, y desde entonces los hombres llaman "panico" al miedo que no tiene causa.',
+    art: 'assets/cartas/satiro-sat-pan.webp',
+    substory: 'satiro',
+    effect: (p, opp) => { exilio(p, opp, 1); },
     startTurn: null
 }
         ];

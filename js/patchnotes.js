@@ -7,6 +7,44 @@
 
 const PATCH_NOTES = [
     {
+        version: '1.9.0',
+        date: '2026-11-10',
+        title: 'Sistema de efectos, arquetipos y familia satiro',
+        highlights: [
+            'Nuevo sistema de efectos: triggers, keywords, alcances',
+            'Laberinto y Petrificar unificados en Exilio',
+            'Todas las desc reescritas al nuevo formato',
+            'Nueva familia: Satiro de los Bosques (c2 -> sat_cortejo / sat_pan)',
+            '2 cartas nuevas: Satiro del Cortejo y Pan, el del Grito',
+            '2 documentos nuevos: docs/sistema-de-efectos.md y docs/arquetipos.md'
+        ],
+        changes: {
+            new: [
+                'docs/sistema-de-efectos.md: 3 triggers, 12 keywords puras, 2 compuestas, 9 alcances, formula PPT.',
+                'docs/arquetipos.md: 23 arquetipos agrupados en 4 grupos.',
+                'Keyword Exilio X: unifica Laberinto y Petrificar.',
+                'Familia satiro: c2 (base), sat_cortejo (rama buffer), sat_pan (rama control).',
+                'Carta: Satiro del Cortejo (Ser, cost 3, 1/3, al entrar Fortalecer 1 a todos los aliados).',
+                'Carta: Pan, el del Grito (Ser, cost 4, 1/5, al entrar Exilio 1 a Fila 1 rival).',
+                'Mision sat_cortejo: gana 5 combates con Satiro de los Bosques en el tablero.',
+                'Mision sat_pan: juega a Satiro de los Bosques en 20 partidas distintas.'
+            ],
+            buffs: [],
+            nerfs: [],
+            fixes: [
+                'b2 y b10 pasan de Petrificar a Exilio (mismo coste, mismo PPT).',
+                'Todas las desc reescritas al formato [Trigger]: [Keyword] [Alcance].',
+                'Identificadores internos renombrados de laberinto/petrificar a exilio.'
+            ],
+            removed: [
+                'Keyword Petrificar (unificada en Exilio).',
+                'Funciones laberinto() y petrificar() de game.js (unificadas en exilio()).',
+                'Estado petrifiedTurns (unificado en stunned + exilioTurns).',
+                'Clases CSS fx-lab, fx-petrificado (renombradas/eliminadas).'
+            ]
+        }
+    },
+    {
         version: '1.8.0',
         date: '2026-11-10',
         title: 'Familia mortales y rebalance Pasifae',

@@ -203,6 +203,11 @@ const CARD_FAMILIES = {
         id: 'mortales',
         name: 'Mortales de Arcadia',
         forms: ['c1', 'fuego', 'muros']
+    },
+    satiro: {
+        id: 'satiro',
+        name: 'Satiro de los Bosques',
+        forms: ['c2', 'sat_cortejo', 'sat_pan']
     }
 };
 
@@ -213,9 +218,9 @@ const CARD_MISSIONS = {
         description: 'Gana 3 combates con Asterión, el Minotauro en el tablero.'
     },
     a3: {
-        type: 'laberinto_received', count: 1, previousCardId: 'a2',
+        type: 'exilio_received', count: 1, previousCardId: 'a2',
         familyId: 'asterion', formIndex: 2,
-        description: 'Recibe el efecto Laberinto con Asterión, Enfurecido en el tablero.'
+        description: 'Recibe el efecto Exilio con Asterion, Enfurecido en el tablero.'
     },
     a10: {
         type: 'games_with', count: 30, previousCardId: 'a7',
@@ -236,6 +241,16 @@ const CARD_MISSIONS = {
         type: 'games_with', count: 30, previousCardId: 'fuego',
         familyId: 'mortales', formIndex: 2,
         description: 'Juega a Mortales del Fuego en 30 partidas distintas.'
+    },
+    sat_cortejo: {
+        type: 'wins', count: 5, previousCardId: 'c2',
+        familyId: 'satiro', formIndex: 1,
+        description: 'Gana 5 combates con Satiro de los Bosques en el tablero.'
+    },
+    sat_pan: {
+        type: 'games_with', count: 20, previousCardId: 'c2',
+        familyId: 'satiro', formIndex: 2,
+        description: 'Juega a Satiro de los Bosques en 20 partidas distintas.'
     }
 };
 
@@ -321,7 +336,7 @@ function resolvePhase(familyId, formId) {
     return family.forms[0];
 }
 
-// Progreso de misiones: { [cardId]: { wins, laberintoReceived, gamesWith, completed } }
+// Progreso de misiones: { [cardId]: { wins, exilioReceived, gamesWith, completed } }
 function getCardProgress() {
     let raw = safeStorageGet('nexo_card_progress_v1');
     if (!raw) return {};
@@ -331,12 +346,12 @@ function saveCardProgress(progress) { safeStorageSet('nexo_card_progress_v1', JS
 
 function getProgressFor(cardId) {
     let progress = getCardProgress();
-    return progress[cardId] || { wins: 0, laberintoReceived: 0, gamesWith: 0, completed: false };
+    return progress[cardId] || { wins: 0, exilioReceived: 0, gamesWith: 0, completed: false };
 }
 
 function updateProgressFor(cardId, updates) {
     let progress = getCardProgress();
-    if (!progress[cardId]) progress[cardId] = { wins: 0, laberintoReceived: 0, gamesWith: 0, completed: false };
+    if (!progress[cardId]) progress[cardId] = { wins: 0, exilioReceived: 0, gamesWith: 0, completed: false };
     Object.assign(progress[cardId], updates);
     saveCardProgress(progress);
     return progress[cardId];
