@@ -81,7 +81,22 @@ function renderCardModalContent(card) {
     // Nombre en modo lore (arriba del arte).
     let loreName = document.getElementById('modal-card-lore-name');
     if (loreName) loreName.innerText = displayCard.name;
-    document.getElementById('modal-card-desc').innerText = displayCard.desc;
+    let descEl = document.getElementById('modal-card-desc');
+    if (descEl) {
+        let descHtml = displayCard.desc || '';
+        let triggerKeys = ['Al entrar','Inicio de turno','Al morir','Embestida','Enfurecer','Sacrificio'];
+        // Ordenar por longitud descendente para evitar que "Daño" se
+        // coma "Daño 2" dentro de otra palabra.
+        let allKeys = Object.keys(LEYENDAS).sort((a,b) => b.length - a.length);
+        allKeys.forEach(key => {
+            if (!descHtml.includes(key)) return;
+            let isTrigger = triggerKeys.includes(key);
+            let color = isTrigger ? 'text-amber-300' : 'text-cyan-300';
+            let regex = new RegExp('\\b' + key.replace(/[.*+?^${}()|[\]\\]/g, '\\$&') + '\\b', 'g');
+            descHtml = descHtml.replace(regex, `<span class="${color}">${key}</span>`);
+        });
+        descEl.innerHTML = descHtml;
+    }
 
     let typeIcon = document.getElementById('modal-card-type-icon');
     let typeText = document.getElementById('modal-card-type');
@@ -142,23 +157,65 @@ function renderCardModalContent(card) {
         if (cardModalMode === 'lore') {
             infoPanel.innerHTML = `<p class="text-[10px] text-slate-400 italic leading-tight text-center">${displayCard.lore || ''}</p>`;
         } else {
-            let mission = getMissionFor(displayCard.id);
             let html = infoHtml;
-            if (mission) {
-                let progress = getProgressFor(displayCard.id);
-                let current = 0;
-                if (mission.type === 'wins') current = progress.wins || 0;
-                if (mission.type === 'exilio_received') current = progress.exilioReceived || 0;
-                if (mission.type === 'games_with') current = progress.gamesWith || 0;
-                let completed = current >= mission.count;
-                let pct = Math.min(100, (current / mission.count) * 100);
-                html += `<div class="mt-2"><p class="text-[8px] font-orbitron font-bold uppercase tracking-[0.2em] text-purple-300 text-center mb-1">MISION</p>`;
-                html += `<p class="text-[10px] text-slate-300 leading-tight text-center mb-1">${mission.description}</p>`;
-                html += `<div class="w-full h-1.5 bg-slate-800 rounded-full overflow-hidden mb-1"><div class="h-full ${completed ? 'bg-emerald-500' : 'bg-purple-500'}" style="width:${pct}%"></div></div>`;
-                html += `<p class="text-[9px] text-center ${completed ? 'text-emerald-400' : 'text-slate-400'}">${current}/${mission.count} ${completed ? '— ¡COMPLETADA!' : ''}</p></div>`;
-            }
             if (!html) html = '<p class="text-[10px] text-slate-500 text-center">Sin informacion.</p>';
             infoPanel.innerHTML = html;
+        }
+    }
+
+    // --- PANEL DE MISIONES (separado de la leyenda; oculto si todo completado) ---
+    let missionPanel = document.getElementById('modal-missions-panel');
+    let missionContent = document.getElementById('modal-missions-content');
+    if (missionPanel && missionContent) {
+        let formId = displayCard.id;
+        // Misiones que desbloquean esta forma; si la carta no tiene (forma
+        // base o carta suelta), se muestran las que se progresan con ella.
+        let ownMissions = [];
+        let prevMissions = [];
+        for (let mid in CARD_MISSIONS) {
+            let m = CARD_MISSIONS[mid];
+            let fam = CARD_FAMILIES[m.familyId];
+            if (!fam) continue;
+            if (fam.forms[m.formIndex] === formId) ownMissions.push({ id: mid, mission: m });
+            else if (m.previousCardId === formId) prevMissions.push({ id: mid, mission: m });
+        }
+        let currentMissions = ownMissions.length > 0 ? ownMissions : prevMissions;
+        let allCompleted = currentMissions.length > 0 && currentMissions.every(({id, mission}) => {
+            let p = getProgressFor(id);
+            if (mission.type === 'wins') return (p.wins||0) >= mission.count;
+            if (mission.type === 'games_with') return (p.gamesWith||0) >= mission.count;
+            if (mission.type === 'exilio_received') return (p.exilioReceived||0) >= mission.count;
+            if (mission.type === 'kills_with') return (p.killsWith||0) >= mission.count;
+            if (mission.type === 'invoke_with') return (p.invokeWith||0) >= mission.count;
+            if (mission.type === 'exile_with') return (p.exileWith||0) >= mission.count;
+            if (mission.type === 'fortalecer_with') return (p.fortalecerWith||0) >= mission.count;
+            if (mission.type === 'glory_with') return (p.gloryWith||0) >= mission.count;
+            return false;
+        });
+        if (currentMissions.length === 0 || allCompleted) {
+            missionPanel.classList.add('hidden-view');
+            missionContent.innerHTML = '';
+        } else {
+            missionPanel.classList.remove('hidden-view');
+            let html = '';
+            currentMissions.forEach(({id, mission}) => {
+                let p = getProgressFor(id);
+                let current = 0;
+                if (mission.type === 'wins') current = p.wins||0;
+                if (mission.type === 'games_with') current = p.gamesWith||0;
+                if (mission.type === 'exilio_received') current = p.exilioReceived||0;
+                if (mission.type === 'kills_with') current = p.killsWith||0;
+                if (mission.type === 'invoke_with') current = p.invokeWith||0;
+                if (mission.type === 'exile_with') current = p.exileWith||0;
+                if (mission.type === 'fortalecer_with') current = p.fortalecerWith||0;
+                if (mission.type === 'glory_with') current = p.gloryWith||0;
+                let completed = current >= mission.count;
+                let pct = Math.min(100, (current / mission.count) * 100);
+                html += `<div class="mb-1"><p class="text-[9px] text-slate-300 leading-tight">${mission.description}</p>`;
+                html += `<div class="w-full h-1 bg-slate-800 rounded-full overflow-hidden mt-0.5"><div class="h-full ${completed ? 'bg-emerald-500' : 'bg-purple-500'}" style="width:${pct}%"></div></div>`;
+                html += `<p class="text-[8px] text-slate-400 text-right">${current}/${mission.count}</p></div>`;
+            });
+            missionContent.innerHTML = html;
         }
     }
 
@@ -645,9 +702,20 @@ function showGameOver() {
     let canReward = currentChapter && !isTutorial && rewardChance > 0;
     let rewardCardId = null;
     if (canReward && Math.random() < rewardChance) {
-        let cardsToGive = currentChapter.botDecks && currentChapter.botDecks[0]
-            ? currentChapter.botDecks[0].filter(id => !ownedCardIds.includes(id))
-            : (currentChapter.botDeck || []).filter(id => !ownedCardIds.includes(id));
+        let allBotCards = currentChapter.botDecks && currentChapter.botDecks[0]
+            ? currentChapter.botDecks[0]
+            : (currentChapter.botDeck || []);
+        // Solo cartas sueltas o formas base. Nunca formas 2/3 ni Tokens.
+        let cardsToGive = allBotCards.filter(id => {
+            let card = ALL_CARDS.find(c => c.id === id);
+            if (!card) return false;
+            if (card.kind === 'Token') return false;
+            if (card.subtype === 'Vástago') return false;
+            let family = getFamilyFor(id);
+            if (family && family.forms[0] !== id) return false; // forma 2/3
+            if (ownedCardIds.includes(id)) return false;
+            return true;
+        });
         if (cardsToGive.length > 0) {
             let newCardId = cardsToGive[Math.floor(Math.random() * cardsToGive.length)];
             ownedCardIds.push(newCardId);
@@ -663,8 +731,43 @@ function showGameOver() {
             }
         }
     }
-    // Carta de recompensa flotante (arte + nombre + tipo + coste + stats).
-    renderRewardCard(rewardCardId);
+    // Recompensa integrada en el modal de victoria (entre la puntuacion
+    // y los botones), con arte, nombre, tipo, coste y stats.
+    let rewardSlot = document.getElementById('gameover-reward-slot');
+    if (rewardSlot) {
+        rewardSlot.innerHTML = '';
+        if (rewardCardId) {
+            let card = ALL_CARDS.find(c => c.id === rewardCardId);
+            if (card) {
+                let typeLabel = card.kind === 'Ser' ? 'SER' : (card.kind === 'Token' ? 'TOKEN' : 'EVENTO');
+                let typeColor = card.kind === 'Ser' ? 'bg-blue-600' : (card.kind === 'Token' ? 'bg-emerald-600' : 'bg-amber-600');
+                let statsHtml = '';
+                if (card.kind === 'Ser' || card.kind === 'Token') {
+                    statsHtml = `<div class="flex gap-1 mt-1">
+                        <span class="stat-atk" style="width:20px;height:20px;font-size:9px;">${card.atk}</span>
+                        <span class="stat-hp" style="width:20px;height:20px;font-size:9px;">${card.hp}</span>
+                    </div>`;
+                }
+                rewardSlot.innerHTML = `
+                    <div class="flex flex-col items-center gap-1">
+                        <div class="text-[9px] font-orbitron font-bold tracking-widest text-amber-300">¡NUEVA CARTA OBTENIDA!</div>
+                        <div class="relative w-20 h-28 rounded-lg overflow-hidden border-2 border-amber-400 shadow-[0_0_15px_rgba(251,191,36,0.6)]">
+                            <div class="absolute inset-0 bg-cover bg-center" style="background-image:url('${card.art}')"></div>
+                            <div class="absolute inset-0 bg-gradient-to-t from-black/85 via-black/20 to-black/40"></div>
+                            <div class="absolute top-1 left-1 w-5 h-5 rounded-full bg-cyan-200 text-cyan-900 text-[10px] font-bold flex items-center justify-center border border-white">${card.cost}</div>
+                            <div class="absolute top-1 right-1 ${typeColor} text-white text-[7px] px-1 rounded font-bold">${typeLabel}</div>
+                            <div class="absolute bottom-1 left-1 right-1">
+                                <div class="text-white font-orbitron font-bold text-[9px] leading-tight truncate drop-shadow-md">${card.name}</div>
+                                ${statsHtml}
+                            </div>
+                        </div>
+                    </div>`;
+                rewardSlot.classList.remove('hidden-view');
+            }
+        } else {
+            rewardSlot.classList.add('hidden-view');
+        }
+    }
 
     if (navigator.vibrate) navigator.vibrate(p1Score >= p2Score ? [30, 40, 60] : 50);
 
@@ -685,28 +788,20 @@ function showGameOver() {
             if (mission.previousCardId === cardId) {
                 if (mission.type === 'wins' && won) {
                     let progress = getProgressFor(missionCardId);
-                    let newWins = (progress.wins || 0) + 1;
-                    updateProgressFor(missionCardId, { wins: newWins });
-                    if (newWins >= mission.count) {
-                        if (unlockCard(missionCardId)) {
-                            let cardData = ALL_CARDS.find(c => c.id === missionCardId);
-                            showTutorialMessage("¡Misión completada!", "Has desbloqueado la forma: " + (cardData ? cardData.name : missionCardId));
-                        }
-                    }
+                    // El desbloqueo lo centraliza consumeMissionCounters: una
+                    // forma se libera solo cuando TODAS sus misiones acaban.
+                    updateProgressFor(missionCardId, { wins: (progress.wins || 0) + 1 });
                 } else if (mission.type === 'games_with') {
                     let progress = getProgressFor(missionCardId);
-                    let newGames = (progress.gamesWith || 0) + 1;
-                    updateProgressFor(missionCardId, { gamesWith: newGames });
-                    if (newGames >= mission.count) {
-                        if (unlockCard(missionCardId)) {
-                            let cardData = ALL_CARDS.find(c => c.id === missionCardId);
-                            showTutorialMessage("¡Misión completada!", "Has desbloqueado la forma: " + (cardData ? cardData.name : missionCardId));
-                        }
-                    }
+                    updateProgressFor(missionCardId, { gamesWith: (progress.gamesWith || 0) + 1 });
                 }
             }
         }
     });
+
+    // Misiones nuevas (v1.9.4): consume los contadores de la partida
+    // (muertos/invocaciones/exilios/Fortalecer/Gloria) y desbloquea formas.
+    consumeMissionCounters();
 
     // Refresca el candado del boton de eventos en el instante de ganar
     // el Cap 1 (sin esperar a la siguiente navegacion a home).
@@ -718,50 +813,66 @@ function showGameOver() {
     document.getElementById('gameover-modal').classList.remove('hidden-view');
 }
 
-// --- CARTA DE RECOMPENSA EN EL MODAL DE GAMEOVER ---
-// Muestra la carta obtenida con arte, nombre, tipo, coste y stats.
-// Animación fade+scale. Tocable para abrir el detalle (openCardModal).
-function renderRewardCard(cardId) {
-    let container = document.getElementById('gameover-reward-card');
-    if (!container) return;
-    if (!cardId) { container.innerHTML = ''; container.classList.add('hidden-view'); return; }
-    let card = ALL_CARDS.find(c => c.id === cardId);
-    if (!card) { container.innerHTML = ''; container.classList.add('hidden-view'); return; }
-
-    let typeLabel = card.kind === 'Ser' ? 'SER' : (card.kind === 'Token' ? 'TOKEN' : 'EVENTO');
-    let typeColor = card.kind === 'Ser' ? 'bg-blue-600' : (card.kind === 'Token' ? 'bg-emerald-600' : 'bg-amber-600');
-    let statsHtml = '';
-    if (card.kind === 'Ser' || card.kind === 'Token') {
-        statsHtml = `<div class="flex gap-1 mt-1">
-            <span class="stat-atk" style="width:20px;height:20px;font-size:9px;">${card.atk}</span>
-            <span class="stat-hp" style="width:20px;height:20px;font-size:9px;">${card.hp}</span>
-        </div>`;
+// --- CONSUMO DE MISIONES NUEVAS (v1.9.4) ---
+// Los contadores de kills/invoke/exile ya vienen condicionados por el motor
+// (la carta previousCardId viva en el tablero al ocurrir el evento); los de
+// Fortalecer y Gloria son globales por partida y se acreditan a las misiones
+// cuyo previousCardId sigue vivo en tablero o esta en el mazo del jugador.
+// El desbloqueo de formas se centraliza aqui: una forma se libera solo
+// cuando TODAS sus misiones estan completadas.
+function consumeMissionCounters() {
+    let counters = gameState.missionCounters || {};
+    let aliveIds = new Set(gameState.p1.activeBoard.filter(c => !c.dying).map(c => c.id));
+    let prevIds = new Set([...aliveIds, ...playerDeck]);
+    let keyFor = { kills_with: 'killsWith', invoke_with: 'invokeWith', exile_with: 'exileWith', fortalecer_with: 'fortalecerWith', glory_with: 'gloryWith' };
+    let fxKeys = { fortalecer_with: '_fx:fortalecer_with', glory_with: '_fx:glory_with' };
+    for (let mid in CARD_MISSIONS) {
+        let mission = CARD_MISSIONS[mid];
+        let key = keyFor[mission.type];
+        if (!key) continue;
+        let inc;
+        if (fxKeys[mission.type]) {
+            if (!prevIds.has(mission.previousCardId)) continue;
+            inc = counters[fxKeys[mission.type]] || 0;
+        } else {
+            inc = counters[mid] || 0;
+        }
+        if (inc <= 0) continue;
+        let progress = getProgressFor(mid);
+        updateProgressFor(mid, { [key]: (progress[key] || 0) + inc });
     }
-    container.innerHTML = `
-        <div class="flex flex-col items-center gap-2">
-            <div class="text-[9px] font-orbitron font-bold tracking-widest text-amber-300">¡NUEVA CARTA OBTENIDA!</div>
-            <div class="fx-reward-card relative w-24 h-32 rounded-lg overflow-hidden border-2 border-amber-400 shadow-[0_0_20px_rgba(251,191,36,0.6)] cursor-pointer active:scale-95 transition-transform"
-                 onclick="openCardModal('${card.id}')">
-                <div class="reward-new-badge">NUEVA</div>
-                <div class="absolute inset-0 bg-cover bg-center" style="background-image:url('${card.art}')"></div>
-                <div class="absolute inset-0 bg-gradient-to-t from-black/85 via-black/20 to-black/40"></div>
-                <div class="absolute top-1 left-1 w-5 h-5 rounded-full bg-cyan-200 text-cyan-900 text-[10px] font-bold flex items-center justify-center border border-white">${card.cost}</div>
-                <div class="absolute top-1 right-1 ${typeColor} text-white text-[7px] px-1 rounded font-bold">${typeLabel}</div>
-                <div class="absolute bottom-1 left-1 right-1">
-                    <div class="text-white font-orbitron font-bold text-[9px] leading-tight truncate drop-shadow-md">${card.name}</div>
-                    ${card.faction ? `<div class="text-amber-300 text-[8px] font-bold uppercase">${card.faction}</div>` : ''}
-                    ${statsHtml}
-                </div>
-            </div>
-        </div>
-    `;
-    container.classList.remove('hidden-view');
-    if (navigator.vibrate) navigator.vibrate([30, 40, 60]);
+    for (let familyId in CARD_FAMILIES) {
+        let family = CARD_FAMILIES[familyId];
+        family.forms.forEach((formId, idx) => {
+            if (idx === 0 || isFormUnlocked(familyId, formId)) return;
+            let missionsOfForm = Object.keys(CARD_MISSIONS).filter(mid => CARD_MISSIONS[mid].familyId === familyId && CARD_MISSIONS[mid].formIndex === idx);
+            if (!missionsOfForm.length) return;
+            let allDone = missionsOfForm.every(mid => {
+                let m = CARD_MISSIONS[mid], p = getProgressFor(mid);
+                let cur = 0;
+                if (m.type === 'wins') cur = p.wins || 0;
+                if (m.type === 'games_with') cur = p.gamesWith || 0;
+                if (m.type === 'exilio_received') cur = p.exilioReceived || 0;
+                if (m.type === 'kills_with') cur = p.killsWith || 0;
+                if (m.type === 'invoke_with') cur = p.invokeWith || 0;
+                if (m.type === 'exile_with') cur = p.exileWith || 0;
+                if (m.type === 'fortalecer_with') cur = p.fortalecerWith || 0;
+                if (m.type === 'glory_with') cur = p.gloryWith || 0;
+                return cur >= m.count;
+            });
+            if (allDone) {
+                unlockForm(familyId, formId);
+                let cardData = ALL_CARDS.find(c => c.id === formId);
+                showTutorialMessage('¡Misión completada!', 'Has desbloqueado la forma: ' + (cardData ? cardData.name : formId));
+            }
+        });
+    }
+    gameState.missionCounters = {};
 }
 
 function closeGameOverModal() {
     document.getElementById('gameover-modal').classList.add('hidden-view');
-    let rc = document.getElementById('gameover-reward-card');
+    let rc = document.getElementById('gameover-reward-slot');
     if (rc) { rc.innerHTML = ''; rc.classList.add('hidden-view'); }
 }
 function closeGameOverAndRestart() { closeGameOverModal(); resetMatch(); startGame(); }

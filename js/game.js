@@ -33,6 +33,11 @@ function killCard(card, side) {
     let board = side === 'p1' ? gameState.p1.activeBoard : gameState.p2.activeBoard;
     let idx = board.indexOf(card);
     if (idx > -1) board.splice(idx, 1);
+    // Mision kills_with: Seres rivales destruidos mientras la carta
+    // previousCardId esta viva en el tablero del jugador (v1.9.4).
+    if (card.kind === 'Ser' && side === 'p2') {
+        gameState.p1.activeBoard.forEach(k => { if (!k.dying) trackMission(k.id, 'kills_with', 1); });
+    }
     // Reacción al morir (Vaca de Madera Hueca a8, Serpientes de la Cabeza b2).
     if (card.onDeath) {
         let owner = side === 'p1' ? gameState.p1 : gameState.p2;
@@ -128,6 +133,12 @@ function exilio(player, opp, X) {
     target.hp = 0;
     queueFx({ t: 'exilio', side: sideOf(opp), uid: target.uid });
 
+    // Mision exile_with: exilios a Seres rivales mientras la carta
+    // previousCardId esta viva en el tablero del jugador (v1.9.4).
+    if (player === gameState.p1 && target.kind === 'Ser') {
+        gameState.p1.activeBoard.forEach(k => { if (!k.dying) trackMission(k.id, 'exile_with', 1); });
+    }
+
     // SISTEMA DE FAMILIAS: mision exilio_received
     for (let missionCardId in CARD_MISSIONS) {
         let mission = CARD_MISSIONS[missionCardId];
@@ -195,6 +206,11 @@ function summonCard(player, cardTemplate) {
         immuneThisTurn: false,
         enfurecerCounter: 0
     };
+    // Mision invoke_with: invocaciones hechas desde un efecto mientras la
+    // carta previousCardId esta viva en el tablero del jugador (v1.9.4).
+    if (gameState._inEffect && player === gameState.p1) {
+        gameState.p1.activeBoard.forEach(k => { if (!k.dying) trackMission(k.id, 'invoke_with', 1); });
+    }
     player.activeBoard.unshift(inst);
     gameState.justDeployed.push(inst.uid);
     queueFx({ t: 'summon', side: sideOf(player), uid: inst.uid });
@@ -435,7 +451,14 @@ function gameTick() {
         // Fase 2 del turno compartido: efectos y avisos visuales, contra
         // tableros ya actualizados por los dos jugadores.
         function resolvePlay(player, opponent, play) {
-            if (play.card.effect) play.card.effect(player, opponent, player.lastPlayed);
+            // Los efectos pueden invocar: los summonCard anidados cuentan
+            // para las misiones invoke_with (v1.9.4).
+            gameState._inEffect = true;
+            try {
+                if (play.card.effect) play.card.effect(player, opponent, player.lastPlayed);
+            } finally {
+                gameState._inEffect = false;
+            }
 
             // Los eventos no entran en tablero: se proyectan como hechizo
             // para que su activación se vea. El descuento del Oráculo
@@ -466,6 +489,8 @@ function gameTick() {
 
             document.getElementById('pause-overlay').classList.add('hidden-view');
             gameState.isPlaying = true;
+            // Contadores de misiones de la partida (v1.9.4).
+            gameState.missionCounters = {};
             applyFxSpeed();
             syncControls();
             
@@ -685,3 +710,36 @@ function destruirSerCosteAlto(opponent, minCost) {
     queueFx({ t: 'sacrifice', side: sideOf(opponent), uid: target.uid });
     return true;
 }
+
+// --- TRACKING DE MISIONES (v1.9.4) ---
+// Suma amount a las misiones de tipo kind cuyo previousCardId es prevCardId.
+function trackMission(prevCardId, kind, amount) {
+    if (!gameState.missionCounters) gameState.missionCounters = {};
+    for (let mid in CARD_MISSIONS) {
+        let mission = CARD_MISSIONS[mid];
+        if (mission.type === kind && mission.previousCardId === prevCardId) {
+            gameState.missionCounters[mid] = (gameState.missionCounters[mid] || 0) + amount;
+        }
+    }
+}
+
+// Fortalecer y Gloria se cuentan por FX (los efectos de carta emiten
+// fx 'buff' con '+X ATK' y fx 'gloria' con num/text): el envoltorio
+// mantiene fx.js intacto y suma puntos en contadores globales de partida.
+let _origQueueFx = queueFx;
+queueFx = function(fx) {
+    try {
+        if (fx && fx.side === 'p1' && (fx.t === 'buff' || fx.t === 'gloria')) {
+            let isAtk = fx.text && fx.text.indexOf('ATK') >= 0;
+            if (fx.t === 'buff' && !isAtk) return _origQueueFx(fx);
+            let pts = fx.num || 0;
+            if (!pts && fx.text) { let m = String(fx.text).match(/\d+/); if (m) pts = parseInt(m[0], 10); }
+            if (pts > 0) {
+                if (!gameState.missionCounters) gameState.missionCounters = {};
+                let key = fx.t === 'buff' ? '_fx:fortalecer_with' : '_fx:glory_with';
+                gameState.missionCounters[key] = (gameState.missionCounters[key] || 0) + pts;
+            }
+        }
+    } catch (e) { console.error('missionTrackFx:', e); }
+    _origQueueFx(fx);
+};

@@ -7,6 +7,35 @@
 
 const PATCH_NOTES = [
     {
+        version: '1.9.4',
+        date: '2026-11-10',
+        title: 'Colores, recompensas y familia Plegaria Arcana',
+        highlights: [
+            'Card-effect-box con colores: triggers ambar, keywords cyan',
+            'Recompensas: nunca formas 2/3 ni Tokens, integradas en el modal de victoria',
+            'Misiones multiples por forma (2 en forma 2, 4 en forma 3) con panel propio',
+            'Familia nueva: Plegaria Arcana (c4 + El Altar de Zeus + El Tocado por el Rayo)'
+        ],
+        changes: {
+            new: [
+                'Card-effect-box: triggers y keywords coloreados igual que la leyenda.',
+                'Tipos de mision nuevos: kills_with, invoke_with, exile_with, fortalecer_with y glory_with.',
+                'Panel de misiones separado de la leyenda; desaparece cuando todo esta completado.',
+                'Familia plegaria: c4 (base), El Altar de Zeus (forma 2) y El Tocado por el Rayo (forma 3).'
+            ],
+            buffs: [],
+            nerfs: [],
+            fixes: [
+                'Recompensas: se excluyen las formas 2/3 de las familias y los Tokens.',
+                'La recompensa se muestra integrada en el modal de victoria (entre la puntuacion y los botones).',
+                'Una forma se desbloquea solo cuando TODAS sus misiones estan completadas.'
+            ],
+            removed: [
+                'renderRewardCard() y el div #gameover-reward-card (reemplazados por el slot integrado).'
+            ]
+        }
+    },
+    {
         version: '1.9.3',
         date: '2026-11-10',
         title: 'Asterion Enfurecido con Enfurecer',

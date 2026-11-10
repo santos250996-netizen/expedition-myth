@@ -208,49 +208,173 @@ const CARD_FAMILIES = {
         id: 'satiro',
         name: 'Satiro de los Bosques',
         forms: ['c2', 'sat_cortejo', 'sat_pan']
+    },
+    plegaria: {
+        id: 'plegaria',
+        name: 'Plegaria Arcana',
+        forms: ['c4', 'altar_zeus', 'tocado_rayo']
     }
 };
 
 const CARD_MISSIONS = {
+    // Familia asterion
     a2: {
-        type: 'wins', count: 3, previousCardId: 'c3',
+        type: 'games_with', count: 10, previousCardId: 'c3',
         familyId: 'asterion', formIndex: 1,
-        description: 'Gana 3 combates con Asterión, el Minotauro en el tablero.'
+        description: 'Juega a Asterion, el Minotauro en 10 partidas distintas.'
+    },
+    a2_2: {
+        type: 'kills_with', count: 5, previousCardId: 'c3',
+        familyId: 'asterion', formIndex: 1,
+        description: 'Destruye 5 Seres rivales con Asterion, el Minotauro en el tablero.'
     },
     a3: {
-        type: 'exilio_received', count: 1, previousCardId: 'a2',
+        type: 'games_with', count: 15, previousCardId: 'c3',
         familyId: 'asterion', formIndex: 2,
-        description: 'Recibe el efecto Exilio con Asterion, Enfurecido en el tablero.'
+        description: 'Juega a Asterion, el Minotauro en 15 partidas distintas.'
     },
+    a3_2: {
+        type: 'kills_with', count: 10, previousCardId: 'c3',
+        familyId: 'asterion', formIndex: 2,
+        description: 'Destruye 10 Seres rivales con Asterion, el Minotauro en el tablero.'
+    },
+    a3_3: {
+        type: 'kills_with', count: 10, previousCardId: 'a2',
+        familyId: 'asterion', formIndex: 2,
+        description: 'Destruye 10 Seres rivales con Asterion, Enfurecido en el tablero.'
+    },
+    a3_4: {
+        type: 'exilio_received', count: 2, previousCardId: 'a2',
+        familyId: 'asterion', formIndex: 2,
+        description: 'Recibe Exilio con Asterion, Enfurecido en el tablero.'
+    },
+
+    // Familia dedalo
     a10: {
-        type: 'games_with', count: 30, previousCardId: 'a7',
+        type: 'games_with', count: 10, previousCardId: 'a7',
         familyId: 'dedalo', formIndex: 1,
-        description: 'Juega a Dédalo en 30 partidas distintas.'
+        description: 'Juega a Dedalo, el Arquitecto en 10 partidas distintas.'
+    },
+    a10_2: {
+        type: 'invoke_with', count: 5, previousCardId: 'a7',
+        familyId: 'dedalo', formIndex: 1,
+        description: 'Invoca 5 Vacas de Madera Hueca con Dedalo, el Arquitecto en el tablero.'
     },
     talos: {
-        type: 'games_with', count: 50, previousCardId: 'a7',
+        type: 'games_with', count: 15, previousCardId: 'a7',
         familyId: 'dedalo', formIndex: 2,
-        description: 'Juega a Dédalo en 50 partidas distintas.'
+        description: 'Juega a Dedalo, el Arquitecto en 15 partidas distintas.'
     },
+    talos_2: {
+        type: 'invoke_with', count: 10, previousCardId: 'a7',
+        familyId: 'dedalo', formIndex: 2,
+        description: 'Invoca 10 Vacas de Madera Hueca con Dedalo, el Arquitecto en el tablero.'
+    },
+    talos_3: {
+        type: 'exile_with', count: 3, previousCardId: 'a10',
+        familyId: 'dedalo', formIndex: 2,
+        description: 'Exilia 3 Seres rivales con El Laberinto de Creta.'
+    },
+    talos_4: {
+        type: 'wins', count: 5, previousCardId: 'a10',
+        familyId: 'dedalo', formIndex: 2,
+        description: 'Gana 5 combates con El Laberinto de Creta en el mazo.'
+    },
+
+    // Familia mortales
     fuego: {
-        type: 'wins', count: 10, previousCardId: 'c1',
+        type: 'games_with', count: 10, previousCardId: 'c1',
         familyId: 'mortales', formIndex: 1,
-        description: 'Gana 10 combates con Mortales de Arcadia en el tablero.'
+        description: 'Juega a Mortales de Arcadia en 10 partidas distintas.'
+    },
+    fuego_2: {
+        type: 'wins', count: 5, previousCardId: 'c1',
+        familyId: 'mortales', formIndex: 1,
+        description: 'Gana 5 combates con Mortales de Arcadia en el tablero.'
     },
     muros: {
-        type: 'games_with', count: 30, previousCardId: 'fuego',
+        type: 'games_with', count: 15, previousCardId: 'c1',
         familyId: 'mortales', formIndex: 2,
-        description: 'Juega a Mortales del Fuego en 30 partidas distintas.'
+        description: 'Juega a Mortales de Arcadia en 15 partidas distintas.'
     },
+    muros_2: {
+        type: 'wins', count: 10, previousCardId: 'c1',
+        familyId: 'mortales', formIndex: 2,
+        description: 'Gana 10 combates con Mortales de Arcadia en el tablero.'
+    },
+    muros_3: {
+        type: 'fortalecer_with', count: 10, previousCardId: 'fuego',
+        familyId: 'mortales', formIndex: 2,
+        description: 'Da 10 de Fortalecer con Mortales del Fuego en el tablero.'
+    },
+    muros_4: {
+        type: 'wins', count: 5, previousCardId: 'fuego',
+        familyId: 'mortales', formIndex: 2,
+        description: 'Gana 5 combates con Mortales del Fuego en el tablero.'
+    },
+
+    // Familia satiro
     sat_cortejo: {
-        type: 'wins', count: 5, previousCardId: 'c2',
+        type: 'games_with', count: 10, previousCardId: 'c2',
         familyId: 'satiro', formIndex: 1,
-        description: 'Gana 5 combates con Satiro de los Bosques en el tablero.'
+        description: 'Juega a Satiro de los Bosques en 10 partidas distintas.'
+    },
+    sat_cortejo_2: {
+        type: 'fortalecer_with', count: 10, previousCardId: 'c2',
+        familyId: 'satiro', formIndex: 1,
+        description: 'Da 10 de Fortalecer con Satiro de los Bosques en el tablero.'
     },
     sat_pan: {
-        type: 'games_with', count: 20, previousCardId: 'c2',
+        type: 'games_with', count: 15, previousCardId: 'c2',
         familyId: 'satiro', formIndex: 2,
-        description: 'Juega a Satiro de los Bosques en 20 partidas distintas.'
+        description: 'Juega a Satiro de los Bosques en 15 partidas distintas.'
+    },
+    sat_pan_2: {
+        type: 'fortalecer_with', count: 20, previousCardId: 'c2',
+        familyId: 'satiro', formIndex: 2,
+        description: 'Da 20 de Fortalecer con Satiro de los Bosques en el tablero.'
+    },
+    sat_pan_3: {
+        type: 'fortalecer_with', count: 15, previousCardId: 'sat_cortejo',
+        familyId: 'satiro', formIndex: 2,
+        description: 'Da 15 de Fortalecer con Satiro del Cortejo en el tablero.'
+    },
+    sat_pan_4: {
+        type: 'wins', count: 5, previousCardId: 'sat_cortejo',
+        familyId: 'satiro', formIndex: 2,
+        description: 'Gana 5 combates con Satiro del Cortejo en el tablero.'
+    },
+
+    // Familia c4
+    altar_zeus: {
+        type: 'games_with', count: 10, previousCardId: 'c4',
+        familyId: 'plegaria', formIndex: 1,
+        description: 'Juega a Plegaria Arcana en 10 partidas distintas.'
+    },
+    altar_zeus_2: {
+        type: 'glory_with', count: 20, previousCardId: 'c4',
+        familyId: 'plegaria', formIndex: 1,
+        description: 'Suma 20 Gloria con Plegaria Arcana en el mazo.'
+    },
+    tocado_rayo: {
+        type: 'games_with', count: 15, previousCardId: 'c4',
+        familyId: 'plegaria', formIndex: 2,
+        description: 'Juega a Plegaria Arcana en 15 partidas distintas.'
+    },
+    tocado_rayo_2: {
+        type: 'glory_with', count: 40, previousCardId: 'c4',
+        familyId: 'plegaria', formIndex: 2,
+        description: 'Suma 40 Gloria con Plegaria Arcana en el mazo.'
+    },
+    tocado_rayo_3: {
+        type: 'fortalecer_with', count: 10, previousCardId: 'altar_zeus',
+        familyId: 'plegaria', formIndex: 2,
+        description: 'Da 10 de Fortalecer con El Altar de Zeus en el mazo.'
+    },
+    tocado_rayo_4: {
+        type: 'wins', count: 5, previousCardId: 'altar_zeus',
+        familyId: 'plegaria', formIndex: 2,
+        description: 'Gana 5 combates con El Altar de Zeus en el mazo.'
     }
 };
 

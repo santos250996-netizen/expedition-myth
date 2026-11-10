@@ -562,6 +562,38 @@ const ALL_CARDS = [
     substory: 'satiro',
     effect: (p, opp) => { exilio(p, opp, 1); },
     startTurn: null
+},
+{
+    id: 'altar_zeus', name: 'El Altar de Zeus', kind: 'Evento', cost: 2, atk: 0, hp: 0,
+    icon: 'fa-monument',
+    desc: 'Al entrar: Fortalecer 2 a todos los aliados.',
+    lore: 'La plegaria no cayo en el vacio. Sobre la colina sagrada, donde los pastores habian alzado sus manos al cielo, un rayo partio el aire y encendio un fuego que no se apagaba. Los mortales comprendieron que Zeus los habia escuchado, y levantaron un altar de piedra negra en su honor. Desde entonces, cada tribu que se acercaba al altar recibia una chispa de la voluntad del dios: los guerreros sentian fuerza en los brazos, los ancianos veian el futuro en el humo, y los ninos crecian sin miedo a la noche.',
+    art: 'assets/cartas/plegaria-altar-de-zeus.webp',
+    substory: 'plegaria',
+    effect: (p) => {
+        p.activeBoard.forEach(c => {
+            if (c.dying) return;
+            c.atk += 2;
+            queueFx({ t: 'buff', side: sideOf(p), uid: c.uid, text: '+2 ATK', icon: 'fa-monument' });
+        });
+    },
+    startTurn: null
+},
+{
+    id: 'tocado_rayo', name: 'El Tocado por el Rayo', kind: 'Ser', cost: 5, atk: 1, hp: 1,
+    icon: 'fa-bolt',
+    desc: 'Al entrar: Destruir 1 rival con coste >= 4.',
+    lore: 'Zeus no solo escucho: eligio. Entre los mortales que se arrodillaban ante el altar, uno fue tocado por el rayo. Su carne se volvio bronce, sus ojos se encendieron con la luz del Olimpo, y su voz sono como un trueno. Los demas mortales lo llamaron "el Tocado", y el camino entre ellos no como un rey, sino como un heraldo de la voluntad de Zeus. Cuando el Tocado alzaba su lanza, los enemigos de la Helade temblaban, porque sabian que no luchaban contra un hombre, sino contra el mismisimo padre de los dioses.',
+    art: 'assets/cartas/plegaria-tocado-por-el-rayo.webp',
+    substory: 'plegaria',
+    effect: (p, opp) => {
+        let targets = opp.activeBoard.filter(c => !c.dying && c.cost >= 4 && !c.noDestroy);
+        if (!targets.length) return;
+        let target = targets.reduce((max, c) => c.cost > max.cost ? c : max, targets[0]);
+        killCard(target, sideOf(opp));
+        queueFx({ t: 'sacrifice', side: sideOf(opp), uid: target.uid });
+    },
+    startTurn: null
 }
         ];
 
