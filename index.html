@@ -12,9 +12,9 @@
          Tailwind va precompilado (solo las clases usadas): el runtime del
          Play CDN recompilaba estilos en cada mutación del DOM y lastraba
          el render. -->
-    <link rel="stylesheet" href="css/vendor/tailwind.min.css?v=20261122h">
+    <link rel="stylesheet" href="css/vendor/tailwind.min.css?v=20261122i">
     <link href="css/vendor/all.min.css" rel="stylesheet">
-    <link rel="stylesheet" href="css/styles.css?v=20261122h">
+    <link rel="stylesheet" href="css/styles.css?v=20261122i">
 </head>
 <body class="bg-black flex justify-center items-center">
 
@@ -349,20 +349,18 @@
                 </div>
             </div>
 
-            <!-- Panel de información (altura fija, contenido intercambiable) -->
-            <div id="modal-info-panel" class="w-full max-w-xs mt-3 bg-slate-900/90 border border-slate-700 rounded-lg overflow-hidden">
-                <div id="modal-info-content" class="p-2 overflow-y-auto h-full">
-                    <!-- Renderizado JS (keyword, lore o misión según el modo) -->
-                </div>
+            <!-- Panel de leyenda (siempre visible) -->
+            <div id="modal-info-panel" class="w-full max-w-xs mt-2 bg-slate-900/90 border border-slate-700 rounded-lg overflow-hidden" style="height: 88px;">
+                <div id="modal-info-content" class="p-2 overflow-y-auto h-full"></div>
             </div>
 
-            <!-- Panel de misiones (separado de la leyenda; oculto si todo completado) -->
-            <div id="modal-missions-panel" class="w-full max-w-xs mt-2 bg-slate-900/90 border border-slate-700 rounded-lg overflow-hidden hidden-view">
+            <!-- Panel de misiones (se oculta si no hay misiones pendientes) -->
+            <div id="modal-missions-panel" class="w-full max-w-xs mt-2 bg-slate-900/90 border border-slate-700 rounded-lg overflow-hidden" style="height: 88px; display: none;">
                 <div id="modal-missions-content" class="p-2 overflow-y-auto h-full"></div>
             </div>
 
-            <!-- Selector de formas (familias; bloque estable fuera del panel) -->
-            <div id="modal-phase-selector" class="w-full max-w-xs mt-2 bg-slate-900/90 border border-amber-700/50 p-2 rounded-lg hidden-view">
+            <!-- Panel de formas (se oculta si no hay familia) -->
+            <div id="modal-phase-selector" class="w-full max-w-xs mt-2 bg-slate-900/90 border border-amber-700/50 p-2 rounded-lg" style="height: 56px; display: none;">
                 <!-- Renderizado JS -->
             </div>
 
@@ -455,15 +453,15 @@
     </div>
 
 
-    <script src="js/cards.js?v=20261122h"></script>
-    <script src="js/state.js?v=20261122h"></script>
-    <script src="js/fx.js?v=20261122h"></script>
-    <script src="js/deck.js?v=20261122h"></script>
-    <script src="js/chapters.js?v=20261122h"></script>
-    <script src="js/patchnotes.js?v=20261122h"></script>
-    <script src="js/ui.js?v=20261122h"></script>
-    <script src="js/game.js?v=20261122h"></script>
-    <script src="js/dev.js?v=20261122h"></script>
-<script src="js/main.js?v=20261122h"></script>
+    <script src="js/cards.js?v=20261122i"></script>
+    <script src="js/state.js?v=20261122i"></script>
+    <script src="js/fx.js?v=20261122i"></script>
+    <script src="js/deck.js?v=20261122i"></script>
+    <script src="js/chapters.js?v=20261122i"></script>
+    <script src="js/patchnotes.js?v=20261122i"></script>
+    <script src="js/ui.js?v=20261122i"></script>
+    <script src="js/game.js?v=20261122i"></script>
+    <script src="js/dev.js?v=20261122i"></script>
+<script src="js/main.js?v=20261122i"></script>
 </body>
 </html>

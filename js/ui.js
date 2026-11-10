@@ -193,10 +193,10 @@ function renderCardModalContent(card) {
             return false;
         });
         if (currentMissions.length === 0 || allCompleted) {
-            missionPanel.classList.add('hidden-view');
+            missionPanel.style.display = 'none';
             missionContent.innerHTML = '';
         } else {
-            missionPanel.classList.remove('hidden-view');
+            missionPanel.style.display = 'block';
             let html = '';
             currentMissions.forEach(({id, mission}) => {
                 let p = getProgressFor(id);
@@ -247,9 +247,10 @@ function renderCardModalContent(card) {
                 html += '<p class="text-[8px] text-slate-500 text-center mt-1">No puedes cambiar la forma en combate</p>';
             }
             phaseSelector.innerHTML = html;
-            phaseSelector.classList.remove('hidden-view');
+            phaseSelector.style.display = 'block';
         } else {
-            phaseSelector.classList.add('hidden-view');
+            phaseSelector.style.display = 'none';
+            phaseSelector.innerHTML = '';
         }
     }
 }

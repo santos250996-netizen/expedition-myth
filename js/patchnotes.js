@@ -7,6 +7,31 @@
 
 const PATCH_NOTES = [
     {
+        version: '1.10.1',
+        date: '2026-11-10',
+        title: 'Modal de carta: altura fija',
+        highlights: [
+            'Los 3 boxes del modal (leyenda, misiones, formas) tienen altura fija',
+            'El box de misiones desaparece y cede su espacio cuando se completan todas',
+            'El box de formas desaparece y cede su espacio si la carta no tiene familia',
+            'Sin brinco al cambiar de forma o completar misiones'
+        ],
+        changes: {
+            new: [],
+            buffs: [],
+            nerfs: [],
+            fixes: [
+                'Modal de carta: leyenda 88px fijo, misiones 88px fijo, formas 56px fijo.',
+                'Misiones y formas usan display: none (no hidden-view) para ocultarse sin transicion.',
+                'El box de misiones desaparece cuando todas las misiones de la forma estan completadas.',
+                'Scroll interno en leyenda y misiones si el contenido no cabe.'
+            ],
+            removed: [
+                '#modal-info-panel { height: 100px } (reemplazado por altura fija inline).'
+            ]
+        }
+    },
+    {
         version: '1.10.0',
         date: '2026-11-10',
         title: 'Documentación y familia niebla',

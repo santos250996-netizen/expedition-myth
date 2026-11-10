@@ -972,25 +972,30 @@ main,
    regla pone el modal dev de mazos de bots por encima del resto (z-50/70). */
 #dev-botdecks-modal { z-index: 90; }
 
-/* --- MODAL DE CARTA: PANEL ÚNICO (altura fija, sin saltos) --- */
-/* El panel de información tiene un alto fijo. El contenido (keyword, lore,
-   misión) se intercambia dentro, pero el panel nunca cambia de tamaño. */
-#modal-info-panel {
-    height: 100px; /* Alto fijo: ajusta si hace falta más espacio */
+/* --- MODAL DE CARTA: PANELES DE ALTURA FIJA (v1.10.1) --- */
+/* La altura de cada panel va inline en el HTML (leyenda 88px, misiones
+   88px, formas 56px). El contenido se intercambia dentro, pero el panel
+   nunca cambia de tamaño; los que no aplican se ocultan con display: none. */
+#modal-info-panel,
+#modal-missions-panel,
+#modal-phase-selector {
     flex-shrink: 0;
 }
-#modal-info-content {
-    height: 100%;
-    scrollbar-width: none;
-    -ms-overflow-style: none;
-}
-#modal-info-content::-webkit-scrollbar {
+
+/* Scrollbars ocultos en los paneles del modal de carta */
+#modal-info-content::-webkit-scrollbar,
+#modal-missions-content::-webkit-scrollbar {
     display: none;
     width: 0;
     height: 0;
 }
+#modal-info-content,
+#modal-missions-content {
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+}
 
-/* --- FIN PANEL ÚNICO --- */
+/* --- FIN PANELES ALTURA FIJA --- */
 
 /* --- BOTONES UNIFICADOS --- */
 /* Todos los botones del juego comparten la misma base. */
