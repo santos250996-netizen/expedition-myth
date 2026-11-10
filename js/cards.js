@@ -785,6 +785,40 @@ const ALL_CARDS = [
         queueFx({ t: 'sacrifice', side: sideOf(opp), uid: target.uid });
     },
     startTurn: null
+},
+{
+    id: 'teseo_creta', name: 'Teseo en Creta', kind: 'Ser', cost: 3, atk: 1, hp: 1,
+    icon: 'fa-scroll',
+    desc: 'Al entrar: Descuento 2 a tu siguiente Ser.',
+    lore: 'Teseo llegó a Creta con los trece jóvenes atenienses. Esa noche, Ariadna, hija del rey Minos, lo esperaba en la oscuridad. Conocía los secretos del laberinto y le entregó un ovillo de hilo: ataría un extremo a la entrada y lo desenrollaría al avanzar, para encontrar el camino de vuelta. Teseo aceptó, afiló su espada, y esperó el amanecer con el hilo de Ariadna en la mano.',
+    art: 'assets/cartas/teseo-en-creta.webp',
+    substory: 'teseo',
+    effect: (p) => {
+        p.pendingSerDiscount = (p.pendingSerDiscount || 0) + 2;
+        queueFx({ t: 'discount', side: sideOf(p), text: '-2' });
+    },
+    startTurn: null
+},
+{
+    id: 'medusa_cabeza', name: 'Medusa, la Cabeza', kind: 'Evento', cost: 4, atk: 0, hp: 0,
+    icon: 'fa-eye-slash',
+    desc: 'Al entrar: Exilio 2 a todos los rivales.',
+    lore: 'Cuando Perseo cortó la cabeza de Medusa, no la enterró. La entregó a Atenea, que la clavó en el centro de su égida, el escudo divino que protegía a los héroes. Desde entonces, la cabeza de Medusa vive en el escudo de la diosa: sus ojos siguen abiertos, sus serpientes siguen moviéndose, y su mirada sigue convirtiendo en piedra a todo aquel que se atreve a mirarla. La Cabeza no es un arma: es una advertencia. Quien la ve, muere. Quien la porta, gana la guerra.',
+    art: 'assets/cartas/medusa-la-cabeza.webp',
+    substory: 'medusa',
+    effect: (p, opp) => {
+        opp.activeBoard.forEach(c => {
+            if (c.dying || c.stunned) return;
+            c.stunned = true;
+            c.exilioTurns = 2;
+            c._exilioSavedAtk = c.atk;
+            c._exilioSavedHp = c.hp;
+            c.atk = 0;
+            c.hp = 0;
+            queueFx({ t: 'exilio', side: sideOf(opp), uid: c.uid });
+        });
+    },
+    startTurn: null
 }
         ];
 

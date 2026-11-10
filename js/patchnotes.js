@@ -7,6 +7,35 @@
 
 const PATCH_NOTES = [
     {
+        version: '1.10.4',
+        date: '2026-11-10',
+        title: 'Familias minoico, teseo y medusa',
+        highlights: [
+            '3 familias nuevas: minoico, teseo, medusa',
+            '2 cartas nuevas: Teseo en Creta, Medusa, la Cabeza',
+            'Pasifae: hp 3 -> 2 (nerf de PPT)',
+            'Nuevo soporte para Descuento en Seres'
+        ],
+        changes: {
+            new: [
+                'Familia minoico: a4 (Tanque), a6 (Buffer), a9 (Invocador).',
+                'Familia teseo: teseo_creta (Acelerador), a5 (Buffer/Generador), a11 (Ejecutor).',
+                'Familia medusa: b1 (Generador), b2 (Control), medusa_cabeza (Control).',
+                'Carta: Teseo en Creta (Ser, cost 3, 1/1, Al entrar: Descuento 2 a tu siguiente Ser).',
+                'Carta: Medusa, la Cabeza (Evento, cost 4, Al entrar: Exilio 2 a todos los rivales).'
+            ],
+            buffs: [],
+            nerfs: [
+                'Pasifae a6: hp 3 -> 2.'
+            ],
+            fixes: [
+                'a6 Pasifae: desc reescrita con keyword Blindar.',
+                'game.js: soporte para Descuento en Seres (pendingSerDiscount).'
+            ],
+            removed: []
+        }
+    },
+    {
         version: '1.10.3',
         date: '2026-11-10',
         title: 'Familias c6, c7, c8, c9, c10',

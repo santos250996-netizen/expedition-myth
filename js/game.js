@@ -7,9 +7,15 @@
 // jugarlo). Mazos singleton → como mucho dos auras. Única fuente: la usa la
 // partida y el HUD, así el coste mostrado siempre coincide con el cobrado.
 function oracleDiscountFor(player, card) {
-    if (!card || card.kind !== 'Evento') return 0;
-    let auras = player.activeBoard.filter(c => (c.id === 'c20' || c.id === 'c32') && !c.dying).length;
-    return auras + (player.pendingEventDiscount || 0);
+    if (!card) return 0;
+    let discount = 0;
+    if (card.kind === 'Evento') {
+        let auras = player.activeBoard.filter(c => (c.id === 'c20' || c.id === 'c32') && !c.dying).length;
+        discount = auras + (player.pendingEventDiscount || 0);
+    } else if (card.kind === 'Ser') {
+        discount = (player.pendingSerDiscount || 0);
+    }
+    return discount;
 }
 
 // Expira el +HP temporal (Bendición de Atenea c37): la bendición se retira al
@@ -468,6 +474,11 @@ function gameTick() {
                 // se consume al jugar ese Evento, sea cual sea su coste final.
                 player.pendingEventDiscount = 0;
                 queueFx({ t: 'cast', side: sideOf(player), card: play.card });
+            }
+            if (play.card.kind === 'Ser') {
+                // El trigger de Teseo en Creta (teseo_creta: "tu siguiente Ser
+                // cuesta -2") se consume al jugar ese Ser.
+                player.pendingSerDiscount = 0;
             }
             if (play.discount > 0) queueFx({ t: 'discount', side: sideOf(player), text: '−' + play.discount });
 

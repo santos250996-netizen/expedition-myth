@@ -243,6 +243,21 @@ const CARD_FAMILIES = {
         id: 'dodona',
         name: 'Ecos del Bosque de Dodona',
         forms: ['c10', 'roble_dodona', 'palomas_dodona']
+    },
+    minoico: {
+        id: 'minoico',
+        name: 'El Toro Blanco de Creta',
+        forms: ['a4', 'a6', 'a9']
+    },
+    teseo: {
+        id: 'teseo',
+        name: 'Teseo en Creta',
+        forms: ['teseo_creta', 'a5', 'a11']
+    },
+    medusa: {
+        id: 'medusa',
+        name: 'Medusa, la Doncella',
+        forms: ['b1', 'b2', 'medusa_cabeza']
     }
 };
 
@@ -598,6 +613,102 @@ const CARD_MISSIONS = {
         type: 'wins', count: 5, previousCardId: 'roble_dodona',
         familyId: 'dodona', formIndex: 2,
         description: 'Gana 5 combates con El Roble de Dodona en el tablero.'
+    },
+
+    // Familia minoico
+    pasifae: {
+        type: 'games_with', count: 10, previousCardId: 'a4',
+        familyId: 'minoico', formIndex: 1,
+        description: 'Juega a El Toro Blanco de Creta en 10 partidas distintas.'
+    },
+    pasifae_2: {
+        type: 'wins', count: 5, previousCardId: 'a4',
+        familyId: 'minoico', formIndex: 1,
+        description: 'Gana 5 combates con El Toro Blanco de Creta en el tablero.'
+    },
+    nacimiento_minotauro: {
+        type: 'games_with', count: 15, previousCardId: 'a4',
+        familyId: 'minoico', formIndex: 2,
+        description: 'Juega a El Toro Blanco de Creta en 15 partidas distintas.'
+    },
+    nacimiento_minotauro_2: {
+        type: 'wins', count: 10, previousCardId: 'a4',
+        familyId: 'minoico', formIndex: 2,
+        description: 'Gana 10 combates con El Toro Blanco de Creta en el tablero.'
+    },
+    nacimiento_minotauro_3: {
+        type: 'games_with', count: 10, previousCardId: 'a6',
+        familyId: 'minoico', formIndex: 2,
+        description: 'Juega a Pasífae, la Reina de Creta en 10 partidas distintas.'
+    },
+    nacimiento_minotauro_4: {
+        type: 'wins', count: 5, previousCardId: 'a6',
+        familyId: 'minoico', formIndex: 2,
+        description: 'Gana 5 combates con Pasífae, la Reina de Creta en el tablero.'
+    },
+
+    // Familia teseo
+    teseo_laberinto: {
+        type: 'games_with', count: 10, previousCardId: 'teseo_creta',
+        familyId: 'teseo', formIndex: 1,
+        description: 'Juega a Teseo en Creta en 10 partidas distintas.'
+    },
+    teseo_laberinto_2: {
+        type: 'wins', count: 5, previousCardId: 'teseo_creta',
+        familyId: 'teseo', formIndex: 1,
+        description: 'Gana 5 combates con Teseo en Creta en el tablero.'
+    },
+    muerte_minotauro: {
+        type: 'games_with', count: 15, previousCardId: 'teseo_creta',
+        familyId: 'teseo', formIndex: 2,
+        description: 'Juega a Teseo en Creta en 15 partidas distintas.'
+    },
+    muerte_minotauro_2: {
+        type: 'kills_with', count: 5, previousCardId: 'teseo_creta',
+        familyId: 'teseo', formIndex: 2,
+        description: 'Destruye 5 Seres rivales con Teseo en Creta en el tablero.'
+    },
+    muerte_minotauro_3: {
+        type: 'games_with', count: 10, previousCardId: 'a5',
+        familyId: 'teseo', formIndex: 2,
+        description: 'Juega a Teseo en el Laberinto en 10 partidas distintas.'
+    },
+    muerte_minotauro_4: {
+        type: 'kills_with', count: 5, previousCardId: 'a5',
+        familyId: 'teseo', formIndex: 2,
+        description: 'Destruye 5 Seres rivales con Teseo en el Laberinto en el tablero.'
+    },
+
+    // Familia medusa
+    medusa_gorgona: {
+        type: 'games_with', count: 10, previousCardId: 'b1',
+        familyId: 'medusa', formIndex: 1,
+        description: 'Juega a Medusa, la Doncella en 10 partidas distintas.'
+    },
+    medusa_gorgona_2: {
+        type: 'wins', count: 5, previousCardId: 'b1',
+        familyId: 'medusa', formIndex: 1,
+        description: 'Gana 5 combates con Medusa, la Doncella en el tablero.'
+    },
+    medusa_cabeza: {
+        type: 'games_with', count: 15, previousCardId: 'b1',
+        familyId: 'medusa', formIndex: 2,
+        description: 'Juega a Medusa, la Doncella en 15 partidas distintas.'
+    },
+    medusa_cabeza_2: {
+        type: 'glory_with', count: 20, previousCardId: 'b1',
+        familyId: 'medusa', formIndex: 2,
+        description: 'Suma 20 Gloria con Medusa, la Doncella en el mazo.'
+    },
+    medusa_cabeza_3: {
+        type: 'exile_with', count: 3, previousCardId: 'b2',
+        familyId: 'medusa', formIndex: 2,
+        description: 'Exilia 3 Seres rivales con Medusa, la Gorgona en el tablero.'
+    },
+    medusa_cabeza_4: {
+        type: 'wins', count: 5, previousCardId: 'b2',
+        familyId: 'medusa', formIndex: 2,
+        description: 'Gana 5 combates con Medusa, la Gorgona en el tablero.'
     }
 };
 
