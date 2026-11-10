@@ -14,9 +14,9 @@ const LEYENDAS = {
     'Al entrar': 'Al entrar al tablero, se dispara el efecto.',
     'Inicio de turno': 'Al comenzar cada turno, si se cumple la condicion de la carta, se dispara el efecto.',
     'Al morir': 'Cuando esta carta muere, se dispara el efecto.',
-    'Embestida': 'Consume X ATK y X HP de esta carta para disparar el efecto que le siga, sobre 1 rival aleatorio.',
+    'Embestida': 'Consume X ATK y X HP de esta carta para disparar el efecto que le siga.',
     'Enfurecer': 'Acumula daño recibido. Al llegar a X, dispara el efecto que le siga y resetea el contador.',
-    'Sacrificio': 'Resta X HP en total de tus Seres (de mas HP a menos) para disparar el efecto que le siga.',
+    'Sacrificio': 'Resta X HP en total de tus Seres (de mas HP a menos) para disparar el efecto que le siga. Si no hay X HP disponibles, no se dispara.',
     // Keywords
     'Daño': 'Inflige X de daño a un objetivo.',
     'Debilitar': 'Reduce X ATK de un objetivo.',
@@ -139,11 +139,10 @@ function renderCardModalContent(card) {
     // --- PANEL DE INFORMACIÓN (leyenda, lore o misión según el modo) ---
     let infoPanel = document.getElementById('modal-info-content');
     if (infoPanel) {
-        let mission = getMissionFor(displayCard.id);
         if (cardModalMode === 'lore') {
             infoPanel.innerHTML = `<p class="text-[10px] text-slate-400 italic leading-tight text-center">${displayCard.lore || ''}</p>`;
         } else {
-            // En modo combate: leyenda + mision (si la hay).
+            let mission = getMissionFor(displayCard.id);
             let html = infoHtml;
             if (mission) {
                 let progress = getProgressFor(displayCard.id);

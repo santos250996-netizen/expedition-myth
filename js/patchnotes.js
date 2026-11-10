@@ -7,6 +7,35 @@
 
 const PATCH_NOTES = [
     {
+        version: '1.9.2',
+        date: '2026-11-10',
+        title: 'Sistema de efectos cerrado',
+        highlights: [
+            'Triggers Embestida, Enfurecer y Sacrificio definidos',
+            'c7 y a2: Embestida 1: Daño 2 a 1 rival aleatorio',
+            'c9 Pacto de Sangre: Sacrificio 4',
+            'Panel de keywords: leyenda con colores (ambar/cyan)'
+        ],
+        changes: {
+            new: [
+                'Trigger Sacrificio X: resta X HP de tus Seres (de mas HP a menos). Si no hay X HP, no se dispara.',
+                'Trigger Enfurecer X: acumula X daño recibido, dispara el efecto y resetea.',
+                'Trigger Embestida X: consume X ATK/HP y dispara el efecto que le siga.'
+            ],
+            buffs: [],
+            nerfs: [],
+            fixes: [
+                'embestida() sin comprobar rival (dispara el efecto que le siga).',
+                'c7 y a2: Embestida 1: Daño 2 a 1 rival aleatorio (antes Daño 1).',
+                'c9 Pacto de Sangre: reescrito como Sacrificio 4: Gloria 4. Destruir 1 rival con menos HP.',
+                'Panel de keywords: leyenda sin titulos, colores ambar (triggers) y cyan (keywords).'
+            ],
+            removed: [
+                'Variable cardModalHasKeyword (reemplazada por la leyenda).'
+            ]
+        }
+    },
+    {
         version: '1.9.1',
         date: '2026-11-10',
         title: 'Triggers Embestida, Enfurecer y Sacrificio',

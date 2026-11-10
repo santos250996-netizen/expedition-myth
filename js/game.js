@@ -62,12 +62,8 @@ function dealDamage(target, amount, side, sourcePlayer) {
     target.hp -= dmg;
     // Trigger Enfurecer: acumula daño recibido. Si llega al
     // umbral de la carta, dispara su efecto y resetea.
-    if (target.enfurecerThreshold && target.enfurecerEffect) {
-        target.enfurecerCounter = (target.enfurecerCounter || 0) + dmg;
-        if (target.enfurecerCounter >= target.enfurecerThreshold) {
-            target.enfurecerCounter = 0;
-            try { target.enfurecerEffect(target, gameState[ownerSideOf(target)]); } catch (e) { console.error('enfurecer:', e); }
-        }
+    if (target.enfurecerThreshold) {
+        enfurecer(target, dmg);
     }
     if (target.hp <= 0) {
         target.hp = 0;
@@ -77,31 +73,41 @@ function dealDamage(target, amount, side, sourcePlayer) {
     if (target.damageReact) target.damageReact(target);
 }
 
-// --- KEYWORD: EMBESTIDA X ---
-// Consume X ATK y X HP de la carta para infligir X de daño a 1 rival
-// aleatorio. Si no puede pagar el coste (ATK < X o HP < X) o no hay
-// rival vivo, no se activa. El daño sale por dealDamage (canónico:
-// reacciones al daño y muerte inmediata); si el coste remata a la carta,
-// queda dying con FX de sacrificio y la red de seguridad del tick siguiente
-// la retira del tablero.
+// --- TRIGGER: EMBESTIDA X ---
+// Consume X ATK y X HP de la carta para disparar el efecto que le siga
+// (embestidaEffect), que decide su propio objetivo. Si no puede pagar el
+// coste (ATK < X o HP < X) o no queda ningún rival vivo, no se activa. Si
+// el pago remata a la carta, queda dying con FX de sacrificio; el efecto
+// se dispara igualmente porque el trigger ya esta en marcha.
 function embestida(self, player, opp, X) {
-    let targets = opp.activeBoard.filter(c => !c.dying);
-    if (!targets.length) return;
-    let target = targets[Math.floor(Math.random() * targets.length)];
-
     if (self.atk < X || self.hp < X) return;
-    
+    if (!opp.activeBoard.some(c => !c.dying)) return;
     self.atk -= X;
     self.hp -= X;
-    
-    dealDamage(target, X, sideOf(opp));
-    
-    queueFx({ t: 'clash', side: sideOf(player), uidA: self.uid, uidB: target.uid });
-    
-    if (self.hp <= 0) { 
-        self.hp = 0; 
-        self.dying = true; 
+    queueFx({ t: 'clash', side: sideOf(player), uidA: self.uid });
+    if (self.hp <= 0) {
+        self.hp = 0;
+        self.dying = true;
         queueFx({ t: 'sacrifice', side: sideOf(player), uid: self.uid });
+    }
+    // El trigger dispara el efecto que le siga. El efecto
+    // decide el objetivo.
+    if (typeof self.embestidaEffect === 'function') {
+        self.embestidaEffect(self, player, opp);
+    }
+}
+
+// --- TRIGGER: ENFURECER X ---
+// Acumula el daño real recibido (dmg tras Bloqueo). Al superar el umbral
+// dispara enfurecerEffect(target, owner) y resetea el contador a 0.
+function enfurecer(target, dmg) {
+    if (!target.enfurecerThreshold || !target.enfurecerEffect) return;
+    target.enfurecerCounter = (target.enfurecerCounter || 0) + dmg;
+    if (target.enfurecerCounter >= target.enfurecerThreshold) {
+        target.enfurecerCounter = 0;
+        try {
+            target.enfurecerEffect(target, gameState[ownerSideOf(target)]);
+        } catch (e) { console.error('enfurecer:', e); }
     }
 }
 

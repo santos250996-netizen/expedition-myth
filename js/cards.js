@@ -72,12 +72,19 @@ const ALL_CARDS = [
             { 
                 id: 'c7', name: 'Jabalí de Erimanto', kind: 'Ser', cost: 5, atk: 4, hp: 6,
                 icon: 'fa-hippo', 
-                desc: 'Embestida 1: Daño 1 a 1 rival aleatorio.', 
+                desc: 'Embestida 1: Daño 2 a 1 rival aleatorio.', 
                 lore: 'Desde las cumbres heladas desciende una bestia descomunal: un jabalí salvaje de piel acorazada y colmillos afilados que arrasa con los primeros cultivos y siembra el pánico absoluto en las laderas de Arcadia. Los pastores susurran su nombre con terror, pues no hay lanza ni trampa que pueda detenerlo. Es una de las bestias primigenias que habitan las montañas, un recordatorio de que la naturaleza salvaje aún no ha sido domesticada por los hombres.',
                 art: 'assets/cartas/carta-07-jabali-de-erimanto.webp',
-                effect: null, 
+                effect: null,
                 startTurn: (self, player, opp) => {
                     embestida(self, player, opp, 1);
+                },
+                embestidaEffect: (self, player, opp) => {
+                    let targets = opp.activeBoard.filter(c => !c.dying);
+                    if (!targets.length) return;
+                    let target = targets[Math.floor(Math.random() * targets.length)];
+                    dealDamage(target, 2, sideOf(opp));
+                    queueFx({ t: 'clash', side: sideOf(opp), uidA: self.uid, uidB: target.uid });
                 }
             },
             { 
@@ -131,12 +138,19 @@ const ALL_CARDS = [
 {
     id: 'a2', name: 'Asterión, Enfurecido', kind: 'Ser', cost: 5, atk: 5, hp: 5,
     icon: 'fa-cow',
-    desc: 'Embestida 1: Daño 1 a 1 rival aleatorio.',
+    desc: 'Embestida 1: Daño 2 a 1 rival aleatorio.',
     lore: 'El cachorro se convirtió en una bestia. Asterión probó la sangre humana y algo se rompió en su interior: ya no distinguía entre el hambre y la furia. Minos, aterrado por lo que su propio pecado había engendrado, ordenó a Dédalo construir un laberinto para encerrarlo.',
     art: 'assets/cartas/asterion-a2-enfurecido.webp',
     substory: 'asterion',
     effect: null,
-    startTurn: (self, player, opp) => { embestida(self, player, opp, 1); }
+    startTurn: (self, player, opp) => { embestida(self, player, opp, 1); },
+    embestidaEffect: (self, player, opp) => {
+        let targets = opp.activeBoard.filter(c => !c.dying);
+        if (!targets.length) return;
+        let target = targets[Math.floor(Math.random() * targets.length)];
+        dealDamage(target, 2, sideOf(opp));
+        queueFx({ t: 'clash', side: sideOf(opp), uidA: self.uid, uidB: target.uid });
+    }
 },
 {
     id: 'a3', name: 'Asterión, el Señor del Laberinto', kind: 'Ser', cost: 7, atk: 6, hp: 4,
