@@ -13,7 +13,6 @@ const PATCH_NOTES = [
         highlights: [
             'Entrar al deckbuilder desde la lista de mazos',
             'Boton MAZOS: lista -> deckbuilder -> lista',
-            'Arte del modal recupera tamano grande',
             'Reiniciar Progreso borra TODO el progreso real',
             'Combates ganados se cuentan en el perfil'
         ],
@@ -24,7 +23,6 @@ const PATCH_NOTES = [
             fixes: [
                 'Entrar al deckbuilder desde la lista de mazos (boton Editar y tarjeta).',
                 'Boton MAZOS: lista -> deckbuilder -> lista (ya no expulsa a home).',
-                'Arte del modal recupera tamano grande en modo combate.',
                 'closeCardModal no reanuda una partida ya terminada.',
                 'Reiniciar Progreso borra mazos, formas, misiones y stats.',
                 'Renombrar mazo ya no pierde el foco del input.',
