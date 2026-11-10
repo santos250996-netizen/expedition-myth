@@ -147,7 +147,7 @@ const ALL_CARDS = [
 {
     id: 'a3', name: 'Asterión, el Señor del Laberinto', kind: 'Ser', cost: 7, atk: 6, hp: 4,
     icon: 'fa-maze',
-    desc: 'Al entrar: Laberinto 2 (atrapa a un Ser rival aleatorio 2 turnos).',
+    desc: 'Al entrar: Laberinto 2.',
     lore: 'Encerrado en el laberinto de Cnosos, Asterión aprendió a moverse entre sus muros como si fueran una extensión de su propio cuerpo. Conocía cada rincón, cada trampa, cada sombra. Los que osaban entrar en su dominio no encontraban la salida, y la bestia los acechaba desde la oscuridad.',
     art: 'assets/cartas/asterion-a3-senor-laberinto.webp',
     substory: 'asterion',
@@ -251,7 +251,7 @@ const ALL_CARDS = [
 {
     id: 'a10', name: 'El Laberinto de Creta', kind: 'Evento', cost: 4, atk: 0, hp: 0,
     icon: 'fa-dungeon',
-    desc: 'Laberinto 2: atrapa a un Ser rival aleatorio durante 2 turnos.',
+    desc: 'Laberinto 2.',
     lore: 'En las profundidades del palacio de Cnosos, bajo los cimientos de piedra, se extiende una red de pasillos que no llevan a ninguna parte. Sus muros son fríos, sus antorchas no dan calor, y el aire huele a polvo y a miedo. Quien entra en el Laberinto de Creta no encuentra la salida: encuentra el silencio, y luego los pasos de algo que se arrastra en la oscuridad.',
     art: 'assets/cartas/asterion-a10-construccion-laberinto.webp',
     substory: 'asterion',

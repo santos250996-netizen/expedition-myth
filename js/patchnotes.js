@@ -7,6 +7,38 @@
 
 const PATCH_NOTES = [
     {
+        version: '1.7.4',
+        date: '2026-11-09',
+        title: 'Progreso, avatar y mazos',
+        highlights: [
+            'Reiniciar Progreso borra TODO el progreso real',
+            'Ganar el Cap 1 desbloquea los eventos',
+            'El avatar y el nombre se ven en el combate',
+            'Selector de mazos en 1 columna con arte de la primera carta',
+            'Fondo dinamico: el del ultimo combate jugado'
+        ],
+        changes: {
+            new: [
+                'Selector de mazos en 1 columna con aspect 3/2 y arte de la primera carta del mazo.',
+                'Avatar del jugador en el header del combate.',
+                'Nombre del jugador en el header del combate.',
+                'Fondo del ultimo combate jugado en home/mazos/perfil/opciones.'
+            ],
+            buffs: [],
+            nerfs: [],
+            fixes: [
+                'Reiniciar Progreso borra misiones, formas y stats.',
+                'Ganar el Cap 1 desbloquea los eventos.',
+                'Keyword redundante en card-effect-box: a3 y a10 muestran solo la mencion.',
+                'Combates ganados se cuentan correctamente en el perfil.',
+                'openDeckbuilderFromGameover y switchView recargan el mazo activo.'
+            ],
+            removed: [
+                'Explicacion larga de la keyword en a3 y a10 (queda en el panel inferior).'
+            ]
+        }
+    },
+    {
         version: '1.7.3',
         date: '2026-11-09',
         title: 'Estructura de mazos y pulido de progreso',

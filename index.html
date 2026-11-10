@@ -12,9 +12,9 @@
          Tailwind va precompilado (solo las clases usadas): el runtime del
          Play CDN recompilaba estilos en cada mutación del DOM y lastraba
          el render. -->
-    <link rel="stylesheet" href="css/vendor/tailwind.min.css?v=20261121b">
+    <link rel="stylesheet" href="css/vendor/tailwind.min.css?v=20261121c">
     <link href="css/vendor/all.min.css" rel="stylesheet">
-    <link rel="stylesheet" href="css/styles.css?v=20261121b">
+    <link rel="stylesheet" href="css/styles.css?v=20261121c">
 </head>
 <body class="bg-black flex justify-center items-center">
 
@@ -99,7 +99,7 @@
                 <span class="text-blue-400 font-bold border-b-2 border-blue-400 pb-1 font-orbitron">MAZOS</span>
             </div>
             <div class="flex-1 p-4 overflow-y-auto pb-20">
-                <div id="decks-list" class="space-y-2"></div>
+                <div id="decks-list" class="space-y-3"></div>
             </div>
         </div>
 
@@ -235,11 +235,9 @@
             <header class="w-full px-2 pt-2 pb-2 flex flex-col gap-2 bg-slate-950/80 backdrop-blur-md border-b border-slate-800/50 z-20 relative">
                 <div class="flex justify-between items-center px-1">
                     <div class="flex items-center gap-2 bg-slate-900/60 border border-blue-500/50 rounded-lg px-2 py-1 w-[40%] shadow-[0_0_10px_rgba(59,130,246,0.2)]">
-                        <div class="w-6 h-6 rounded-full bg-purple-900/50 border border-purple-400 flex items-center justify-center text-purple-300">
-                            <i class="fa-solid fa-user text-[10px]"></i>
-                        </div>
+                        <div id="p1-avatar" class="w-6 h-6 rounded-full bg-slate-800 border border-cyan-400 bg-cover bg-center shrink-0"></div>
                         <div class="flex flex-col">
-                            <span class="text-[10px] font-bold text-white leading-none">Tú</span>
+                            <span id="p1-name" class="text-[10px] font-bold text-white leading-none">Tú</span>
                             <span class="text-[8px] text-blue-300 font-bold leading-none mt-0.5">HÉLADE <i class="fa-solid fa-bolt"></i></span>
                         </div>
                     </div>
@@ -452,15 +450,15 @@
     </div>
 
 
-    <script src="js/cards.js?v=20261121b"></script>
-    <script src="js/state.js?v=20261121b"></script>
-    <script src="js/fx.js?v=20261121b"></script>
-    <script src="js/deck.js?v=20261121b"></script>
-    <script src="js/chapters.js?v=20261121b"></script>
-    <script src="js/patchnotes.js?v=20261121b"></script>
-    <script src="js/ui.js?v=20261121b"></script>
-    <script src="js/game.js?v=20261121b"></script>
-    <script src="js/dev.js?v=20261121b"></script>
-<script src="js/main.js?v=20261121b"></script>
+    <script src="js/cards.js?v=20261121c"></script>
+    <script src="js/state.js?v=20261121c"></script>
+    <script src="js/fx.js?v=20261121c"></script>
+    <script src="js/deck.js?v=20261121c"></script>
+    <script src="js/chapters.js?v=20261121c"></script>
+    <script src="js/patchnotes.js?v=20261121c"></script>
+    <script src="js/ui.js?v=20261121c"></script>
+    <script src="js/game.js?v=20261121c"></script>
+    <script src="js/dev.js?v=20261121c"></script>
+<script src="js/main.js?v=20261121c"></script>
 </body>
 </html>

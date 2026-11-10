@@ -179,6 +179,16 @@ body {
     box-shadow: 0 0 30px rgba(59, 130, 246, 0.3);
 }
 
+/* Utilidades del selector de mazos sin cobertura en el vendor Tailwind
+   (glow del mazo activo y fondo del boton de crear). */
+.shadow-\[0_0_15px_rgba\(251\,191\,36\,0\.4\)\] {
+    box-shadow: 0 0 15px rgba(251, 191, 36, 0.4);
+}
+
+.bg-emerald-700 {
+    background-color: #047857;
+}
+
 .card-art-bg {
     position: absolute;
     inset: 0;

@@ -433,6 +433,14 @@ function gameTick() {
             syncControls();
             
             clearInterval(gameState.timer);
+            // Avatar y nombre del perfil en el header del combate (v1.7.4).
+            let avatarCard = ALL_CARDS.find(c => c.id === playerProfile.avatarId);
+            let avatarEl = document.getElementById('p1-avatar');
+            if (avatarCard && avatarEl) {
+                avatarEl.style.backgroundImage = `url('${avatarCard.art}')`;
+            }
+            let nameEl = document.getElementById('p1-name');
+            if (nameEl) nameEl.innerText = (playerProfile.name || 'Tú').slice(0, 12);
             gameState.timer = setInterval(gameTick, 1500 / gameState.speed);
             gameTick(); 
         }

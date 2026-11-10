@@ -720,6 +720,13 @@ function showGameOver() {
         }
     });
 
+    // Refresca el candado del boton de eventos en el instante de ganar
+    // el Cap 1 (sin esperar a la siguiente navegacion a home).
+    updateEventsButtonState();
+    // Refresca el perfil si el jugador vuelve a el tras el combate.
+    if (!document.getElementById('view-profile').classList.contains('hidden-view')) {
+        renderProfile();
+    }
     document.getElementById('gameover-modal').classList.remove('hidden-view');
 }
 
@@ -797,6 +804,7 @@ function setGlobalChapterBg(url) {
 
 function updateGlobalBackground(viewId) {
     let art;
+    let lastArt = safeStorageGet('nexo_last_chapter_art_v1');
     if (viewId === 'view-chapter-intro' || viewId === 'view-game') {
         art = currentChapter ? currentChapter.art : (getProgressChapter() || {}).art;
     } else if (viewId === 'view-chapters') {
@@ -810,8 +818,15 @@ function updateGlobalBackground(viewId) {
             art = ch ? ch.art : null;
         }
     } else {
-        let ch = getProgressChapter();
-        art = ch ? ch.art : null;
+        // Home, mazos, deckbuilder, perfil, opciones:
+        // fondo del ultimo combate jugado (cap o evento, gane o pierda).
+        // Fallback al progreso si nunca se ha jugado.
+        if (lastArt) {
+            art = lastArt;
+        } else {
+            let ch = getProgressChapter();
+            art = ch ? ch.art : null;
+        }
     }
     if (art) setGlobalChapterBg(art);
 }
@@ -1005,6 +1020,9 @@ function launchChapterCombat() {
     // El fondo de combate lo fija updateGlobalBackground() con el
     // capítulo en juego al entrar en view-game.
     closeGameOverModal();
+    // Recordar el arte de este combate para el fondo global de las
+    // demas vistas (home, mazos, perfil, opciones).
+    safeStorageSet('nexo_last_chapter_art_v1', currentChapter.art);
     startGame();
     // Tutorial: el paso 4 se activa DESPUÉS de arrancar el combate, para que
     // el toast didáctico encuentre el juego en marcha y pueda pausarlo.
@@ -1232,6 +1250,7 @@ function confirmResetProgress() {
         safeStorageSet('nexo_card_progress_v1', '');
         safeStorageSet('nexo_stats_v1', '');
         safeStorageSet('nexo_last_seen_version', '');
+        safeStorageSet('nexo_last_chapter_art_v1', '');
         location.reload();
     }
 }
@@ -1452,7 +1471,9 @@ function handleNavClick(viewId, opener) {
     else opener();
 }
 
-// --- LISTA DE MAZOS (CREAR / RENOMBRAR / ELIMINAR / ACTIVAR) ---
+// --- LISTA DE MAZOS (ABRIR / CREAR / ELIMINAR) ---
+// Un box 3/2 por mazo con el arte de su primera carta (en familias, la
+// forma marcada). Tocar el box abre el deckbuilder con ese mazo.
 function renderDeckSelect() {
     let container = document.getElementById('decks-list');
     if (!container) return;
@@ -1461,25 +1482,37 @@ function renderDeckSelect() {
     let html = '';
     decks.forEach(deck => {
         let isActive = deck.id === activeId;
-        let firstCard = deck.cards.length > 0 ? ALL_CARDS.find(c => c.id === deck.cards[0]) : null;
-        let family = deck.cards.length > 0 ? getFamilyById(deck.cards[0]) : null;
-        if (family) firstCard = ALL_CARDS.find(c => c.id === getSelectedPhase(family.id));
-        let art = firstCard ? firstCard.art : 'assets/cartas/carta-01-mortales-de-arcadia.webp';
+        // Resolver arte de la primera carta (familia -> forma marcada)
+        let art = 'assets/cartas/carta-01-mortales-de-arcadia.webp';
+        let firstEntry = deck.cards && deck.cards.length > 0 ? deck.cards[0] : null;
+        if (firstEntry) {
+            // getFamilyFor (no getFamilyById): las familias se indexan por
+            // id de familia ('asterion'), no por id de carta base ('c3').
+            let family = getFamilyFor(firstEntry);
+            if (family) {
+                let selectedForm = getSelectedPhase(family.id);
+                let formCard = ALL_CARDS.find(c => c.id === selectedForm);
+                if (formCard) art = formCard.art;
+            } else {
+                let card = ALL_CARDS.find(c => c.id === firstEntry);
+                if (card) art = card.art;
+            }
+        }
         html += `
-            <div class="flex items-center gap-2 p-2">
-                <div class="w-16 h-12 rounded overflow-hidden bg-cover bg-center shrink-0 border border-slate-600" style="background-image:url('${art}')"></div>
-                <div class="flex-1" onclick="setActiveDeckId('${deck.id}'); loadDeck(); renderDeckSelect();">
-                    <input type="text" value="${deck.name}" data-deck-name="${deck.id}" onclick="event.stopPropagation()" onchange="renameDeck('${deck.id}', this.value);" class="w-full bg-slate-800 border border-slate-600 rounded px-2 py-1 text-white text-xs font-bold">
-                    <div class="text-[9px] text-slate-400 mt-0.5">${deck.cards.length}/10 cartas ${isActive ? '· ACTIVO' : ''}</div>
+            <div class="relative rounded-xl overflow-hidden border-2 ${isActive ? 'border-amber-400 shadow-[0_0_15px_rgba(251,191,36,0.4)]' : 'border-slate-700'}" style="aspect-ratio:3/2" onclick="openDeckForEdit('${deck.id}')">
+                <div class="absolute inset-0 bg-cover bg-center" style="background-image:url('${art}')"></div>
+                <div class="absolute inset-x-0 bottom-0 h-1/3 bg-gradient-to-t from-black/90 to-transparent pointer-events-none"></div>
+                <div class="absolute bottom-0 inset-x-0 flex items-center justify-between px-3 py-2 gap-2">
+                    <span class="text-white font-orbitron font-bold text-sm truncate flex-1 drop-shadow-md">${deck.name}</span>
+                    <button onclick="event.stopPropagation(); openDeckForEdit('${deck.id}')" class="w-8 h-8 rounded-full bg-slate-900/80 border border-slate-600 text-xs text-blue-300 shrink-0 active:scale-95" aria-label="Editar mazo">
+                        <i class="fa-solid fa-pen"></i>
+                    </button>
+                    ${decks.length > 1 ? `<button onclick="event.stopPropagation(); if(confirm('¿Eliminar este mazo?')) { if(deleteDeck('${deck.id}')) { loadDeck(); renderDeckSelect(); } }" class="w-8 h-8 rounded-full bg-slate-900/80 border border-red-500/60 text-xs text-red-300 shrink-0 active:scale-95" aria-label="Eliminar mazo"><i class="fa-solid fa-trash"></i></button>` : ''}
                 </div>
-                <button onclick="event.stopPropagation(); openDeckForEdit('${deck.id}')" class="w-8 h-8 rounded-full bg-blue-900/60 border border-blue-500/50 text-blue-300 text-xs shrink-0" aria-label="Editar mazo">
-                    <i class="fa-solid fa-pen"></i>
-                </button>
-                ${decks.length > 1 ? `<button onclick="event.stopPropagation(); if(deleteDeck('${deck.id}')) { loadDeck(); renderDeckSelect(); }" class="w-8 h-8 rounded-full bg-red-950/60 border border-red-500/50 text-red-300 text-xs shrink-0" aria-label="Eliminar mazo"><i class="fa-solid fa-trash"></i></button>` : ''}
             </div>
         `;
     });
-    html += `<button onclick="createDeck(); renderDeckSelect();" class="w-full bg-emerald-700 text-white font-bold py-2 rounded-lg text-xs mt-2"><i class="fa-solid fa-plus"></i> Crear mazo nuevo</button>`;
+    html += `<button onclick="createDeck(); renderDeckSelect();" class="w-full bg-emerald-700 text-white font-bold py-2.5 rounded-lg text-xs mt-3 active:scale-95"><i class="fa-solid fa-plus"></i> Crear mazo nuevo</button>`;
     container.innerHTML = html;
 }
 
