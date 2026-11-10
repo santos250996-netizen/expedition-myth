@@ -78,3 +78,11 @@ npx serve .
 ## Stack
 
 HTML5 + CSS3 + JavaScript vanilla, con Tailwind CSS, Font Awesome y las tipografías vendorizadas en el repo (sin CDN: funciona offline y en el APK). Sin frameworks, sin build, sin backend: el mazo se guarda en `localStorage`.
+
+## Documentación de diseño
+
+- [docs/sistema-de-efectos.md](docs/sistema-de-efectos.md) — el sistema de efectos: 6 triggers, 12 keywords puras, 6 alcances, fórmula de PPT. Referencia normativa para crear y auditar cartas.
+- [docs/arquetipos.md](docs/arquetipos.md) — los 23 arquetipos del juego (Agresor, Tanque, Buffer, Control...). Herramienta de diseño para clasificar cartas y familias.
+- [docs/familias.md](docs/familias.md) — las familias actuales, sus formas y arquetipos, y el patrón de misiones.
+- [docs/misiones.md](docs/misiones.md) — el sistema de misiones: estructura, tipos, tracking y panel.
+- [docs/diseno-de-cartas.md](docs/diseno-de-cartas.md) — el flujo de creación de cartas y familias, con reglas y ejemplos.

@@ -213,6 +213,11 @@ const CARD_FAMILIES = {
         id: 'plegaria',
         name: 'Plegaria Arcana',
         forms: ['c4', 'altar_zeus', 'tocado_rayo']
+    },
+    niebla: {
+        id: 'niebla',
+        name: 'Niebla del Caos',
+        forms: ['c5', 'sombra_niebla', 'espectro_niebla']
     }
 };
 
@@ -375,6 +380,38 @@ const CARD_MISSIONS = {
         type: 'wins', count: 5, previousCardId: 'altar_zeus',
         familyId: 'plegaria', formIndex: 2,
         description: 'Gana 5 combates con El Altar de Zeus en el mazo.'
+    },
+
+    // Familia niebla
+    sombra_niebla: {
+        type: 'games_with', count: 10, previousCardId: 'c5',
+        familyId: 'niebla', formIndex: 1,
+        description: 'Juega a Niebla del Caos en 10 partidas distintas.'
+    },
+    sombra_niebla_2: {
+        type: 'wins', count: 5, previousCardId: 'c5',
+        familyId: 'niebla', formIndex: 1,
+        description: 'Gana 5 combates con Niebla del Caos en el mazo.'
+    },
+    espectro_niebla: {
+        type: 'games_with', count: 15, previousCardId: 'c5',
+        familyId: 'niebla', formIndex: 2,
+        description: 'Juega a Niebla del Caos en 15 partidas distintas.'
+    },
+    espectro_niebla_2: {
+        type: 'wins', count: 10, previousCardId: 'c5',
+        familyId: 'niebla', formIndex: 2,
+        description: 'Gana 10 combates con Niebla del Caos en el mazo.'
+    },
+    espectro_niebla_3: {
+        type: 'exile_with', count: 3, previousCardId: 'sombra_niebla',
+        familyId: 'niebla', formIndex: 2,
+        description: 'Exilia 3 Seres rivales con La Sombra en la Niebla en el tablero.'
+    },
+    espectro_niebla_4: {
+        type: 'wins', count: 5, previousCardId: 'sombra_niebla',
+        familyId: 'niebla', formIndex: 2,
+        description: 'Gana 5 combates con La Sombra en la Niebla en el tablero.'
     }
 };
 

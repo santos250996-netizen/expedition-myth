@@ -7,6 +7,32 @@
 
 const PATCH_NOTES = [
     {
+        version: '1.10.0',
+        date: '2026-11-10',
+        title: 'Documentación y familia niebla',
+        highlights: [
+            'Nuevos docs: familias.md, misiones.md, diseno-de-cartas.md',
+            'Nueva familia: Niebla del Caos (c5 → sombra_niebla → espectro_niebla)',
+            '2 cartas nuevas: La Sombra en la Niebla y El Espectro de la Niebla'
+        ],
+        changes: {
+            new: [
+                'docs/familias.md: las 6 familias actuales + reglas + patrón de misiones.',
+                'docs/misiones.md: sistema de misiones + tipos + tracking + panel.',
+                'docs/diseno-de-cartas.md: flujo de creación + reglas + ejemplos.',
+                'Familia niebla: c5 (base), sombra_niebla (forma 2), espectro_niebla (forma 3).',
+                'Carta: La Sombra en la Niebla (Ser, cost 3, 2/2, Inicio de turno (si hay un Ser exiliado): Exilio 1 a 1 rival aleatorio).',
+                'Carta: El Espectro de la Niebla (Ser, cost 5, 1/1, Al morir: Destruir 1 rival con el ATK mas alto).',
+                'Misión sombra_niebla: 2 misiones con c5 (10 partidas + 5 wins).',
+                'Misión espectro_niebla: 4 misiones (15 partidas + 10 wins con c5; 3 exilios + 5 wins con sombra_niebla).'
+            ],
+            buffs: [],
+            nerfs: [],
+            fixes: [],
+            removed: []
+        }
+    },
+    {
         version: '1.9.4',
         date: '2026-11-10',
         title: 'Colores, recompensas y familia Plegaria Arcana',

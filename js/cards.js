@@ -594,6 +594,38 @@ const ALL_CARDS = [
         queueFx({ t: 'sacrifice', side: sideOf(opp), uid: target.uid });
     },
     startTurn: null
+},
+{
+    id: 'sombra_niebla', name: 'La Sombra en la Niebla', kind: 'Ser', cost: 3, atk: 2, hp: 2,
+    icon: 'fa-ghost',
+    desc: 'Inicio de turno (si hay un Ser exiliado): Exilio 1 a 1 rival aleatorio.',
+    lore: 'La niebla no era solo niebla. Los mortales que se adentraban en ella empezaron a ver formas: primero sombras, luego siluetas, luego ojos que los miraban desde la oscuridad. La Sombra no es un hombre ni una bestia: es la niebla misma tomando forma, un reflejo de los miedos de quien la mira. Los que se cruzan con ella sienten que el mundo se estrecha, que el aire se vuelve pesado, que sus propios pensamientos se vuelven contra ellos. La Sombra no ataca: te envuelve. Y cuando te envuelve, ya no sabes si estas vivo o si siempre has sido parte de la niebla.',
+    art: 'assets/cartas/niebla-sombra-en-la-niebla.webp',
+    substory: 'niebla',
+    effect: null,
+    startTurn: (self, player, opp) => {
+        let anyExiled = opp.activeBoard.some(c => c.stunned && c.exilioTurns > 0);
+        if (!anyExiled) return;
+        exilio(player, opp, 1);
+    }
+},
+{
+    id: 'espectro_niebla', name: 'El Espectro de la Niebla', kind: 'Ser', cost: 5, atk: 1, hp: 1,
+    icon: 'fa-ghost',
+    desc: 'Al morir: Destruir 1 rival con el ATK mas alto.',
+    lore: 'Los que se pierden en la niebla no mueren: se convierten en ella. El Espectro es el recuerdo de un mortal que nunca volvio, condenado a vagar por la oscuridad que lo reclamo. No tiene rostro, no tiene voz, solo una mano fria que se posa sobre el hombro de los vivos. Cuando el Espectro te toca, la niebla te reclama, y tu nombre se borra de la memoria de los hombres. Los ancianos dicen que hay tantos espectros como mortales se han perdido en la niebla desde el principio de los tiempos, y que cada uno busca lo que perdio: un nombre, un rostro, una vida que ya no recuerda.',
+    art: 'assets/cartas/niebla-espectro-de-la-niebla.webp',
+    substory: 'niebla',
+    effect: null,
+    startTurn: null,
+    onDeath: (owner) => {
+        let opp = owner === gameState.p1 ? gameState.p2 : gameState.p1;
+        let alive = opp.activeBoard.filter(c => !c.dying && !c.noDestroy && !c.stunned);
+        if (!alive.length) return;
+        let target = alive.reduce((max, c) => (c.atk + (c.tempAtkMod||0)) > (max.atk + (max.tempAtkMod||0)) ? c : max, alive[0]);
+        killCard(target, sideOf(opp));
+        queueFx({ t: 'sacrifice', side: sideOf(opp), uid: target.uid });
+    }
 }
         ];
 
