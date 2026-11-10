@@ -218,6 +218,31 @@ const CARD_FAMILIES = {
         id: 'niebla',
         name: 'Niebla del Caos',
         forms: ['c5', 'sombra_niebla', 'espectro_niebla']
+    },
+    ninfas: {
+        id: 'ninfas',
+        name: 'Ninfas de las Fuentes Secas',
+        forms: ['c6', 'canto_fuente', 'ninfa_ahogada']
+    },
+    jabali: {
+        id: 'jabali',
+        name: 'Jabalí de Erimanto',
+        forms: ['c7', 'jabali_capturado', 'colmillos_jabali']
+    },
+    oraculo: {
+        id: 'oraculo',
+        name: 'Oráculo Ciego',
+        forms: ['c8', 'juicio_tiresias', 'vara_tiresias']
+    },
+    pacto: {
+        id: 'pacto',
+        name: 'Pacto de Sangre',
+        forms: ['c9', 'ofrenda_hades', 'deuda_sangre']
+    },
+    dodona: {
+        id: 'dodona',
+        name: 'Ecos del Bosque de Dodona',
+        forms: ['c10', 'roble_dodona', 'palomas_dodona']
     }
 };
 
@@ -412,6 +437,167 @@ const CARD_MISSIONS = {
         type: 'wins', count: 5, previousCardId: 'sombra_niebla',
         familyId: 'niebla', formIndex: 2,
         description: 'Gana 5 combates con La Sombra en la Niebla en el tablero.'
+    },
+
+    // Familia ninfas
+    canto_fuente: {
+        type: 'games_with', count: 10, previousCardId: 'c6',
+        familyId: 'ninfas', formIndex: 1,
+        description: 'Juega a Ninfas de las Fuentes Secas en 10 partidas distintas.'
+    },
+    canto_fuente_2: {
+        type: 'glory_with', count: 10, previousCardId: 'c6',
+        familyId: 'ninfas', formIndex: 1,
+        description: 'Suma 10 Gloria con Ninfas de las Fuentes Secas en el mazo.'
+    },
+    ninfa_ahogada: {
+        type: 'games_with', count: 15, previousCardId: 'c6',
+        familyId: 'ninfas', formIndex: 2,
+        description: 'Juega a Ninfas de las Fuentes Secas en 15 partidas distintas.'
+    },
+    ninfa_ahogada_2: {
+        type: 'glory_with', count: 20, previousCardId: 'c6',
+        familyId: 'ninfas', formIndex: 2,
+        description: 'Suma 20 Gloria con Ninfas de las Fuentes Secas en el mazo.'
+    },
+    ninfa_ahogada_3: {
+        type: 'games_with', count: 10, previousCardId: 'canto_fuente',
+        familyId: 'ninfas', formIndex: 2,
+        description: 'Juega a El Canto de la Fuente en 10 partidas distintas.'
+    },
+    ninfa_ahogada_4: {
+        type: 'wins', count: 5, previousCardId: 'canto_fuente',
+        familyId: 'ninfas', formIndex: 2,
+        description: 'Gana 5 combates con El Canto de la Fuente en el mazo.'
+    },
+
+    // Familia jabali
+    jabali_capturado: {
+        type: 'games_with', count: 10, previousCardId: 'c7',
+        familyId: 'jabali', formIndex: 1,
+        description: 'Juega a Jabalí de Erimanto en 10 partidas distintas.'
+    },
+    jabali_capturado_2: {
+        type: 'games_with_both', count: 5, previousCardId: 'c7',
+        secondCardId: 'e3',
+        familyId: 'jabali', formIndex: 1,
+        description: 'Juega a Jabalí de Erimanto y Heracles, el Héroe en la misma partida 5 veces.'
+    },
+    colmillos_jabali: {
+        type: 'games_with', count: 15, previousCardId: 'c7',
+        familyId: 'jabali', formIndex: 2,
+        description: 'Juega a Jabalí de Erimanto en 15 partidas distintas.'
+    },
+    colmillos_jabali_2: {
+        type: 'kills_with', count: 10, previousCardId: 'c7',
+        familyId: 'jabali', formIndex: 2,
+        description: 'Destruye 10 Seres rivales con Jabalí de Erimanto en el tablero.'
+    },
+    colmillos_jabali_3: {
+        type: 'kills_with', count: 5, previousCardId: 'jabali_capturado',
+        familyId: 'jabali', formIndex: 2,
+        description: 'Destruye 5 Seres rivales con El Jabalí Capturado en el tablero.'
+    },
+    colmillos_jabali_4: {
+        type: 'wins', count: 5, previousCardId: 'jabali_capturado',
+        familyId: 'jabali', formIndex: 2,
+        description: 'Gana 5 combates con El Jabalí Capturado en el tablero.'
+    },
+
+    // Familia oraculo
+    juicio_tiresias: {
+        type: 'games_with', count: 10, previousCardId: 'c8',
+        familyId: 'oraculo', formIndex: 1,
+        description: 'Juega a Oráculo Ciego en 10 partidas distintas.'
+    },
+    juicio_tiresias_2: {
+        type: 'exile_with', count: 3, previousCardId: 'c8',
+        familyId: 'oraculo', formIndex: 1,
+        description: 'Exilia 3 Seres rivales con Oráculo Ciego en el tablero.'
+    },
+    vara_tiresias: {
+        type: 'games_with', count: 15, previousCardId: 'c8',
+        familyId: 'oraculo', formIndex: 2,
+        description: 'Juega a Oráculo Ciego en 15 partidas distintas.'
+    },
+    vara_tiresias_2: {
+        type: 'exile_with', count: 5, previousCardId: 'c8',
+        familyId: 'oraculo', formIndex: 2,
+        description: 'Exilia 5 Seres rivales con Oráculo Ciego en el tablero.'
+    },
+    vara_tiresias_3: {
+        type: 'wins', count: 5, previousCardId: 'juicio_tiresias',
+        familyId: 'oraculo', formIndex: 2,
+        description: 'Gana 5 combates con El Juicio de Tiresias en el tablero.'
+    },
+    vara_tiresias_4: {
+        type: 'kills_with', count: 5, previousCardId: 'juicio_tiresias',
+        familyId: 'oraculo', formIndex: 2,
+        description: 'Destruye 5 Seres rivales con El Juicio de Tiresias en el tablero.'
+    },
+
+    // Familia pacto
+    ofrenda_hades: {
+        type: 'games_with', count: 10, previousCardId: 'c9',
+        familyId: 'pacto', formIndex: 1,
+        description: 'Juega a Pacto de Sangre en el Altar de Piedra en 10 partidas distintas.'
+    },
+    ofrenda_hades_2: {
+        type: 'wins', count: 5, previousCardId: 'c9',
+        familyId: 'pacto', formIndex: 1,
+        description: 'Gana 5 combates con Pacto de Sangre en el Altar de Piedra en el mazo.'
+    },
+    deuda_sangre: {
+        type: 'games_with', count: 15, previousCardId: 'c9',
+        familyId: 'pacto', formIndex: 2,
+        description: 'Juega a Pacto de Sangre en el Altar de Piedra en 15 partidas distintas.'
+    },
+    deuda_sangre_2: {
+        type: 'wins', count: 10, previousCardId: 'c9',
+        familyId: 'pacto', formIndex: 2,
+        description: 'Gana 10 combates con Pacto de Sangre en el Altar de Piedra en el mazo.'
+    },
+    deuda_sangre_3: {
+        type: 'games_with', count: 10, previousCardId: 'ofrenda_hades',
+        familyId: 'pacto', formIndex: 2,
+        description: 'Juega a La Ofrenda a Hades en 10 partidas distintas.'
+    },
+    deuda_sangre_4: {
+        type: 'wins', count: 5, previousCardId: 'ofrenda_hades',
+        familyId: 'pacto', formIndex: 2,
+        description: 'Gana 5 combates con La Ofrenda a Hades en el mazo.'
+    },
+
+    // Familia dodona
+    roble_dodona: {
+        type: 'games_with', count: 10, previousCardId: 'c10',
+        familyId: 'dodona', formIndex: 1,
+        description: 'Juega a Ecos del Bosque de Dodona en 10 partidas distintas.'
+    },
+    roble_dodona_2: {
+        type: 'wins', count: 5, previousCardId: 'c10',
+        familyId: 'dodona', formIndex: 1,
+        description: 'Gana 5 combates con Ecos del Bosque de Dodona en el mazo.'
+    },
+    palomas_dodona: {
+        type: 'games_with', count: 15, previousCardId: 'c10',
+        familyId: 'dodona', formIndex: 2,
+        description: 'Juega a Ecos del Bosque de Dodona en 15 partidas distintas.'
+    },
+    palomas_dodona_2: {
+        type: 'wins', count: 10, previousCardId: 'c10',
+        familyId: 'dodona', formIndex: 2,
+        description: 'Gana 10 combates con Ecos del Bosque de Dodona en el mazo.'
+    },
+    palomas_dodona_3: {
+        type: 'games_with', count: 10, previousCardId: 'roble_dodona',
+        familyId: 'dodona', formIndex: 2,
+        description: 'Juega a El Roble de Dodona en 10 partidas distintas.'
+    },
+    palomas_dodona_4: {
+        type: 'wins', count: 5, previousCardId: 'roble_dodona',
+        familyId: 'dodona', formIndex: 2,
+        description: 'Gana 5 combates con El Roble de Dodona en el tablero.'
     }
 };
 

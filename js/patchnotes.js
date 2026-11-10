@@ -7,6 +7,34 @@
 
 const PATCH_NOTES = [
     {
+        version: '1.10.3',
+        date: '2026-11-10',
+        title: 'Familias c6, c7, c8, c9, c10',
+        highlights: [
+            '5 familias nuevas: ninfas, jabali, oraculo, pacto, dodona',
+            '10 cartas nuevas con arquetipos, triggers y keywords variados',
+            'Nuevo tipo de mision: games_with_both (jugar 2 cartas especificas)'
+        ],
+        changes: {
+            new: [
+                'Familia ninfas: c6 (Debuffer), canto_fuente (Control + Generador), ninfa_ahogada (Ejecutor).',
+                'Familia jabali: c7 (Agresor), jabali_capturado (Debuffer), colmillos_jabali (Buffer).',
+                'Familia oraculo: c8 (Acelerador), juicio_tiresias (Control), vara_tiresias (Ejecutor).',
+                'Familia pacto: c9 (Sacrificio, coste 5), ofrenda_hades (Buffer), deuda_sangre (Control).',
+                'Familia dodona: c10 (Debuffer), roble_dodona (Tanque), palomas_dodona (Ejecutor).',
+                'Tipo de mision games_with_both: jugar 2 cartas especificas en la misma partida.'
+            ],
+            buffs: [],
+            nerfs: [
+                'c9 Pacto de Sangre: coste 3 -> 5 (para cuadrar PPT con Sacrificio 4).'
+            ],
+            fixes: [
+                'c9 Pacto de Sangre: reescrito como Sacrificio 4: Gloria 4. Destruir 1 rival con menos HP.'
+            ],
+            removed: []
+        }
+    },
+    {
         version: '1.10.1',
         date: '2026-11-10',
         title: 'Modal de carta: altura fija',

@@ -661,6 +661,12 @@ function flashStat(badge, rose) {
 }
 
 function showGameOver() {
+    // Cartas jugadas por p1 en la partida (tablero + mazo ya robado +
+    // ultima jugada): para misiones de tipo games_with_both.
+    let p1PlayedIds = new Set();
+    gameState.p1.activeBoard.forEach(c => p1PlayedIds.add(c.id));
+    if (gameState.p1.deck) gameState.p1.deck.slice(0, gameState.p1.deckPointer).forEach(c => p1PlayedIds.add(c.id));
+    if (gameState.p1.lastPlayed) p1PlayedIds.add(gameState.p1.lastPlayed.id);
     let p1Score = gameState.p1.score;
     let p2Score = gameState.p2.score;
     let title = document.getElementById('gameover-title');
@@ -795,6 +801,13 @@ function showGameOver() {
                 } else if (mission.type === 'games_with') {
                     let progress = getProgressFor(missionCardId);
                     updateProgressFor(missionCardId, { gamesWith: (progress.gamesWith || 0) + 1 });
+                } else if (mission.type === 'games_with_both') {
+                    // Ambas cartas deben haber sido jugadas en la partida.
+                    // El desbloqueo lo centraliza consumeMissionCounters.
+                    if (p1PlayedIds.has(mission.previousCardId) && p1PlayedIds.has(mission.secondCardId)) {
+                        let progress = getProgressFor(missionCardId);
+                        updateProgressFor(missionCardId, { gamesWith: (progress.gamesWith || 0) + 1 });
+                    }
                 }
             }
         }

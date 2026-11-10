@@ -96,7 +96,7 @@ const ALL_CARDS = [
                 effect: (p) => { p.pendingEventDiscount = (p.pendingEventDiscount || 0) + 1; queueFx({ t: 'discount', side: sideOf(p), text: '-1' }); }, startTurn: null 
             },
             { 
-                id: 'c9', name: 'Pacto de Sangre en el Altar de Piedra', kind: 'Evento', cost: 3, atk: 0, hp: 0, 
+                id: 'c9', name: 'Pacto de Sangre en el Altar de Piedra', kind: 'Evento', cost: 5, atk: 0, hp: 0,
                 icon: 'fa-droplet', 
                 desc: 'Sacrificio 4: Gloria 4. Destruir 1 rival con menos HP.', 
                 lore: 'Desesperados por detener las malas cosechas y los ataques, los mortales construyen altares toscos de roca y entregan la vida de sus cazadores en un ritual oscuro para apaciguar a las fuerzas que los acechan. Es un pacto con Hades, el dios del inframundo, que acepta la sangre como moneda de cambio.',
@@ -626,6 +626,165 @@ const ALL_CARDS = [
         killCard(target, sideOf(opp));
         queueFx({ t: 'sacrifice', side: sideOf(opp), uid: target.uid });
     }
+},
+{
+    id: 'canto_fuente', name: 'El Canto de la Fuente', kind: 'Evento', cost: 2, atk: 0, hp: 0,
+    icon: 'fa-music',
+    desc: 'Al entrar: Exilio 1 a 1 rival aleatorio. Gloria 4.',
+    lore: 'Cuando la luna se refleja en el agua estancada, las ninfas corrompidas alzan su canto. No es un canto de mujer, ni de pájaro, ni de viento: es un sonido que no existe en la naturaleza, un lamento que se cuela en los oídos y borra todos los pensamientos. Los mortales que lo escuchan olvidan por qué caminaban, hacia dónde iban, quiénes eran. Se quedan quietos junto a la fuente, mirando el agua negra, hasta que el hambre o la sed los reclaman. Y entonces la ninfa los envuelve con sus brazos fríos y se los lleva al fondo, donde el agua no tiene superficie.',
+    art: 'assets/cartas/ninfas-canto-de-la-fuente.webp',
+    substory: 'ninfas',
+    effect: (p, opp) => {
+        exilio(p, opp, 1);
+        p.score += 4;
+        queueFx({ t: 'gloria', side: sideOf(p), text: '+4 GLORIA', icon: 'fa-music', num: 4 });
+    },
+    startTurn: null
+},
+{
+    id: 'ninfa_ahogada', name: 'La Ninfa Ahogada', kind: 'Ser', cost: 5, atk: 3, hp: 3,
+    icon: 'fa-water',
+    desc: 'Al morir: Daño 4 a 1 rival aleatorio.',
+    lore: 'La ninfa que se ahogó en su propia fuente no descansa. Se arrastra por el fondo del agua negra, con el cabello cubierto de limo y los ojos blancos como la luna. Cuando un mortal se acerca a beber, ella alarga la mano desde el fondo y lo arrastra al abismo. No lo mata: lo guarda. Los que se ahogan en la fuente no mueren, se convierten en parte de ella, y sus rostros se ven en el agua negra como sombras que gritan sin voz. La Ninfa Ahogada no busca venganza: busca compañía. Y cada mortal que se lleva es un nuevo rostro en el fondo de la fuente.',
+    art: 'assets/cartas/ninfas-ninfa-ahogada.webp',
+    substory: 'ninfas',
+    effect: null,
+    startTurn: null,
+    onDeath: (owner) => {
+        let opp = owner === gameState.p1 ? gameState.p2 : gameState.p1;
+        let alive = opp.activeBoard.filter(c => !c.dying && !c.stunned);
+        if (!alive.length) return;
+        let target = alive[Math.floor(Math.random() * alive.length)];
+        dealDamage(target, 4, sideOf(opp));
+        queueFx({ t: 'debuff', side: sideOf(opp), uid: target.uid, text: '-4 HP', icon: 'fa-water', overlay: 'hit' });
+    }
+},
+{
+    id: 'jabali_capturado', name: 'El Jabalí Capturado', kind: 'Ser', cost: 4, atk: 2, hp: 2,
+    icon: 'fa-hippo',
+    desc: 'Al entrar: Debilitar 2 a todos los rivales.',
+    lore: 'El Jabalí no entendía las cadenas. Había nacido en las cumbres del Erimanto, donde la nieve no se derrite y el viento aulla como un lobo. Había arrasado cultivos, había atravesado lanzas con su piel acorazada, había hecho huir a ejércitos enteros. Pero ahora estaba atado con cadenas de bronce, cargado sobre los hombros de un hombre que olía a gloria y a sudor. El Jabalí rugió, y los habitantes de Micenas huyeron aterrorizados al verlo vivo. No era la muerte lo que temían: era la bestia misma, la naturaleza salvaje que se negaba a ser domesticada. Heracles lo encerró en los establos reales, y durante la noche, los guardias temblaban al oír sus colmillos contra la piedra.',
+    art: 'assets/cartas/jabali-capturado.webp',
+    substory: 'jabali',
+    effect: (p, opp) => {
+        opp.activeBoard.forEach(c => {
+            if (c.dying || c.stunned) return;
+            let d = bloqueoAbsorb(c, 2);
+            if (d > 0) {
+                c.atk = Math.max(0, c.atk - d);
+                queueFx({ t: 'debuff', side: sideOf(opp), uid: c.uid, text: '-' + d + ' ATK', icon: 'fa-hippo' });
+            }
+        });
+    },
+    startTurn: null
+},
+{
+    id: 'colmillos_jabali', name: 'Los Colmillos del Jabalí', kind: 'Evento', cost: 2, atk: 0, hp: 0,
+    icon: 'fa-tooth',
+    desc: 'Al entrar: Fortalecer 2 a todos los aliados.',
+    lore: 'Cuando el Jabalí cayó, los cazadores no lo enterraron. Le arrancaron los colmillos y los exhibieron en el centro del poblado, como trofeo y advertencia: la bestia que había arrasado los cultivos durante generaciones ya no volvería. Pero los colmillos seguían brillando con una luz extraña, y los que los tocaban sentían la furia del animal recorrerles los brazos: los ancianos recuperaban la fuerza de su juventud, los cobardes se volvían valientes, los guerreros sentían el impulso de embestir como el Jabalí. Los sacerdotes dijeron que los colmillos debían ser ofrecidos a Artemisa, la diosa de la caza, o la maldición del Jabalí caería sobre el pueblo. Y así se hizo: los colmillos fueron clavados en el altar de la diosa, y desde entonces, cada cazador que los toca antes de partir recibe la furia del Jabalí en sus manos.',
+    art: 'assets/cartas/jabali-colmillos.webp',
+    substory: 'jabali',
+    effect: (p) => {
+        p.activeBoard.forEach(c => {
+            if (c.dying) return;
+            c.atk += 2;
+            queueFx({ t: 'buff', side: sideOf(p), uid: c.uid, text: '+2 ATK', icon: 'fa-tooth' });
+        });
+    },
+    startTurn: null
+},
+{
+    id: 'juicio_tiresias', name: 'El Juicio de Tiresias', kind: 'Ser', cost: 3, atk: 1, hp: 3,
+    icon: 'fa-eye-slash',
+    desc: 'Al morir: Exilio 1 a 1 rival aleatorio.',
+    lore: 'Tiresias fue consultado en la disputa entre Zeus y Hera. "¿Quién disfruta más del amor, el hombre o la mujer?", preguntaron los dioses. Tiresias, que había sido hombre y mujer, respondió sin dudar: "La mujer, tres veces más". Hera, ofendida, lo cegó con un toque de sus dedos. Zeus, compadecido, le dio el don de la profecía como compensación. Desde entonces, Tiresias ve el futuro con una claridad que los dioses le concedieron a cambio de sus ojos. Pero la sentencia de Hera no fue solo la ceguera: fue el juicio mismo, que cae sobre quien se atreve a contradecir a los dioses. Y Tiresias, ciego, se convirtió en el juez de los que osan desafiar al Olimpo.',
+    art: 'assets/cartas/oraculo-juicio-tiresias.webp',
+    substory: 'oraculo',
+    effect: null,
+    startTurn: null,
+    onDeath: (owner) => {
+        let opp = owner === gameState.p1 ? gameState.p2 : gameState.p1;
+        exilio(owner, opp, 1);
+    }
+},
+{
+    id: 'vara_tiresias', name: 'La Vara de Tiresias', kind: 'Evento', cost: 4, atk: 0, hp: 0,
+    icon: 'fa-staff-snake',
+    desc: 'Al entrar: Destruir 1 rival con el ATK mas alto.',
+    lore: 'Tiresias caminaba con una vara de olivo que lo guiaba por el mundo. No era un simple bastón: era el símbolo de su don, la herramienta con la que tocaba el mundo y lo comprendía. Cuando Tiresias clavaba la vara en la tierra, el futuro se abría ante él como un libro. Los que se atrevían a tocar la vara sentían el peso de la profecía: no era un objeto, era una sentencia. Y cuando Tiresias murió, la vara quedó en el templo de Apolo, esperando a quien se atreviera a empuñarla. El que la empuña ve el futuro, pero también ve su propio final, y eso lo destruye.',
+    art: 'assets/cartas/oraculo-vara-tiresias.webp',
+    substory: 'oraculo',
+    effect: (p, opp) => {
+        let alive = opp.activeBoard.filter(c => !c.dying && !c.noDestroy && !c.stunned);
+        if (!alive.length) return;
+        let target = alive.reduce((max, c) => (c.atk + (c.tempAtkMod||0)) > (max.atk + (max.tempAtkMod||0)) ? c : max, alive[0]);
+        killCard(target, sideOf(opp));
+        queueFx({ t: 'sacrifice', side: sideOf(opp), uid: target.uid });
+    },
+    startTurn: null
+},
+{
+    id: 'ofrenda_hades', name: 'La Ofrenda a Hades', kind: 'Evento', cost: 1, atk: 0, hp: 0,
+    icon: 'fa-droplet',
+    desc: 'Sacrificio 2: Fortalecer 2 a todos los aliados.',
+    lore: 'El altar de piedra negra se alzaba en el centro del poblado, y sobre él, los cazadores dejaban su sangre. No era un sacrificio cualquiera: era un pacto. Hades, el dios que no escucha plegarias, aceptaba la ofrenda y, a cambio, apartaba a los males de la aldea. Pero la sangre derramada no desaparecía: se filtraba en la tierra y llegaba al Inframundo, donde los muertos la bebían y recordaban su vida. Y los que quedaban en la aldea sentían esa sangre correr por sus venas, como si los cazadores muertos les prestaran su fuerza.',
+    art: 'assets/cartas/pacto-ofrenda-hades.webp',
+    substory: 'pacto',
+    effect: (p) => {
+        sacrificio(p, 2, () => {
+            p.activeBoard.forEach(c => {
+                if (c.dying) return;
+                c.atk += 2;
+                queueFx({ t: 'buff', side: sideOf(p), uid: c.uid, text: '+2 ATK', icon: 'fa-droplet' });
+            });
+        });
+    },
+    startTurn: null
+},
+{
+    id: 'deuda_sangre', name: 'La Deuda de Sangre', kind: 'Evento', cost: 2, atk: 0, hp: 0,
+    icon: 'fa-skull',
+    desc: 'Sacrificio 4: Exilio 4 a 1 rival aleatorio.',
+    lore: 'El pacto se cumplió, pero los dioses no olvidan. La sangre derramada en el altar no era una ofrenda: era una deuda. Y cuando llegó el momento de pagarla, Hades envió a sus espectros para cobrar. Los mortales que habían participado en el ritual empezaron a morir uno a uno, y sus almas eran arrastradas al Inframundo. La deuda no se olvidó: cada generación, alguien debía derramar sangre en el altar para mantener a los espectros alejados. Y así, el pacto se convirtió en una cadena que nunca se rompería.',
+    art: 'assets/cartas/pacto-deuda-sangre.webp',
+    substory: 'pacto',
+    effect: (p, opp) => {
+        sacrificio(p, 4, () => {
+            exilio(p, opp, 4);
+        });
+    },
+    startTurn: null
+},
+{
+    id: 'roble_dodona', name: 'El Roble de Dodona', kind: 'Ser', cost: 3, atk: 0, hp: 3,
+    icon: 'fa-tree',
+    desc: 'Al entrar: Bloqueo 3.',
+    lore: 'En el centro del bosque sagrado de Dodona se alza un roble milenario, el árbol más antiguo de Grecia. Sus raíces llegan al centro de la tierra, y sus hojas susurran las profecías de Zeus cuando el viento las agita. Los sacerdotes, llamados Selloi, duermen en el suelo a su sombra y no se lavan los pies para mantener contacto con la tierra. Los que intentan talar el roble mueren antes de levantar el hacha: el árbol es sagrado, y su corteza es tan dura como el bronce. El Roble de Dodona no habla: susurra. Pero los que saben escuchar, entienden.',
+    art: 'assets/cartas/dodona-roble.webp',
+    substory: 'dodona',
+    effect: (p) => {
+        // Bloqueo 3 se inicializa en la instancia de la carta.
+        // No se necesita hacer nada aqui: el motor lo lee de la plantilla.
+    },
+    startTurn: null,
+    bloqueo: 3
+},
+{
+    id: 'palomas_dodona', name: 'Las Palomas de Dodona', kind: 'Evento', cost: 4, atk: 0, hp: 0,
+    icon: 'fa-dove',
+    desc: 'Al entrar: Destruir 1 rival con el ATK mas alto.',
+    lore: 'Dos palomas negras salieron de Egipto y cruzaron el mar. Una fundó el oráculo de Dodona, la otra el de Ammon en Libia. Desde entonces, las palomas de Dodona son las mensajeras de Zeus: su vuelo trae la sentencia divina, y su arrullo anuncia la muerte. Los que las ven posarse sobre el roble sagrado saben que su destino está escrito. Y cuando las palomas alzan el vuelo, el cielo se oscurece, y el hombre más fuerte del lugar cae sin vida. No es un castigo: es la voluntad de Zeus, que no tolera que los mortales olviden su poder.',
+    art: 'assets/cartas/dodona-palomas.webp',
+    substory: 'dodona',
+    effect: (p, opp) => {
+        let alive = opp.activeBoard.filter(c => !c.dying && !c.noDestroy && !c.stunned);
+        if (!alive.length) return;
+        let target = alive.reduce((max, c) => (c.atk + (c.tempAtkMod||0)) > (max.atk + (max.tempAtkMod||0)) ? c : max, alive[0]);
+        killCard(target, sideOf(opp));
+        queueFx({ t: 'sacrifice', side: sideOf(opp), uid: target.uid });
+    },
+    startTurn: null
 }
         ];
 
