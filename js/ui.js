@@ -6,10 +6,31 @@
 // Al tocar la carta: LORE (se oculta todo, arte expandido, lore debajo).
 // Toggle solo tocando la carta. Icono sutil como indicador.
 let cardModalMode = 'combat';
-// Si la carta mostrada tiene keyword (lo decide renderCardModalContent);
-// applyCardModalMode lo consulta para no re-mostrar el bloque en cartas
-// sin keyword (c1) al volver a modo combate.
-let cardModalHasKeyword = false;
+
+// LEYENDAS: explicaciones por trigger/keyword. El panel del modal lista
+// SOLO las que la desc de la carta usa (ambar = triggers, cyan = keywords).
+const LEYENDAS = {
+    // Triggers
+    'Al entrar': 'Al entrar al tablero, se dispara el efecto.',
+    'Inicio de turno': 'Al comenzar cada turno, si se cumple la condicion de la carta, se dispara el efecto.',
+    'Al morir': 'Cuando esta carta muere, se dispara el efecto.',
+    'Embestida': 'Consume X ATK y X HP de esta carta para disparar el efecto que le siga, sobre 1 rival aleatorio.',
+    'Enfurecer': 'Acumula daño recibido. Al llegar a X, dispara el efecto que le siga y resetea el contador.',
+    'Sacrificio': 'Resta X HP en total de tus Seres (de mas HP a menos) para disparar el efecto que le siga.',
+    // Keywords
+    'Daño': 'Inflige X de daño a un objetivo.',
+    'Debilitar': 'Reduce X ATK de un objetivo.',
+    'Fortalecer': 'Aumenta X ATK de un objetivo.',
+    'Blindar': 'Aumenta X HP de un objetivo.',
+    'Gloria': 'Otorga X Puntos de Gloria.',
+    'Destruir': 'Destruye instantaneamente a un objetivo.',
+    'Exilio': 'Exilia a un Ser rival X turnos. Mientras este exiliado: ATK y HP a 0, no ataca, no puntua, no recibe daño ni efectos, no es target de nada.',
+    'Invocar': 'Invoca X copias de una carta en tu tablero.',
+    'Inmune': 'Inmune a efectos rivales X turnos.',
+    'Descuento': 'Reduce en X el coste de tu proxima carta.',
+    'Bloqueo': 'Amortigua hasta X puntos de reduccion de ATK o HP sobre esta carta. Al agotarse, el efecto se desactiva.',
+    'Reflejo': 'Inmune al proximo efecto rival que targetee a esta carta. El efecto se refleja y se aplica a una carta aleatoria del rival.'
+};
 
 // Vista activa dentro de la pantalla de capítulos: campaña o eventos.
 let currentChapterView = 'campaign';
@@ -95,61 +116,35 @@ function renderCardModalContent(card) {
         if (statsBox) statsBox.style.display = 'none';
     }
 
-    // Keyword (usa displayCard.desc).
-    let keywordExplanation = '';
+    // Leyenda (solo los triggers/keywords que la desc de la carta usa).
+    let infoHtml = '';
     if (displayCard.desc) {
-        if (displayCard.desc.includes('Exilio')) {
-            keywordExplanation = "<strong>Exilio X:</strong> Exilia a un Ser rival X turnos. Mientras este exiliado: ATK y HP a 0, no ataca, no puntua, no recibe daño ni efectos, no es target de nada.";
-        } else if (displayCard.desc.includes('Embestida')) {
-            keywordExplanation = "<strong>Embestida X:</strong> Al inicio de cada turno, consume X ATK y X HP para infligir X de daño al Ser rival de su fila.";
-        } else if (displayCard.desc.includes('Enfurecer')) {
-            keywordExplanation = "<strong>Enfurecer X:</strong> Cada vez que esta carta recibe daño, gana +X ATK permanentemente.";
-        } else if (displayCard.desc.includes('Bloqueo')) {
-            keywordExplanation = "<strong>Bloqueo X:</strong> Amortigua hasta X puntos de reduccion de ATK o HP sobre esta carta. Al agotarse, el efecto se desactiva.";
-        } else if (displayCard.desc.includes('Reflejo')) {
-            keywordExplanation = "<strong>Reflejo X:</strong> Inmune al proximo efecto rival que targetee a esta carta. El efecto se refleja y se aplica a una carta aleatoria del rival.";
-        } else if (displayCard.desc.includes('Daño')) {
-            keywordExplanation = "<strong>Daño X:</strong> Inflige X de daño a un objetivo.";
-        } else if (displayCard.desc.includes('Debilitar')) {
-            keywordExplanation = "<strong>Debilitar X:</strong> Reduce X ATK de un objetivo.";
-        } else if (displayCard.desc.includes('Fortalecer')) {
-            keywordExplanation = "<strong>Fortalecer X:</strong> Aumenta X ATK de un objetivo.";
-        } else if (displayCard.desc.includes('Blindar')) {
-            keywordExplanation = "<strong>Blindar X:</strong> Aumenta X HP de un objetivo.";
-        } else if (displayCard.desc.includes('Gloria')) {
-            keywordExplanation = "<strong>Gloria X:</strong> Otorga X Puntos de Gloria.";
-        } else if (displayCard.desc.includes('Destruir')) {
-            keywordExplanation = "<strong>Destruir:</strong> Destruye instantaneamente a un objetivo.";
-        } else if (displayCard.desc.includes('Invocar')) {
-            keywordExplanation = "<strong>Invocar X:</strong> Invoca X copias de una carta en tu tablero.";
-        } else if (displayCard.desc.includes('Inmune')) {
-            keywordExplanation = "<strong>Inmune X:</strong> Inmune a efectos rivales X turnos.";
-        } else if (displayCard.desc.includes('Descuento')) {
-            keywordExplanation = "<strong>Descuento X:</strong> Reduce en X el coste de tu proxima carta.";
+        let keys = new Set();
+        // Detectar triggers y keywords presentes en la desc.
+        for (let key in LEYENDAS) {
+            if (displayCard.desc.includes(key)) keys.add(key);
+        }
+        if (keys.size > 0) {
+            let list = '';
+            keys.forEach(key => {
+                let isTrigger = ['Al entrar','Inicio de turno','Al morir','Embestida','Enfurecer','Sacrificio'].includes(key);
+                let color = isTrigger ? 'text-amber-300' : 'text-cyan-300';
+                let icon = isTrigger ? 'fa-bolt' : 'fa-key';
+                list += `<li class="mb-1 flex gap-1 items-start"><i class="fa-solid ${icon} ${color} text-[8px] mt-1"></i><span class="text-[10px] text-slate-300 leading-tight"><strong class="${color}">${key}:</strong> ${LEYENDAS[key]}</span></li>`;
+            });
+            infoHtml = `<ul class="space-y-1">${list}</ul>`;
         }
     }
-    // PANEL ÚNICO: la explicación se guarda en el window; el panel de
-    // información (#modal-info-content, más abajo) la pinta según el modo.
-    cardModalHasKeyword = !!keywordExplanation;
-    window._modalKeywordExplanation = keywordExplanation;
 
-    // --- PANEL DE INFORMACIÓN (keyword, lore o misión según el modo) ---
+    // --- PANEL DE INFORMACIÓN (leyenda, lore o misión según el modo) ---
     let infoPanel = document.getElementById('modal-info-content');
     if (infoPanel) {
         let mission = getMissionFor(displayCard.id);
-        let html = '';
-
-        // Modo combate: keyword + misión (si tiene).
-        // Modo lore: lore (ocupa todo el panel).
         if (cardModalMode === 'lore') {
-            html = `<p class="text-[10px] text-slate-400 italic leading-tight text-center">${displayCard.lore || ''}</p>`;
+            infoPanel.innerHTML = `<p class="text-[10px] text-slate-400 italic leading-tight text-center">${displayCard.lore || ''}</p>`;
         } else {
-            // Keyword
-            if (cardModalHasKeyword) {
-                html += `<div class="mb-1"><p class="text-[8px] font-orbitron font-bold uppercase tracking-[0.2em] text-amber-300 text-center mb-1">KEYWORD</p>`;
-                html += `<p id="modal-keyword-text" class="text-[10px] text-slate-300 leading-tight text-center">${window._modalKeywordExplanation || ''}</p></div>`;
-            }
-            // Misión
+            // En modo combate: leyenda + mision (si la hay).
+            let html = infoHtml;
             if (mission) {
                 let progress = getProgressFor(displayCard.id);
                 let current = 0;
@@ -158,14 +153,14 @@ function renderCardModalContent(card) {
                 if (mission.type === 'games_with') current = progress.gamesWith || 0;
                 let completed = current >= mission.count;
                 let pct = Math.min(100, (current / mission.count) * 100);
-                html += `<div class="mt-1"><p class="text-[8px] font-orbitron font-bold uppercase tracking-[0.2em] text-purple-300 text-center mb-1">MISIÓN</p>`;
+                html += `<div class="mt-2"><p class="text-[8px] font-orbitron font-bold uppercase tracking-[0.2em] text-purple-300 text-center mb-1">MISION</p>`;
                 html += `<p class="text-[10px] text-slate-300 leading-tight text-center mb-1">${mission.description}</p>`;
                 html += `<div class="w-full h-1.5 bg-slate-800 rounded-full overflow-hidden mb-1"><div class="h-full ${completed ? 'bg-emerald-500' : 'bg-purple-500'}" style="width:${pct}%"></div></div>`;
                 html += `<p class="text-[9px] text-center ${completed ? 'text-emerald-400' : 'text-slate-400'}">${current}/${mission.count} ${completed ? '— ¡COMPLETADA!' : ''}</p></div>`;
             }
-            if (!html) html = '<p class="text-[10px] text-slate-500 text-center">Sin información.</p>';
+            if (!html) html = '<p class="text-[10px] text-slate-500 text-center">Sin informacion.</p>';
+            infoPanel.innerHTML = html;
         }
-        infoPanel.innerHTML = html;
     }
 
     // --- SELECTOR DE FORMAS (solo si la carta pertenece a una familia) ---
@@ -261,11 +256,6 @@ function applyCardModalMode() {
     let activeCard = window._modalActiveCard;
     let hasLore = activeCard && activeCard.lore && activeCard.lore.trim() !== '';
     if (loreBox) loreBox.classList.toggle('hidden-view', !isLore || !hasLore);
-
-    // El keyword-box se oculta en modo lore (en combate lo gestiona
-    // renderCardModalContent según si la carta tiene keyword).
-    let keywordBox = document.getElementById('modal-keyword-box');
-    if (keywordBox) keywordBox.classList.toggle('hidden-view', isLore || !cardModalHasKeyword);
 
     // Icono indicador.
     let hint = document.getElementById('modal-card-mode-hint');

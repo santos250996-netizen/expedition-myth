@@ -7,6 +7,35 @@
 
 const PATCH_NOTES = [
     {
+        version: '1.9.1',
+        date: '2026-11-10',
+        title: 'Triggers Embestida, Enfurecer y Sacrificio',
+        highlights: [
+            'Embestida X, Enfurecer X y Sacrificio X son triggers',
+            'c7 y a2: Embestida ahora apunta a 1 rival aleatorio',
+            'c9 Pacto de Sangre usa Sacrificio 4',
+            'Panel de keywords: leyenda con colores (ambar/cyan)'
+        ],
+        changes: {
+            new: [
+                'Trigger Sacrificio X: resta X HP de tus Seres (de mas HP a menos) y dispara el efecto.',
+                'Trigger Enfurecer X: acumula X daño recibido, dispara el efecto y resetea.',
+                'Trigger Embestida X: consume X ATK/HP y dispara el efecto sobre 1 rival aleatorio.',
+                'Panel de keywords: leyenda sin titulos, colores ambar (triggers) y cyan (keywords).'
+            ],
+            buffs: [],
+            nerfs: [],
+            fixes: [
+                'c7 Jabali y a2 Asterion: Embestida apunta a 1 rival aleatorio (antes fila opuesta).',
+                'c9 Pacto de Sangre: reescrito como Sacrificio 4.',
+                'Desc corregidas: c2, c5, c6, c8, c10, b2, a4, a10, b3, e1, muros, fuego.'
+            ],
+            removed: [
+                'Variable cardModalHasKeyword (reemplazada por la leyenda).'
+            ]
+        }
+    },
+    {
         version: '1.9.0',
         date: '2026-11-10',
         title: 'Sistema de efectos, arquetipos y familia satiro',

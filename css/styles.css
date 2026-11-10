@@ -1157,3 +1157,8 @@ main,
     border-width: 2px;
 }
 /* --- FIN INDICADORES PRO --- */
+
+/* --- LEYENDA DEL MODAL (v1.9.1): colores centralizados; ui.js ademas usa
+   text-amber-300 (triggers) y text-cyan-300 (keywords) de Tailwind. --- */
+.keyword-trigger { color: #fbbf24; }  /* ambar */
+.keyword-effect { color: #22d3ee; }   /* cyan */

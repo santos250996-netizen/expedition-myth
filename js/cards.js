@@ -13,7 +13,7 @@ const ALL_CARDS = [
             { 
                 id: 'c2', name: 'Sátiro de los Bosques', kind: 'Ser', cost: 2, atk: 0, hp: 2, 
                 icon: 'fa-leaf', 
-                desc: 'Inicio de turno: Gana +1 ATK por cada otro Ser aliado en el tablero.', 
+                desc: 'Inicio de turno (si hay aliados): Fortalecer 1 por cada otro aliado.', 
                 lore: 'De la espesura más profunda de los matorrales surge una criatura híbrida de torso humano y patas caprinas. Es un ser salvaje y caótico que no obedece a ninguna ley humana, merodeando los bordes de los caminos para asustar y desorientar a los viajeros. Es el cortejo de Dioniso, el dios del vino y el éxtasis, y su sola presencia anuncia el caos.',
                 art: 'assets/cartas/carta-02-satiro-de-los-bosques.webp',
                 effect: null, 
@@ -22,7 +22,7 @@ const ALL_CARDS = [
             { 
                 id: 'c3', name: 'Asterión, el Minotauro', kind: 'Ser', cost: 3, atk: 2, hp: 4, 
                 icon: 'fa-cow', 
-                desc: 'Sin habilidades, pero un muro sólido.', 
+                desc: 'Sin habilidades, pero un muro solido.', 
                 lore: 'De la unión prohibida entre Pasífae y el toro blanco nació Asterión, una criatura de cuerpo humano y cabeza de toro. Creció entre los muros del palacio de Cnosos, y aunque al principio no era más que un cachorro asustado, su fuerza bruta y su naturaleza salvaje comenzaron a manifestarse. La corte lo miraba con temor, y los susurros sobre la maldición de Poseidón no tardaron en recorrer los pasillos. Algunos dicen que el laberinto de Creta aún lo espera.',
                 art: 'assets/cartas/carta-03-asterion-el-minotauro.webp',
                 effect: null, startTurn: null 
@@ -56,7 +56,7 @@ const ALL_CARDS = [
             { 
                 id: 'c6', name: 'Ninfas de las Fuentes Secas', kind: 'Ser', cost: 2, atk: 1, hp: 2, 
                 icon: 'fa-water', 
-                desc: 'Al entrar: Reduce en -1 el ATK del Ser rival en la Fila 1 (permanente).', 
+                desc: 'Al entrar: Debilitar 1 a Fila 1 rival.', 
                 lore: 'Las protectoras de los manantiales sufren la corrupción de la niebla. Al verse marchitas y sin agua pura, pierden la razón y se convierten en espectros errantes que lloran desconsoladamente, confundiendo con sus cantos a cualquiera que se acerque. Son las ninfas de Poseidón, hijas del mar y de los ríos, ahora corrompidas por el Caos.',
                 art: 'assets/cartas/carta-06-ninfas-de-las-fuentes-secas.webp',
                 effect: (p, opp) => {
@@ -72,7 +72,7 @@ const ALL_CARDS = [
             { 
                 id: 'c7', name: 'Jabalí de Erimanto', kind: 'Ser', cost: 5, atk: 4, hp: 6,
                 icon: 'fa-hippo', 
-                desc: 'Embestida 1.', 
+                desc: 'Embestida 1: Daño 1 a 1 rival aleatorio.', 
                 lore: 'Desde las cumbres heladas desciende una bestia descomunal: un jabalí salvaje de piel acorazada y colmillos afilados que arrasa con los primeros cultivos y siembra el pánico absoluto en las laderas de Arcadia. Los pastores susurran su nombre con terror, pues no hay lanza ni trampa que pueda detenerlo. Es una de las bestias primigenias que habitan las montañas, un recordatorio de que la naturaleza salvaje aún no ha sido domesticada por los hombres.',
                 art: 'assets/cartas/carta-07-jabali-de-erimanto.webp',
                 effect: null, 
@@ -83,7 +83,7 @@ const ALL_CARDS = [
             { 
                 id: 'c8', name: 'Oráculo Ciego', kind: 'Ser', cost: 2, atk: 1, hp: 1,
                 icon: 'fa-eye-slash', 
-                desc: 'Al entrar: Tu siguiente Evento cuesta -1 Energía (mínimo 0).', 
+                desc: 'Al entrar: Descuento 1 a tu siguiente Evento.', 
                 lore: 'En una cueva donde los vapores de la tierra escapan por las grietas, un anciano inhala los efluvios telúricos. Entra en un profundo trance y comienza a escupir profecías indescifrables sobre un destino escrito con sangre y bronce. Es un oráculo de Apolo, el dios de la profecía, y sus palabras son tan oscuras como el futuro que anuncian.',
                 art: 'assets/cartas/carta-08-oraculo-ciego.webp',
                 effect: (p) => { p.pendingEventDiscount = (p.pendingEventDiscount || 0) + 1; queueFx({ t: 'discount', side: sideOf(p), text: '-1' }); }, startTurn: null 
@@ -91,32 +91,26 @@ const ALL_CARDS = [
             { 
                 id: 'c9', name: 'Pacto de Sangre en el Altar de Piedra', kind: 'Evento', cost: 3, atk: 0, hp: 0, 
                 icon: 'fa-droplet', 
-                desc: 'Al entrar: Gloria 4. Destruir al rival con menos HP. Daño 4 a tu Ser con mas HP.', 
+                desc: 'Sacrificio 4: Gloria 4. Destruir 1 rival con menos HP.', 
                 lore: 'Desesperados por detener las malas cosechas y los ataques, los mortales construyen altares toscos de roca y entregan la vida de sus cazadores en un ritual oscuro para apaciguar a las fuerzas que los acechan. Es un pacto con Hades, el dios del inframundo, que acepta la sangre como moneda de cambio.',
                 art: 'assets/cartas/carta-09-pacto-de-sangre.webp',
                 effect: (p, opp) => {
-                    // Canon: sin Ser aliado vivo, el ritual no se activa.
-                    let own = p.activeBoard.filter(c => c.kind === 'Ser' && !c.dying);
-                    if (own.length === 0) return;
-                    p.score += 4;
-                    queueFx({ t: 'gloria', side: sideOf(p), text: '+4 GLORIA', icon: 'fa-droplet', num: 4 });
-                    let alive = opp.activeBoard.filter(c => !c.dying && !c.noDestroy && !c.stunned);
-                    if (alive.length > 0) {
-                        let weakest = alive.reduce((min, c) => c.hp < min.hp ? c : min, alive[0]);
-                        killCard(weakest, sideOf(opp));
-                        queueFx({ t: 'sacrifice', side: sideOf(opp), uid: weakest.uid });
-                    }
-                    // Drawback: tu Ser con más HP paga 4 HP (puede morir).
-                    let strongest = own.reduce((max, c) => c.hp > max.hp ? c : max, own[0]);
-                    strongest.hp = Math.max(0, strongest.hp - 4);
-                    queueFx({ t: 'debuff', side: sideOf(p), uid: strongest.uid, text: '-4 HP', icon: 'fa-droplet', overlay: 'hit' });
-                    if (strongest.hp === 0) { strongest.dying = true; queueFx({ t: 'sacrifice', side: sideOf(p), uid: strongest.uid }); }
-                } 
+                    sacrificio(p, 4, () => {
+                        p.score += 4;
+                        queueFx({ t: 'gloria', side: sideOf(p), text: '+4 GLORIA', icon: 'fa-droplet', num: 4 });
+                        let alive = opp.activeBoard.filter(c => !c.dying && !c.noDestroy && !c.stunned);
+                        if (alive.length > 0) {
+                            let weakest = alive.reduce((min, c) => c.hp < min.hp ? c : min, alive[0]);
+                            killCard(weakest, sideOf(opp));
+                            queueFx({ t: 'sacrifice', side: sideOf(opp), uid: weakest.uid });
+                        }
+                    });
+                }
             },
             {
                 id: 'c10', name: 'Ecos del Bosque de Dodona', kind: 'Evento', cost: 1, atk: 0, hp: 0,
                 icon: 'fa-tree',
-                desc: 'Al entrar: Debilitar 1 a todos (rivales + aliados).',
+                desc: 'Al entrar: Debilitar 1 a todos los Seres.',
                 lore: 'Los robles milenarios de los bosques sagrados guardan secretos antiguos. Cuando los intrusos se adentran sin respeto, las hojas y el viento susurran nombres prohibidos que paralizan la voluntad y confunden las mentes de los enemigos. Es el santuario oracular más antiguo de Zeus, donde los robles susurran sus profecías y su poder debilita a los incrédulos.',
                 art: 'assets/cartas/carta-10-ecos-de-dodona.webp',
                 effect: (p, opp) => {
@@ -137,7 +131,7 @@ const ALL_CARDS = [
 {
     id: 'a2', name: 'Asterión, Enfurecido', kind: 'Ser', cost: 5, atk: 5, hp: 5,
     icon: 'fa-cow',
-    desc: 'Embestida 1.',
+    desc: 'Embestida 1: Daño 1 a 1 rival aleatorio.',
     lore: 'El cachorro se convirtió en una bestia. Asterión probó la sangre humana y algo se rompió en su interior: ya no distinguía entre el hambre y la furia. Minos, aterrado por lo que su propio pecado había engendrado, ordenó a Dédalo construir un laberinto para encerrarlo.',
     art: 'assets/cartas/asterion-a2-enfurecido.webp',
     substory: 'asterion',
@@ -157,7 +151,7 @@ const ALL_CARDS = [
 {
     id: 'a4', name: 'El Toro Blanco de Creta', kind: 'Ser', cost: 4, atk: 1, hp: 5,
     icon: 'fa-cow',
-    desc: 'Bloqueo 2.',
+    desc: 'Al entrar: Bloqueo 2.',
     lore: 'Poseidón hizo emerger del mar un toro blanco como la espuma, un regalo sagrado para Minos, rey de Creta. El animal era de una belleza sobrecogedora, y Minos, incapaz de alzar la mano contra él, lo conservó en sus dominios. Pero la afrenta no quedó impune: Poseidón encendió en el corazón de Pasífae una pasión prohibida por el toro.',
     art: 'assets/cartas/asterion-a4-toro-blanco.webp',
     substory: 'asterion',
@@ -299,7 +293,7 @@ const ALL_CARDS = [
 {
     id: 'b2', name: 'Medusa, la Gorgona', kind: 'Ser', cost: 6, atk: 2, hp: 2,
     icon: 'fa-snake',
-    desc: 'Al entrar: Exilio 2. Inicio de turno (si esta en Fila 1 y hay rival): Daño 1 a Fila 1 rival. Al morir: Invocar 2 Serpientes de la Cabeza.',
+    desc: 'Al entrar: Exilio 2 a 1 rival aleatorio. Inicio de turno (si esta en Fila 1): Daño 1 a Fila 1 rival. Al morir: Invocar 2 Serpientes de la Cabeza.',
     lore: 'Atenea no distinguió entre el culpable y la víctima. El cabello de Medusa se enroscó en serpientes, y su mirada se volvió piedra. Huyó al norte, donde las Gorgonas la acogieron, y desde entonces ningún hombre que la mirara volvió a contar lo que vio.',
     art: 'assets/cartas/medusa-b2-gorgona.webp',
     substory: 'medusa',
@@ -319,7 +313,7 @@ const ALL_CARDS = [
 {
     id: 'b3', name: 'Esteno, la Fuerte', kind: 'Ser', cost: 4, atk: 3, hp: 3, bloqueo: 2,
     icon: 'fa-shield-halved',
-    desc: 'Bloqueo 2.',
+    desc: 'Al entrar: Bloqueo 2.',
     lore: 'La mayor de las Gorgonas, hija de Forcis y Ceto. Su fuerza era tal que podía detener a un toro con una mano. Cuando Medusa llegó al norte, Esteno la abrazó como a una hermana y juró protegerla de los hombres que la buscaban.',
     art: 'assets/cartas/medusa-b3-esteno.webp',
     substory: 'medusa',
@@ -433,7 +427,7 @@ const ALL_CARDS = [
 {
     id: 'e1', name: 'León de Nemea', kind: 'Ser', subtype: 'Vástago', cost: 5, atk: 2, hp: 4,
     icon: 'fa-paw',
-    desc: 'Bloqueo 4.',
+    desc: 'Al entrar: Bloqueo 4.',
     lore: 'En los bosques entre Nemea y Cleone, en la Argólide, vive una bestia que no es un animal. Su pelaje dorado brilla como el oro bajo la luna, y su piel es tan dura que ninguna lanza, espada o flecha puede rasgarla. Es el hijo de Tifón y Equidna, engendrado por la sangre de los monstruos, pero fue Hera quien lo crió en los montes de Nemea y lo dejó crecer para castigar a los mortales que olvidaron rendirle culto. Los pastores han aprendido a no cruzar los límites del bosque, y los rebaños desaparecen uno a uno sin que nadie encuentre rastro. No es un depredador: es un castigo divino.',
     art: 'assets/cartas/e1-leon-de-nemea.webp',
     effect: null, startTurn: null, bloqueo: 4
@@ -501,7 +495,7 @@ const ALL_CARDS = [
 {
     id: 'fuego', name: 'Mortales del Fuego', kind: 'Ser', cost: 3, atk: 2, hp: 2,
     icon: 'fa-fire',
-    desc: 'Al entrar: Fortalecer 1 a todos tus Mortales.',
+    desc: 'Al entrar: Fortalecer 1 a todos tus Seres.',
     lore: 'Prometeo robo una chispa del carro de Helios y la escondio en una cana hueca. Cuando la entrego a los mortales, les dio el primer poder divino: el fuego. Con el aprendieron a forjar el bronce, a cocinar el grano y a iluminar la noche. Pero cada llama que encendian era una afrenta a Zeus, y el titan pagaria su osadia con una condena eterna.',
     art: 'assets/cartas/mortales-fuego.webp',
     substory: 'mortales',
@@ -519,7 +513,7 @@ const ALL_CARDS = [
 {
     id: 'muros', name: 'Mortales de los Muros', kind: 'Ser', cost: 4, atk: 1, hp: 5,
     icon: 'fa-monument', bloqueo: 2,
-    desc: 'Bloqueo 2.',
+    desc: 'Al entrar: Bloqueo 2.',
     lore: 'Con el fuego llego el bronce, y con el bronce, las herramientas. Los mortales levantaron muros de piedra ciclopea, tan pesados que solo los gigantes de un ojo podrian haberlos movido. Micenas, Tirinto, Argos: ciudades amuralladas que resistieron el asedio de los siglos. Pero ningun muro detiene a los dioses, y los mortales lo sabian.',
     art: 'assets/cartas/mortales-muros.webp',
     substory: 'mortales',

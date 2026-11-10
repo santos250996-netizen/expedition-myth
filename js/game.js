@@ -60,6 +60,15 @@ function dealDamage(target, amount, side, sourcePlayer) {
     let dmg = bloqueoAbsorb(target, amount);
     if (dmg <= 0) return;
     target.hp -= dmg;
+    // Trigger Enfurecer: acumula daño recibido. Si llega al
+    // umbral de la carta, dispara su efecto y resetea.
+    if (target.enfurecerThreshold && target.enfurecerEffect) {
+        target.enfurecerCounter = (target.enfurecerCounter || 0) + dmg;
+        if (target.enfurecerCounter >= target.enfurecerThreshold) {
+            target.enfurecerCounter = 0;
+            try { target.enfurecerEffect(target, gameState[ownerSideOf(target)]); } catch (e) { console.error('enfurecer:', e); }
+        }
+    }
     if (target.hp <= 0) {
         target.hp = 0;
         killCard(target, side || ownerSideOf(target));
@@ -69,17 +78,17 @@ function dealDamage(target, amount, side, sourcePlayer) {
 }
 
 // --- KEYWORD: EMBESTIDA X ---
-// Consume X ATK y X HP de la carta para infligir X de daño al Ser rival de
-// su misma fila. Si no puede pagar el coste (ATK < X o HP < X) o no hay
-// rival vivo enfrente, no se activa. El daño sale por dealDamage (canónico:
+// Consume X ATK y X HP de la carta para infligir X de daño a 1 rival
+// aleatorio. Si no puede pagar el coste (ATK < X o HP < X) o no hay
+// rival vivo, no se activa. El daño sale por dealDamage (canónico:
 // reacciones al daño y muerte inmediata); si el coste remata a la carta,
 // queda dying con FX de sacrificio y la red de seguridad del tick siguiente
 // la retira del tablero.
 function embestida(self, player, opp, X) {
-    let myIndex = player.activeBoard.indexOf(self);
-    let target = opp.activeBoard[myIndex];
-    
-    if (!target || target.dying) return;
+    let targets = opp.activeBoard.filter(c => !c.dying);
+    if (!targets.length) return;
+    let target = targets[Math.floor(Math.random() * targets.length)];
+
     if (self.atk < X || self.hp < X) return;
     
     self.atk -= X;
@@ -130,6 +139,37 @@ function exilio(player, opp, X) {
     }
 }
 
+function sacrificio(player, X, applyEffect) {
+    // Comprueba si hay X HP disponibles en los Seres del jugador.
+    let totalHp = player.activeBoard
+        .filter(c => !c.dying && c.kind === 'Ser')
+        .reduce((sum, c) => sum + c.hp, 0);
+    if (totalHp < X) return false;
+
+    // Reparte X HP de mas HP a menos.
+    let remaining = X;
+    let sorted = player.activeBoard
+        .filter(c => !c.dying && c.kind === 'Ser')
+        .slice()
+        .sort((a, b) => b.hp - a.hp);
+
+    for (let c of sorted) {
+        if (remaining <= 0) break;
+        let dmg = Math.min(remaining, c.hp);
+        c.hp -= dmg;
+        remaining -= dmg;
+        queueFx({ t: 'debuff', side: sideOf(player), uid: c.uid, text: '-' + dmg + ' HP', icon: 'fa-droplet', overlay: 'hit' });
+        if (c.hp <= 0) {
+            c.hp = 0;
+            killCard(c, sideOf(player));
+        }
+    }
+
+    // Dispara el efecto.
+    if (typeof applyEffect === 'function') applyEffect();
+    return true;
+}
+
 // --- INVOCACIÓN DE CARTAS ---
 // Instancia una carta (Ser o Token) en la cima del tablero del jugador,
 // con uid nuevo. Si el tablero está lleno (12), no se invoca.
@@ -146,7 +186,8 @@ function summonCard(player, cardTemplate) {
         exilioTurns: 0,
         reflectCharges: 0,
         bloqueo: cardTemplate.bloqueo || 0,
-        immuneThisTurn: false
+        immuneThisTurn: false,
+        enfurecerCounter: 0
     };
     player.activeBoard.unshift(inst);
     gameState.justDeployed.push(inst.uid);
@@ -374,7 +415,7 @@ function gameTick() {
             player.deckPointer++;
             return {
                 card: nextCard,
-                inst: { ...nextCard, uid: Math.random().toString(36).slice(2, 9), tempAtkMod: 0, tempHpMod: 0, stunned: false, exilioTurns: 0, reflectCharges: 0, bloqueo: nextCard.bloqueo || 0 },
+                inst: { ...nextCard, uid: Math.random().toString(36).slice(2, 9), tempAtkMod: 0, tempHpMod: 0, stunned: false, exilioTurns: 0, reflectCharges: 0, bloqueo: nextCard.bloqueo || 0, enfurecerCounter: 0 },
                 discount: oracleDiscount
             };
         }
