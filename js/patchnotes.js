@@ -7,6 +7,25 @@
 
 const PATCH_NOTES = [
     {
+        version: '1.7.5',
+        date: '2026-11-10',
+        title: 'Selector de mazos: renombrar y arte de familia',
+        highlights: [
+            'El lapiz del mazo renombra (antes abria el deckbuilder)',
+            'El arte del mazo resuelve la forma marcada de familias'
+        ],
+        changes: {
+            new: [],
+            buffs: [],
+            nerfs: [],
+            fixes: [
+                'Lapiz del mazo abre prompt de renombrar, no el deckbuilder.',
+                'Arte del mazo resuelve familyId y cardId de familia (usa la forma marcada).'
+            ],
+            removed: []
+        }
+    },
+    {
         version: '1.7.4',
         date: '2026-11-09',
         title: 'Progreso, avatar y mazos',

@@ -1471,9 +1471,10 @@ function handleNavClick(viewId, opener) {
     else opener();
 }
 
-// --- LISTA DE MAZOS (ABRIR / CREAR / ELIMINAR) ---
+// --- LISTA DE MAZOS (ABRIR / RENOMBRAR / CREAR / ELIMINAR) ---
 // Un box 3/2 por mazo con el arte de su primera carta (en familias, la
-// forma marcada). Tocar el box abre el deckbuilder con ese mazo.
+// forma marcada). El arte y el nombre abren el deckbuilder; el lapiz
+// renombra con prompt.
 function renderDeckSelect() {
     let container = document.getElementById('decks-list');
     if (!container) return;
@@ -1482,29 +1483,39 @@ function renderDeckSelect() {
     let html = '';
     decks.forEach(deck => {
         let isActive = deck.id === activeId;
-        // Resolver arte de la primera carta (familia -> forma marcada)
+        // Resolver arte de la primera carta.
+        // Soporta: familyId ('asterion'), cardId de familia ('c3'),
+        // cardId suelta ('c1') y objeto carta.
         let art = 'assets/cartas/carta-01-mortales-de-arcadia.webp';
         let firstEntry = deck.cards && deck.cards.length > 0 ? deck.cards[0] : null;
         if (firstEntry) {
-            // getFamilyFor (no getFamilyById): las familias se indexan por
-            // id de familia ('asterion'), no por id de carta base ('c3').
-            let family = getFamilyFor(firstEntry);
-            if (family) {
-                let selectedForm = getSelectedPhase(family.id);
-                let formCard = ALL_CARDS.find(c => c.id === selectedForm);
-                if (formCard) art = formCard.art;
-            } else {
-                let card = ALL_CARDS.find(c => c.id === firstEntry);
-                if (card) art = card.art;
+            let entryId = typeof firstEntry === 'string'
+                ? firstEntry
+                : (firstEntry && firstEntry.id ? firstEntry.id : null);
+            if (entryId) {
+                let family = getFamilyById(entryId);
+                if (!family) {
+                    let fam = getFamilyFor(entryId);
+                    if (fam) family = fam;
+                }
+                if (family) {
+                    let selectedForm = getSelectedPhase(family.id);
+                    let formCard = ALL_CARDS.find(c => c.id === selectedForm)
+                        || ALL_CARDS.find(c => c.id === family.forms[0]);
+                    if (formCard) art = formCard.art;
+                } else {
+                    let card = ALL_CARDS.find(c => c.id === entryId);
+                    if (card) art = card.art;
+                }
             }
         }
         html += `
-            <div class="relative rounded-xl overflow-hidden border-2 ${isActive ? 'border-amber-400 shadow-[0_0_15px_rgba(251,191,36,0.4)]' : 'border-slate-700'}" style="aspect-ratio:3/2" onclick="openDeckForEdit('${deck.id}')">
-                <div class="absolute inset-0 bg-cover bg-center" style="background-image:url('${art}')"></div>
+            <div class="relative rounded-xl overflow-hidden border-2 ${isActive ? 'border-amber-400 shadow-[0_0_15px_rgba(251,191,36,0.4)]' : 'border-slate-700'} aspect-[3/2]" style="aspect-ratio:3/2">
+                <div class="absolute inset-0 bg-cover bg-center cursor-pointer" style="background-image:url('${art}')" onclick="openDeckForEdit('${deck.id}')"></div>
                 <div class="absolute inset-x-0 bottom-0 h-1/3 bg-gradient-to-t from-black/90 to-transparent pointer-events-none"></div>
                 <div class="absolute bottom-0 inset-x-0 flex items-center justify-between px-3 py-2 gap-2">
-                    <span class="text-white font-orbitron font-bold text-sm truncate flex-1 drop-shadow-md">${deck.name}</span>
-                    <button onclick="event.stopPropagation(); openDeckForEdit('${deck.id}')" class="w-8 h-8 rounded-full bg-slate-900/80 border border-slate-600 text-xs text-blue-300 shrink-0 active:scale-95" aria-label="Editar mazo">
+                    <span class="text-white font-orbitron font-bold text-sm truncate flex-1 drop-shadow-md cursor-pointer" onclick="openDeckForEdit('${deck.id}')">${deck.name}</span>
+                    <button onclick="event.stopPropagation(); renameDeckPrompt('${deck.id}')" class="w-8 h-8 rounded-full bg-slate-900/80 border border-slate-600 text-xs text-blue-300 shrink-0 active:scale-95" aria-label="Renombrar mazo">
                         <i class="fa-solid fa-pen"></i>
                     </button>
                     ${decks.length > 1 ? `<button onclick="event.stopPropagation(); if(confirm('¿Eliminar este mazo?')) { if(deleteDeck('${deck.id}')) { loadDeck(); renderDeckSelect(); } }" class="w-8 h-8 rounded-full bg-slate-900/80 border border-red-500/60 text-xs text-red-300 shrink-0 active:scale-95" aria-label="Eliminar mazo"><i class="fa-solid fa-trash"></i></button>` : ''}
@@ -1516,7 +1527,21 @@ function renderDeckSelect() {
     container.innerHTML = html;
 }
 
-// Abre el deckbuilder con el mazo indicado (botón lápiz de la lista).
+// Renombrar mazo desde el lapiz del box (prompt nativo). Cancelar o
+// dejar vacio no cambia nada.
+function renameDeckPrompt(deckId) {
+    let decks = getDecks();
+    let deck = decks.find(d => d.id === deckId);
+    if (!deck) return;
+    let newName = prompt('Nuevo nombre del mazo:', deck.name);
+    if (newName === null) return;
+    newName = newName.trim();
+    if (newName === '') return;
+    renameDeck(deckId, newName);
+    renderDeckSelect();
+}
+
+// Abre el deckbuilder con el mazo indicado (arte o nombre del box de la lista).
 function openDeckForEdit(deckId) {
     setActiveDeckId(deckId);
     loadDeck();
