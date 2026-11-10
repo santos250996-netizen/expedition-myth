@@ -7,6 +7,31 @@
 
 const PATCH_NOTES = [
     {
+        version: '1.8.0',
+        date: '2026-11-10',
+        title: 'Familia mortales y rebalance Pasifae',
+        highlights: [
+            'Nueva familia: Mortales de Arcadia (c1 -> fuego -> muros)',
+            '2 cartas nuevas: Mortales del Fuego y Mortales de los Muros',
+            'Nerf Pasifae: 0/3 -> 0/2'
+        ],
+        changes: {
+            new: [
+                'Familia mortales: c1 (base), fuego (forma II), muros (forma III).',
+                'Carta: Mortales del Fuego (Ser, cost 3, 2/2, +1 ATK a todos tus Mortales al entrar).',
+                'Carta: Mortales de los Muros (Ser, cost 4, 1/5, Bloqueo 2).',
+                'Mision fuego: gana 10 combates con Mortales de Arcadia en el tablero.',
+                'Mision muros: juega a Mortales del Fuego en 30 partidas distintas.'
+            ],
+            buffs: [],
+            nerfs: [
+                'Pasifae a6: stats 0/3 -> 0/2.'
+            ],
+            fixes: [],
+            removed: []
+        }
+    },
+    {
         version: '1.7.5',
         date: '2026-11-10',
         title: 'Selector de mazos: renombrar y arte de familia',

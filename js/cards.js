@@ -181,7 +181,7 @@ const ALL_CARDS = [
     startTurn: null
 },
 {
-    id: 'a6', name: 'Pasífae, la Reina de Creta', kind: 'Ser', cost: 2, atk: 0, hp: 3,
+    id: 'a6', name: 'Pasífae, la Reina de Creta', kind: 'Ser', cost: 2, atk: 0, hp: 2,
     icon: 'fa-crown',
     desc: 'Al entrar: +1 HP a todos tus Asterión (en tablero o en mazo).',
     lore: 'Pasífae, esposa de Minos, caminaba por los jardines de Cnosos con la mirada perdida, ajena al hechizo que Poseidón había tejido sobre ella. Una pasión prohibida por el toro blanco encendió su corazón, y de esa unión contra natura nació Asterión. Aterrorizada por lo que había engendrado, la reina se retiró a las sombras del palacio, pero su amor de madre aún protege a su hijo, dondequiera que esté.',
@@ -496,6 +496,34 @@ const ALL_CARDS = [
             queueFx({ t: 'debuff', side: sideOf(opp), uid: c.uid, text: '-2 HP', icon: 'fa-robot', overlay: 'hit', pulse: 'fx-shake' });
         });
     },
+    startTurn: null
+},
+{
+    id: 'fuego', name: 'Mortales del Fuego', kind: 'Ser', cost: 3, atk: 2, hp: 2,
+    icon: 'fa-fire',
+    desc: 'Al entrar: +1 ATK a todos tus Mortales (en tablero).',
+    lore: 'Prometeo robo una chispa del carro de Helios y la escondio en una cana hueca. Cuando la entrego a los mortales, les dio el primer poder divino: el fuego. Con el aprendieron a forjar el bronce, a cocinar el grano y a iluminar la noche. Pero cada llama que encendian era una afrenta a Zeus, y el titan pagaria su osadia con una condena eterna.',
+    art: 'assets/cartas/mortales-fuego.webp',
+    substory: 'mortales',
+    effect: (p) => {
+        p.activeBoard.forEach(c => {
+            if (c.dying) return;
+            if (c.id === 'c1' || c.id === 'fuego' || c.id === 'muros') {
+                c.atk += 1;
+                queueFx({ t: 'buff', side: sideOf(p), uid: c.uid, text: '+1 ATK', icon: 'fa-fire' });
+            }
+        });
+    },
+    startTurn: null
+},
+{
+    id: 'muros', name: 'Mortales de los Muros', kind: 'Ser', cost: 4, atk: 1, hp: 5,
+    icon: 'fa-monument', bloqueo: 2,
+    desc: 'Bloqueo 2.',
+    lore: 'Con el fuego llego el bronce, y con el bronce, las herramientas. Los mortales levantaron muros de piedra ciclopea, tan pesados que solo los gigantes de un ojo podrian haberlos movido. Micenas, Tirinto, Argos: ciudades amuralladas que resistieron el asedio de los siglos. Pero ningun muro detiene a los dioses, y los mortales lo sabian.',
+    art: 'assets/cartas/mortales-muros.webp',
+    substory: 'mortales',
+    effect: null,
     startTurn: null
 }
         ];

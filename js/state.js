@@ -198,6 +198,11 @@ const CARD_FAMILIES = {
         id: 'dedalo',
         name: 'Dédalo',
         forms: ['a7', 'a10', 'talos']
+    },
+    mortales: {
+        id: 'mortales',
+        name: 'Mortales de Arcadia',
+        forms: ['c1', 'fuego', 'muros']
     }
 };
 
@@ -221,6 +226,16 @@ const CARD_MISSIONS = {
         type: 'games_with', count: 50, previousCardId: 'a7',
         familyId: 'dedalo', formIndex: 2,
         description: 'Juega a Dédalo en 50 partidas distintas.'
+    },
+    fuego: {
+        type: 'wins', count: 10, previousCardId: 'c1',
+        familyId: 'mortales', formIndex: 1,
+        description: 'Gana 10 combates con Mortales de Arcadia en el tablero.'
+    },
+    muros: {
+        type: 'games_with', count: 30, previousCardId: 'fuego',
+        familyId: 'mortales', formIndex: 2,
+        description: 'Juega a Mortales del Fuego en 30 partidas distintas.'
     }
 };
 

@@ -14,6 +14,8 @@ Juego de cartas coleccionables **auto-batalla** inspirado en los mitos del mundo
 3. Cada turno, el **ATK** total de tu tablero se suma a tu marcador; el rival hace lo propio.
 4. La partida se decide por **diferencia de 50 Puntos de Gloria**. Y ojo al estancamiento: si ambos mazos se agotan y en los tableros ya no queda nada que pueda sumar gloria (sin ATK ni generadores periódicos), termina ahí mismo y gana quien tenga más Puntos de Gloria — con igualdad, empate. Guarda detalles de cada carta tocándola (con su lore).
 
+El juego usa **familias de cartas**: una misma entrada del mazo puede tener varias formas desbloqueables. Familias actuales: Asterión (c3 -> a2 -> a3), Dédalo (a7 -> a10 -> talos) y Mortales (c1 -> fuego -> muros). Las formas se desbloquean completando misiones con la forma anterior.
+
 ## Estructura del proyecto
 
 ```
