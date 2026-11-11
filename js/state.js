@@ -258,6 +258,16 @@ const CARD_FAMILIES = {
         id: 'medusa',
         name: 'Medusa, la Doncella',
         forms: ['b1', 'b2', 'medusa_cabeza']
+    },
+    esteno: {
+        id: 'esteno',
+        name: 'Esteno, la Fuerte',
+        forms: ['b3', 'esteno_protectora', 'esteno_vengadora']
+    },
+    euriale: {
+        id: 'euriale',
+        name: 'Euriale, la Errante',
+        forms: ['b4', 'euriale_advirtio', 'euriale_lloro']
     }
 };
 
@@ -709,6 +719,70 @@ const CARD_MISSIONS = {
         type: 'wins', count: 5, previousCardId: 'b2',
         familyId: 'medusa', formIndex: 2,
         description: 'Gana 5 combates con Medusa, la Gorgona en el tablero.'
+    },
+
+    // Familia esteno
+    esteno_protectora: {
+        type: 'games_with', count: 10, previousCardId: 'b3',
+        familyId: 'esteno', formIndex: 1,
+        description: 'Juega a Esteno, la Fuerte en 10 partidas distintas.'
+    },
+    esteno_protectora_2: {
+        type: 'wins', count: 5, previousCardId: 'b3',
+        familyId: 'esteno', formIndex: 1,
+        description: 'Gana 5 combates con Esteno, la Fuerte en el tablero.'
+    },
+    esteno_vengadora: {
+        type: 'games_with', count: 15, previousCardId: 'b3',
+        familyId: 'esteno', formIndex: 2,
+        description: 'Juega a Esteno, la Fuerte en 15 partidas distintas.'
+    },
+    esteno_vengadora_2: {
+        type: 'kills_with', count: 10, previousCardId: 'b3',
+        familyId: 'esteno', formIndex: 2,
+        description: 'Destruye 10 Seres rivales con Esteno, la Fuerte en el tablero.'
+    },
+    esteno_vengadora_3: {
+        type: 'games_with', count: 10, previousCardId: 'esteno_protectora',
+        familyId: 'esteno', formIndex: 2,
+        description: 'Juega a Esteno, la Protectora de Medusa en 10 partidas distintas.'
+    },
+    esteno_vengadora_4: {
+        type: 'wins', count: 5, previousCardId: 'esteno_protectora',
+        familyId: 'esteno', formIndex: 2,
+        description: 'Gana 5 combates con Esteno, la Protectora de Medusa en el tablero.'
+    },
+
+    // Familia euriale
+    euriale_advirtio: {
+        type: 'games_with', count: 10, previousCardId: 'b4',
+        familyId: 'euriale', formIndex: 1,
+        description: 'Juega a Euriale, la Errante en 10 partidas distintas.'
+    },
+    euriale_advirtio_2: {
+        type: 'wins', count: 5, previousCardId: 'b4',
+        familyId: 'euriale', formIndex: 1,
+        description: 'Gana 5 combates con Euriale, la Errante en el tablero.'
+    },
+    euriale_lloro: {
+        type: 'games_with', count: 15, previousCardId: 'b4',
+        familyId: 'euriale', formIndex: 2,
+        description: 'Juega a Euriale, la Errante en 15 partidas distintas.'
+    },
+    euriale_lloro_2: {
+        type: 'wins', count: 10, previousCardId: 'b4',
+        familyId: 'euriale', formIndex: 2,
+        description: 'Gana 10 combates con Euriale, la Errante en el tablero.'
+    },
+    euriale_lloro_3: {
+        type: 'games_with', count: 10, previousCardId: 'euriale_advirtio',
+        familyId: 'euriale', formIndex: 2,
+        description: 'Juega a Euriale, la que Advirtio a Medusa en 10 partidas distintas.'
+    },
+    euriale_lloro_4: {
+        type: 'wins', count: 5, previousCardId: 'euriale_advirtio',
+        familyId: 'euriale', formIndex: 2,
+        description: 'Gana 5 combates con Euriale, la que Advirtio a Medusa en el tablero.'
     }
 };
 

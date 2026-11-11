@@ -7,6 +7,31 @@
 
 const PATCH_NOTES = [
     {
+        version: '1.10.5',
+        date: '2026-11-11',
+        title: 'Familias esteno y euriale',
+        highlights: [
+            '2 familias nuevas: esteno y euriale',
+            '4 cartas nuevas: Esteno Protectora, Esteno Vengadora, Euriale Advirtio, Euriale Lloro',
+            'Triggers variados: Embestida, Enfurecer, Al entrar, Al morir',
+            'Regla nueva: Enfurecer X requiere X < HP de la carta'
+        ],
+        changes: {
+            new: [
+                'Familia esteno: b3 (Tanque), esteno_protectora (Buffer), esteno_vengadora (Ejecutor).',
+                'Familia euriale: b4 (Debuffer), euriale_advirtio (Acelerador), euriale_lloro (Generador).',
+                'Carta: Esteno, la Protectora de Medusa (Ser, cost 4, 4/4, Embestida 2: Blindar 2 a todos los aliados).',
+                'Carta: Esteno, la Vengadora (Ser, cost 4, 3/3, Enfurecer 2: Dano 4 a 1 rival aleatorio).',
+                'Carta: Euriale, la que Advirtio a Medusa (Ser, cost 3, 1/1, Al entrar: Descuento 2 a tu siguiente Ser).',
+                'Carta: Euriale, la que Lloro a Medusa (Ser, cost 3, 2/2, Al morir: Gloria 4).'
+            ],
+            buffs: [],
+            nerfs: [],
+            fixes: [],
+            removed: []
+        }
+    },
+    {
         version: '1.10.4',
         date: '2026-11-10',
         title: 'Familias minoico, teseo y medusa',

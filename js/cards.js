@@ -819,6 +819,75 @@ const ALL_CARDS = [
         });
     },
     startTurn: null
+},
+{
+    id: 'esteno_protectora', name: 'Esteno, la Protectora de Medusa', kind: 'Ser', cost: 4, atk: 4, hp: 4,
+    icon: 'fa-shield-halved',
+    desc: 'Embestida 2: Blindar 2 a todos los aliados.',
+    lore: 'Cuando Medusa llegó al norte, huyendo de los hombres que la buscaban, Esteno la abrazó como a una hermana. "No temas", le dijo. "Mientras yo esté a tu lado, nadie te tocará". Y así fue: Esteno se plantó en la entrada de la cueva de las Gorgonas, y ningún hombre que intentó entrar volvió a salir. Su lealtad era más fuerte que su fuerza, y su amor de hermana, más duro que su piel de bronce.',
+    art: 'assets/cartas/esteno-protectora-de-medusa.webp',
+    substory: 'esteno',
+    effect: null,
+    startTurn: (self, player, opp) => {
+        if (self.atk < 2 || self.hp < 2) return;
+        if (!opp.activeBoard.some(c => !c.dying)) return;
+        // Embestida 2: paga 2 ATK + 2 HP, dispara Blindar 2 a todos los aliados.
+        self.atk -= 2;
+        self.hp -= 2;
+        queueFx({ t: 'clash', side: sideOf(player), uidA: self.uid });
+        if (self.hp <= 0) { self.hp = 0; self.dying = true; queueFx({ t: 'sacrifice', side: sideOf(player), uid: self.uid }); }
+        player.activeBoard.forEach(c => {
+            if (c.dying) return;
+            c.hp += 2;
+            queueFx({ t: 'buff', side: sideOf(player), uid: c.uid, text: '+2 HP', icon: 'fa-shield-halved' });
+        });
+    }
+},
+{
+    id: 'esteno_vengadora', name: 'Esteno, la Vengadora', kind: 'Ser', cost: 4, atk: 3, hp: 3,
+    icon: 'fa-skull',
+    desc: 'Enfurecer 2: Dano 4 a 1 rival aleatorio.',
+    lore: 'Cuando supo que Perseo había cortado la cabeza de Medusa, Esteno no lloró: las Gorgonas no lloran. Tomó su lanza y juró que encontraría al asesino de su hermana. Recorrió el mundo entero, de norte a sur, y donde pasaba, los hombres se convertían en piedra. Pero Perseo ya estaba en el Olimpo, protegido por los dioses, y Esteno sigue esperando la oportunidad de cobrarse la deuda.',
+    art: 'assets/cartas/esteno-vengadora.webp',
+    substory: 'esteno',
+    effect: null,
+    startTurn: null,
+    enfurecerThreshold: 2,
+    enfurecerEffect: (self, player) => {
+        let opp = player === gameState.p1 ? gameState.p2 : gameState.p1;
+        let alive = opp.activeBoard.filter(c => !c.dying && !c.stunned);
+        if (!alive.length) return;
+        let target = alive[Math.floor(Math.random() * alive.length)];
+        dealDamage(target, 4, sideOf(opp));
+        queueFx({ t: 'debuff', side: sideOf(opp), uid: target.uid, text: '-4 HP', icon: 'fa-skull', overlay: 'hit' });
+    }
+},
+{
+    id: 'euriale_advirtio', name: 'Euriale, la que Advirtió a Medusa', kind: 'Ser', cost: 3, atk: 1, hp: 1,
+    icon: 'fa-eye',
+    desc: 'Al entrar: Descuento 2 a tu siguiente Ser.',
+    lore: 'Cuando Euriale vio en el vuelo de los cuervos que un héroe con sandalias aladas cruzaba el mar, corrió a advertir a Medusa. "Perseo viene", le dijo. "Y no viene solo: los dioses lo protegen". Pero Medusa ya no podía escuchar: la maldición de Atenea le había nublado el juicio, y su orgullo era más fuerte que la advertencia de su hermana. Euriale lo intentó de nuevo, pero Medusa la apartó con desprecio, y cuando Perseo llegó, Euriale ya no estaba.',
+    art: 'assets/cartas/euriale-advirtio-a-medusa.webp',
+    substory: 'euriale',
+    effect: (p) => {
+        p.pendingSerDiscount = (p.pendingSerDiscount || 0) + 2;
+        queueFx({ t: 'discount', side: sideOf(p), text: '-2' });
+    },
+    startTurn: null
+},
+{
+    id: 'euriale_lloro', name: 'Euriale, la que Lloró a Medusa', kind: 'Ser', cost: 3, atk: 2, hp: 2,
+    icon: 'fa-water',
+    desc: 'Al morir: Gloria 4.',
+    lore: 'Cuando supo que Perseo había cortado la cabeza de Medusa, Euriale no buscó venganza: buscó el silencio. Se retiró a las montañas más altas, donde los cuervos no vuelan, y allí lloró durante siete días y siete noches. Sus lágrimas se convirtieron en los ríos que bajan de las montañas, y su dolor, en el viento que aúlla en las cumbres. Desde entonces, Euriale no vuelve a ver el futuro: solo ve el pasado, y el pasado está lleno de Medusa.',
+    art: 'assets/cartas/euriale-lloro-a-medusa.webp',
+    substory: 'euriale',
+    effect: null,
+    startTurn: null,
+    onDeath: (owner) => {
+        owner.score += 4;
+        queueFx({ t: 'gloria', side: sideOf(owner), text: '+4 GLORIA', icon: 'fa-water', num: 4 });
+    }
 }
         ];
 
