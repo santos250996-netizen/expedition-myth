@@ -950,6 +950,40 @@ const ALL_CARDS = [
         dealDamage(target, 4, sideOf(opp));
         queueFx({ t: 'debuff', side: sideOf(opp), uid: target.uid, text: '-4 HP', icon: 'fa-users', overlay: 'hit' });
     }
+},
+{
+    id: 'estatua_gorgona', name: 'La Estatua de la Gorgona', kind: 'Evento', cost: 1, atk: 0, hp: 0,
+    icon: 'fa-monument',
+    desc: 'Al entrar: Debilitar 1 a todos los rivales.',
+    lore: 'Cuando Medusa fue decapitada, su cuerpo se convirtio en piedra. Pero la piedra no murio: siguio esperando, siguio odiando. Los que tocan la estatua sienten el frio de la muerte, y su piel se vuelve marmol. Y la estatua, erguida en el centro de la cueva, sigue debilitando a los que se atreven a acercarse.',
+    art: 'assets/cartas/mirada-estatua-gorgona.webp',
+    substory: 'mirada',
+    effect: (p, opp) => {
+        opp.activeBoard.forEach(c => {
+            if (c.dying || c.stunned) return;
+            let d = bloqueoAbsorb(c, 1);
+            if (d > 0) {
+                c.atk = Math.max(0, c.atk - d);
+                queueFx({ t: 'debuff', side: sideOf(opp), uid: c.uid, text: '-' + d + ' ATK', icon: 'fa-monument' });
+            }
+        });
+    },
+    startTurn: null
+},
+{
+    id: 'grito_gorgona', name: 'El Grito de la Gorgona', kind: 'Evento', cost: 2, atk: 0, hp: 0,
+    icon: 'fa-bullhorn',
+    desc: 'Al entrar: Dano 2 a todos los rivales.',
+    lore: 'Cuando Medusa fue decapitada, su grito resonó en toda la cueva. Los que lo oyeron quedaron petrificados de terror, no por la mirada, sino por el sonido. El grito sigue en el aire, esperando a quien se atreva a escucharlo. Y cuando alguien lo oye, su cuerpo se desgarra desde dentro, y su alma se queda atrapada en el marmol para siempre.',
+    art: 'assets/cartas/mirada-grito-gorgona.webp',
+    substory: 'mirada',
+    effect: (p, opp) => {
+        opp.activeBoard.filter(c => !c.dying).slice().forEach(c => {
+            dealDamage(c, 2, sideOf(opp));
+            queueFx({ t: 'debuff', side: sideOf(opp), uid: c.uid, text: '-2 HP', icon: 'fa-bullhorn', overlay: 'hit' });
+        });
+    },
+    startTurn: null
 }
         ];
 

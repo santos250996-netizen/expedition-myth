@@ -7,6 +7,29 @@
 
 const PATCH_NOTES = [
     {
+        version: '1.10.7',
+        date: '2026-11-11',
+        title: 'Familia mirada (cierre evento Medusa)',
+        highlights: [
+            'Nueva familia: mirada (b10 -> estatua_gorgona -> grito_gorgona)',
+            '2 cartas nuevas: La Estatua de la Gorgona y El Grito de la Gorgona',
+            'Evento Medusa cerrado: todas sus cartas jugables estan en familia'
+        ],
+        changes: {
+            new: [
+                'Familia mirada: b10 (Control), estatua_gorgona (Debuffer), grito_gorgona (AoE).',
+                'Carta: La Estatua de la Gorgona (Evento, cost 1, Al entrar: Debilitar 1 a todos los rivales).',
+                'Carta: El Grito de la Gorgona (Evento, cost 2, Al entrar: Dano 2 a todos los rivales).',
+                'Mision estatua_gorgona: 2 misiones con b10 (10 partidas + 5 wins).',
+                'Mision grito_gorgona: 4 misiones (15 partidas + 10 wins con b10; 10 partidas + 5 wins con estatua_gorgona).'
+            ],
+            buffs: [],
+            nerfs: [],
+            fixes: [],
+            removed: []
+        }
+    },
+    {
         version: '1.10.6',
         date: '2026-11-11',
         title: 'Familias objetos, pegaso y crisaor',

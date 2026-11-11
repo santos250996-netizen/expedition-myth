@@ -283,6 +283,11 @@ const CARD_FAMILIES = {
         id: 'crisaor',
         name: 'Crisaor, el de la Espada de Oro',
         forms: ['b9', 'crisaor_cabeza', 'crisaor_gerion']
+    },
+    mirada: {
+        id: 'mirada',
+        name: 'La Mirada de Piedra',
+        forms: ['b10', 'estatua_gorgona', 'grito_gorgona']
     }
 };
 
@@ -891,6 +896,37 @@ const CARD_MISSIONS = {
         type: 'wins', count: 5, previousCardId: 'crisaor_cabeza',
         familyId: 'crisaor', formIndex: 2,
         description: 'Gana 5 combates con Crisaor, el que Recogio la Cabeza de Medusa en el tablero.'
+    },
+    // Familia mirada
+    estatua_gorgona: {
+        type: 'games_with', count: 10, previousCardId: 'b10',
+        familyId: 'mirada', formIndex: 1,
+        description: 'Juega a La Mirada de Piedra en 10 partidas distintas.'
+    },
+    estatua_gorgona_2: {
+        type: 'wins', count: 5, previousCardId: 'b10',
+        familyId: 'mirada', formIndex: 1,
+        description: 'Gana 5 combates con La Mirada de Piedra en el mazo.'
+    },
+    grito_gorgona: {
+        type: 'games_with', count: 15, previousCardId: 'b10',
+        familyId: 'mirada', formIndex: 2,
+        description: 'Juega a La Mirada de Piedra en 15 partidas distintas.'
+    },
+    grito_gorgona_2: {
+        type: 'wins', count: 10, previousCardId: 'b10',
+        familyId: 'mirada', formIndex: 2,
+        description: 'Gana 10 combates con La Mirada de Piedra en el mazo.'
+    },
+    grito_gorgona_3: {
+        type: 'games_with', count: 10, previousCardId: 'estatua_gorgona',
+        familyId: 'mirada', formIndex: 2,
+        description: 'Juega a La Estatua de la Gorgona en 10 partidas distintas.'
+    },
+    grito_gorgona_4: {
+        type: 'wins', count: 5, previousCardId: 'estatua_gorgona',
+        familyId: 'mirada', formIndex: 2,
+        description: 'Gana 5 combates con La Estatua de la Gorgona en el mazo.'
     }
 };
 
