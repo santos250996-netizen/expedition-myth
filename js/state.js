@@ -268,6 +268,21 @@ const CARD_FAMILIES = {
         id: 'euriale',
         name: 'Euriale, la Errante',
         forms: ['b4', 'euriale_advirtio', 'euriale_lloro']
+    },
+    objetos: {
+        id: 'objetos',
+        name: 'Los Objetos de Perseo',
+        forms: ['b5', 'b6', 'b7']
+    },
+    pegaso: {
+        id: 'pegaso',
+        name: 'Pegaso, el Nacido de la Sangre',
+        forms: ['b8', 'pegaso_belerofonte', 'pegaso_zeus']
+    },
+    crisaor: {
+        id: 'crisaor',
+        name: 'Crisaor, el de la Espada de Oro',
+        forms: ['b9', 'crisaor_cabeza', 'crisaor_gerion']
     }
 };
 
@@ -783,6 +798,99 @@ const CARD_MISSIONS = {
         type: 'wins', count: 5, previousCardId: 'euriale_advirtio',
         familyId: 'euriale', formIndex: 2,
         description: 'Gana 5 combates con Euriale, la que Advirtio a Medusa en el tablero.'
+    },
+    // Familia objetos
+    sandalias: {
+        type: 'games_with', count: 10, previousCardId: 'b5',
+        familyId: 'objetos', formIndex: 1,
+        description: 'Juega a El Escudo Espejo en 10 partidas distintas.'
+    },
+    sandalias_2: {
+        type: 'wins', count: 5, previousCardId: 'b5',
+        familyId: 'objetos', formIndex: 1,
+        description: 'Gana 5 combates con El Escudo Espejo en el mazo.'
+    },
+    casco: {
+        type: 'games_with', count: 15, previousCardId: 'b5',
+        familyId: 'objetos', formIndex: 2,
+        description: 'Juega a El Escudo Espejo en 15 partidas distintas.'
+    },
+    casco_2: {
+        type: 'wins', count: 10, previousCardId: 'b5',
+        familyId: 'objetos', formIndex: 2,
+        description: 'Gana 10 combates con El Escudo Espejo en el mazo.'
+    },
+    casco_3: {
+        type: 'games_with', count: 10, previousCardId: 'b6',
+        familyId: 'objetos', formIndex: 2,
+        description: 'Juega a Las Sandalias Aladas en 10 partidas distintas.'
+    },
+    casco_4: {
+        type: 'wins', count: 5, previousCardId: 'b6',
+        familyId: 'objetos', formIndex: 2,
+        description: 'Gana 5 combates con Las Sandalias Aladas en el mazo.'
+    },
+    // Familia pegaso
+    pegaso_belerofonte: {
+        type: 'games_with', count: 10, previousCardId: 'b8',
+        familyId: 'pegaso', formIndex: 1,
+        description: 'Juega a Pegaso, el Nacido de la Sangre en 10 partidas distintas.'
+    },
+    pegaso_belerofonte_2: {
+        type: 'wins', count: 5, previousCardId: 'b8',
+        familyId: 'pegaso', formIndex: 1,
+        description: 'Gana 5 combates con Pegaso, el Nacido de la Sangre en el tablero.'
+    },
+    pegaso_zeus: {
+        type: 'games_with', count: 15, previousCardId: 'b8',
+        familyId: 'pegaso', formIndex: 2,
+        description: 'Juega a Pegaso, el Nacido de la Sangre en 15 partidas distintas.'
+    },
+    pegaso_zeus_2: {
+        type: 'wins', count: 10, previousCardId: 'b8',
+        familyId: 'pegaso', formIndex: 2,
+        description: 'Gana 10 combates con Pegaso, el Nacido de la Sangre en el tablero.'
+    },
+    pegaso_zeus_3: {
+        type: 'games_with', count: 10, previousCardId: 'pegaso_belerofonte',
+        familyId: 'pegaso', formIndex: 2,
+        description: 'Juega a Pegaso, el que Derribo a Belerofonte en 10 partidas distintas.'
+    },
+    pegaso_zeus_4: {
+        type: 'wins', count: 5, previousCardId: 'pegaso_belerofonte',
+        familyId: 'pegaso', formIndex: 2,
+        description: 'Gana 5 combates con Pegaso, el que Derribo a Belerofonte en el tablero.'
+    },
+    // Familia crisaor
+    crisaor_cabeza: {
+        type: 'games_with', count: 10, previousCardId: 'b9',
+        familyId: 'crisaor', formIndex: 1,
+        description: 'Juega a Crisaor, el de la Espada de Oro en 10 partidas distintas.'
+    },
+    crisaor_cabeza_2: {
+        type: 'wins', count: 5, previousCardId: 'b9',
+        familyId: 'crisaor', formIndex: 1,
+        description: 'Gana 5 combates con Crisaor, el de la Espada de Oro en el tablero.'
+    },
+    crisaor_gerion: {
+        type: 'games_with', count: 15, previousCardId: 'b9',
+        familyId: 'crisaor', formIndex: 2,
+        description: 'Juega a Crisaor, el de la Espada de Oro en 15 partidas distintas.'
+    },
+    crisaor_gerion_2: {
+        type: 'wins', count: 10, previousCardId: 'b9',
+        familyId: 'crisaor', formIndex: 2,
+        description: 'Gana 10 combates con Crisaor, el de la Espada de Oro en el tablero.'
+    },
+    crisaor_gerion_3: {
+        type: 'games_with', count: 10, previousCardId: 'crisaor_cabeza',
+        familyId: 'crisaor', formIndex: 2,
+        description: 'Juega a Crisaor, el que Recogio la Cabeza de Medusa en 10 partidas distintas.'
+    },
+    crisaor_gerion_4: {
+        type: 'wins', count: 5, previousCardId: 'crisaor_cabeza',
+        familyId: 'crisaor', formIndex: 2,
+        description: 'Gana 5 combates con Crisaor, el que Recogio la Cabeza de Medusa en el tablero.'
     }
 };
 

@@ -888,6 +888,68 @@ const ALL_CARDS = [
         owner.score += 4;
         queueFx({ t: 'gloria', side: sideOf(owner), text: '+4 GLORIA', icon: 'fa-water', num: 4 });
     }
+},
+{
+    id: 'pegaso_belerofonte', name: 'Pegaso, el que Derribo a Belerofonte', kind: 'Ser', cost: 4, atk: 3, hp: 3,
+    icon: 'fa-horse',
+    desc: 'Al entrar: Dano 3 a 1 rival aleatorio.',
+    lore: 'Pegaso llevo a Belerofonte a la victoria contra la Quimera y las Amazonas, pero el heroe se volvio arrogante. Cuando Belerofonte quiso volar al Olimpo para sentarse entre los dioses, Pegaso se nego. El caballo alado derribo a su jinete en pleno vuelo, y Belerofonte cayo a la tierra, condenado a vagar ciego y solo. Pegaso volvio al Olimpo, fiel a Zeus, y desde entonces ningun mortal volvio a montarlo.',
+    art: 'assets/cartas/pegaso-belerofonte.webp',
+    substory: 'pegaso',
+    effect: (p, opp) => {
+        let alive = opp.activeBoard.filter(c => !c.dying && !c.stunned);
+        if (!alive.length) return;
+        let target = alive[Math.floor(Math.random() * alive.length)];
+        dealDamage(target, 3, sideOf(opp));
+        queueFx({ t: 'debuff', side: sideOf(opp), uid: target.uid, text: '-3 HP', icon: 'fa-horse', overlay: 'hit' });
+    },
+    startTurn: null
+},
+{
+    id: 'pegaso_zeus', name: 'Pegaso, el Corcel de Zeus', kind: 'Ser', cost: 5, atk: 3, hp: 3,
+    icon: 'fa-bolt',
+    desc: 'Al entrar: Fortalecer 2 a todos los aliados.',
+    lore: 'Tras la caida de Belerofonte, Pegaso volvio al Olimpo y se convirtio en el corcel de Zeus. Desde entonces, lleva el rayo del dios a traves del cielo, y su vuelo anuncia la tormenta. Los mortales que ven su silueta entre las nubes saben que Zeus los observa, y que su furia puede caer en cualquier momento. Pero Pegaso no es un arma: es un mensajero, y su vuelo trae tanto la bendicion como el castigo.',
+    art: 'assets/cartas/pegaso-corcel-de-zeus.webp',
+    substory: 'pegaso',
+    effect: (p) => {
+        p.activeBoard.forEach(c => {
+            if (c.dying) return;
+            c.atk += 2;
+            queueFx({ t: 'buff', side: sideOf(p), uid: c.uid, text: '+2 ATK', icon: 'fa-bolt' });
+        });
+    },
+    startTurn: null
+},
+{
+    id: 'crisaor_cabeza', name: 'Crisaor, el que Recogio la Cabeza de Medusa', kind: 'Ser', cost: 4, atk: 2, hp: 3,
+    icon: 'fa-sword',
+    desc: 'Al entrar: Exilio 1 a 1 rival aleatorio.',
+    lore: 'Cuando Perseo corto la cabeza de Medusa, nadie se atrevio a tocarla. Las serpientes seguian moviendose, y la mirada de piedra aun brillaba en los ojos vacios. Pero Crisaor, nacido de la misma sangre que Medusa, se acerco sin miedo. Recogio la cabeza con sus propias manos y la entrego a Atenea, que la clavo en su egida, y desde entonces su espada de oro protege el trofeo de los que osan robarlo.',
+    art: 'assets/cartas/crisaor-cabeza-de-medusa.webp',
+    substory: 'crisaor',
+    effect: (p, opp) => {
+        exilio(p, opp, 1);
+    },
+    startTurn: null
+},
+{
+    id: 'crisaor_gerion', name: 'Crisaor, el Padre de Gerion', kind: 'Ser', cost: 4, atk: 2, hp: 2,
+    icon: 'fa-users',
+    desc: 'Al morir: Dano 4 a 1 rival aleatorio.',
+    lore: 'Crisaor se caso con Calirroe, hija de Oceano, y de esa union nacio Gerion, el gigante de tres cuerpos. Gerion crecio en la isla de Eritia, al oeste del mundo, y se convirtio en un pastor de rebanos rojos. Pero su sangre era la de Medusa, y su destino estaba escrito: Heracles lo mataria para robarle sus rebanos. Crisaor lo sabia, pero no hizo nada por evitarlo, porque sabia que el destino de los hijos de Medusa era morir a manos de los heroes.',
+    art: 'assets/cartas/crisaor-padre-de-gerion.webp',
+    substory: 'crisaor',
+    effect: null,
+    startTurn: null,
+    onDeath: (owner) => {
+        let opp = owner === gameState.p1 ? gameState.p2 : gameState.p1;
+        let alive = opp.activeBoard.filter(c => !c.dying && !c.stunned);
+        if (!alive.length) return;
+        let target = alive[Math.floor(Math.random() * alive.length)];
+        dealDamage(target, 4, sideOf(opp));
+        queueFx({ t: 'debuff', side: sideOf(opp), uid: target.uid, text: '-4 HP', icon: 'fa-users', overlay: 'hit' });
+    }
 }
         ];
 

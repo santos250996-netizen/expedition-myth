@@ -7,6 +7,30 @@
 
 const PATCH_NOTES = [
     {
+        version: '1.10.6',
+        date: '2026-11-11',
+        title: 'Familias objetos, pegaso y crisaor',
+        highlights: [
+            '3 familias nuevas: objetos, pegaso, crisaor',
+            '4 cartas nuevas: Pegaso Belerofonte, Pegaso Zeus, Crisaor Cabeza, Crisaor Gerion'
+        ],
+        changes: {
+            new: [
+                'Familia objetos: b5 (Soporte), b6 (Buffer), b7 (Soporte).',
+                'Familia pegaso: b8 (Buffer/Generador), pegaso_belerofonte (Agresor), pegaso_zeus (Soporte).',
+                'Familia crisaor: b9 (Buffer), crisaor_cabeza (Control), crisaor_gerion (Invocador).',
+                'Carta: Pegaso, el que Derribo a Belerofonte (Ser, cost 4, 3/3, Al entrar: Dano 3 a 1 rival aleatorio).',
+                'Carta: Pegaso, el Corcel de Zeus (Ser, cost 5, 3/3, Al entrar: Fortalecer 2 a todos los aliados).',
+                'Carta: Crisaor, el que Recogio la Cabeza de Medusa (Ser, cost 4, 2/3, Al entrar: Exilio 1 a 1 rival aleatorio).',
+                'Carta: Crisaor, el Padre de Gerion (Ser, cost 4, 2/2, Al morir: Dano 4 a 1 rival aleatorio).'
+            ],
+            buffs: [],
+            nerfs: [],
+            fixes: [],
+            removed: []
+        }
+    },
+    {
         version: '1.10.5',
         date: '2026-11-11',
         title: 'Familias esteno y euriale',
