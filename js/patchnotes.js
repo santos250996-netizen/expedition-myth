@@ -7,6 +7,28 @@
 
 const PATCH_NOTES = [
     {
+        version: '1.10.8',
+        date: '2026-11-11',
+        title: 'Nombres cortos y correccion de misiones',
+        highlights: [
+            '38 cartas renombradas con nombres mas cortos',
+            'Mision jabali_capturado_2 corregida (ya no depende de e3 Heracles)',
+            '4 descripciones de mision actualizadas con los nombres nuevos'
+        ],
+        changes: {
+            new: [],
+            buffs: [],
+            nerfs: [],
+            fixes: [
+                'Nombres de cartas acortados (ej. "Esteno, la Protectora de Medusa" -> "Esteno, la Protectora").',
+                'Se eliminan articulos iniciales de los nombres ("El", "La", "Los", "Las").',
+                'Mision jabali_capturado_2: reemplazada por wins 5 con c7 (antes pedia jugar e3 Heracles, que no es jugable).',
+                '4 descripciones de mision actualizadas con los nombres nuevos (esteno_protectora_3, pegaso_zeus_3, crisaor_gerion_3, grito_gorgona_3).'
+            ],
+            removed: []
+        }
+    },
+    {
         version: '1.10.7',
         date: '2026-11-11',
         title: 'Familia mirada (cierre evento Medusa)',

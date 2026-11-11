@@ -523,10 +523,9 @@ const CARD_MISSIONS = {
         description: 'Juega a Jabalí de Erimanto en 10 partidas distintas.'
     },
     jabali_capturado_2: {
-        type: 'games_with_both', count: 5, previousCardId: 'c7',
-        secondCardId: 'e3',
+        type: 'wins', count: 5, previousCardId: 'c7',
         familyId: 'jabali', formIndex: 1,
-        description: 'Juega a Jabalí de Erimanto y Heracles, el Héroe en la misma partida 5 veces.'
+        description: 'Gana 5 combates con Jabali de Erimanto en el tablero.'
     },
     colmillos_jabali: {
         type: 'games_with', count: 15, previousCardId: 'c7',
@@ -765,7 +764,7 @@ const CARD_MISSIONS = {
     esteno_vengadora_3: {
         type: 'games_with', count: 10, previousCardId: 'esteno_protectora',
         familyId: 'esteno', formIndex: 2,
-        description: 'Juega a Esteno, la Protectora de Medusa en 10 partidas distintas.'
+        description: 'Juega a Esteno, la Protectora en 10 partidas distintas.'
     },
     esteno_vengadora_4: {
         type: 'wins', count: 5, previousCardId: 'esteno_protectora',
@@ -859,7 +858,7 @@ const CARD_MISSIONS = {
     pegaso_zeus_3: {
         type: 'games_with', count: 10, previousCardId: 'pegaso_belerofonte',
         familyId: 'pegaso', formIndex: 2,
-        description: 'Juega a Pegaso, el que Derribo a Belerofonte en 10 partidas distintas.'
+        description: 'Juega a Pegaso, el Derribador en 10 partidas distintas.'
     },
     pegaso_zeus_4: {
         type: 'wins', count: 5, previousCardId: 'pegaso_belerofonte',
@@ -890,7 +889,7 @@ const CARD_MISSIONS = {
     crisaor_gerion_3: {
         type: 'games_with', count: 10, previousCardId: 'crisaor_cabeza',
         familyId: 'crisaor', formIndex: 2,
-        description: 'Juega a Crisaor, el que Recogio la Cabeza de Medusa en 10 partidas distintas.'
+        description: 'Juega a Crisaor, el Portador en 10 partidas distintas.'
     },
     crisaor_gerion_4: {
         type: 'wins', count: 5, previousCardId: 'crisaor_cabeza',
@@ -921,7 +920,7 @@ const CARD_MISSIONS = {
     grito_gorgona_3: {
         type: 'games_with', count: 10, previousCardId: 'estatua_gorgona',
         familyId: 'mirada', formIndex: 2,
-        description: 'Juega a La Estatua de la Gorgona en 10 partidas distintas.'
+        description: 'Juega a La Estatua en 10 partidas distintas.'
     },
     grito_gorgona_4: {
         type: 'wins', count: 5, previousCardId: 'estatua_gorgona',

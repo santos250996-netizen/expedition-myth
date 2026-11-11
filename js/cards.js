@@ -96,7 +96,7 @@ const ALL_CARDS = [
                 effect: (p) => { p.pendingEventDiscount = (p.pendingEventDiscount || 0) + 1; queueFx({ t: 'discount', side: sideOf(p), text: '-1' }); }, startTurn: null 
             },
             { 
-                id: 'c9', name: 'Pacto de Sangre en el Altar de Piedra', kind: 'Evento', cost: 5, atk: 0, hp: 0,
+                id: 'c9', name: 'Pacto de Sangre', kind: 'Evento', cost: 5, atk: 0, hp: 0,
                 icon: 'fa-droplet', 
                 desc: 'Sacrificio 4: Gloria 4. Destruir 1 rival con menos HP.', 
                 lore: 'Desesperados por detener las malas cosechas y los ataques, los mortales construyen altares toscos de roca y entregan la vida de sus cazadores en un ritual oscuro para apaciguar a las fuerzas que los acechan. Es un pacto con Hades, el dios del inframundo, que acepta la sangre como moneda de cambio.',
@@ -115,7 +115,7 @@ const ALL_CARDS = [
                 }
             },
             {
-                id: 'c10', name: 'Ecos del Bosque de Dodona', kind: 'Evento', cost: 1, atk: 0, hp: 0,
+                id: 'c10', name: 'Ecos de Dodona', kind: 'Evento', cost: 1, atk: 0, hp: 0,
                 icon: 'fa-tree',
                 desc: 'Al entrar: Debilitar 1 a todos los Seres.',
                 lore: 'Los robles milenarios de los bosques sagrados guardan secretos antiguos. Cuando los intrusos se adentran sin respeto, las hojas y el viento susurran nombres prohibidos que paralizan la voluntad y confunden las mentes de los enemigos. Es el santuario oracular más antiguo de Zeus, donde los robles susurran sus profecías y su poder debilita a los incrédulos.',
@@ -166,7 +166,7 @@ const ALL_CARDS = [
     startTurn: null
 },
 {
-    id: 'a4', name: 'El Toro Blanco de Creta', kind: 'Ser', cost: 4, atk: 1, hp: 5,
+    id: 'a4', name: 'Toro Blanco de Creta', kind: 'Ser', cost: 4, atk: 1, hp: 5,
     icon: 'fa-cow',
     desc: 'Al entrar: Bloqueo 2.',
     lore: 'Poseidón hizo emerger del mar un toro blanco como la espuma, un regalo sagrado para Minos, rey de Creta. El animal era de una belleza sobrecogedora, y Minos, incapaz de alzar la mano contra él, lo conservó en sus dominios. Pero la afrenta no quedó impune: Poseidón encendió en el corazón de Pasífae una pasión prohibida por el toro.',
@@ -192,7 +192,7 @@ const ALL_CARDS = [
     startTurn: null
 },
 {
-    id: 'a6', name: 'Pasífae, la Reina de Creta', kind: 'Ser', cost: 2, atk: 0, hp: 2,
+    id: 'a6', name: 'Pasifae, la Reina', kind: 'Ser', cost: 2, atk: 0, hp: 2,
     icon: 'fa-crown',
     desc: 'Al entrar: Blindar 1 a todos tus Asterion (tablero + mazo).',
     lore: 'Pasífae, esposa de Minos, caminaba por los jardines de Cnosos con la mirada perdida, ajena al hechizo que Poseidón había tejido sobre ella. Una pasión prohibida por el toro blanco encendió su corazón, y de esa unión contra natura nació Asterión. Aterrorizada por lo que había engendrado, la reina se retiró a las sombras del palacio, pero su amor de madre aún protege a su hijo, dondequiera que esté.',
@@ -233,7 +233,7 @@ const ALL_CARDS = [
     startTurn: null
 },
 {
-    id: 'a8', name: 'Vaca de Madera Hueca', kind: 'Token', cost: 0, atk: 0, hp: 1,
+    id: 'a8', name: 'Vaca de Madera', kind: 'Token', cost: 0, atk: 0, hp: 1,
     icon: 'fa-horse',
     desc: 'Al morir: Invocar 1 Asterion, el Minotauro.',
     lore: 'Una vaca de madera hueca, construida por Dédalo para que Pasífae pudiera consumar su pasión prohibida por el Toro Blanco. En su interior, la reina se ocultó para engendrar a Asterión. La vaca es el símbolo del engaño y la tragedia que envolvió a la casa de Minos.',
@@ -247,7 +247,7 @@ const ALL_CARDS = [
     }
 },
 {
-    id: 'a9', name: 'El Nacimiento del Minotauro', kind: 'Evento', cost: 3, atk: 0, hp: 0,
+    id: 'a9', name: 'Nacimiento del Minotauro', kind: 'Evento', cost: 3, atk: 0, hp: 0,
     icon: 'fa-egg',
     desc: 'Al entrar: Invocar 1 Asterion, el Minotauro.',
     lore: 'En la oscuridad de la noche, Pasífae dio a luz a una criatura de cuerpo humano y cabeza de toro. Los gritos de la reina resonaron en los pasillos del palacio, y los dioses guardaron silencio. Asterión había nacido, y con él, la vergüenza y el castigo divino se instalaron en Creta.',
@@ -260,7 +260,7 @@ const ALL_CARDS = [
     startTurn: null
 },
 {
-    id: 'a10', name: 'El Laberinto de Creta', kind: 'Evento', cost: 4, atk: 0, hp: 0,
+    id: 'a10', name: 'Laberinto de Creta', kind: 'Evento', cost: 4, atk: 0, hp: 0,
     icon: 'fa-dungeon',
     desc: 'Al entrar: Exilio 2 a 1 rival aleatorio.',
     lore: 'En las profundidades del palacio de Cnosos, bajo los cimientos de piedra, se extiende una red de pasillos que no llevan a ninguna parte. Sus muros son fríos, sus antorchas no dan calor, y el aire huele a polvo y a miedo. Quien entra en el Laberinto de Creta no encuentra la salida: encuentra el silencio, y luego los pasos de algo que se arrastra en la oscuridad.',
@@ -270,7 +270,7 @@ const ALL_CARDS = [
     startTurn: null
 },
 {
-    id: 'a11', name: 'La Muerte del Minotauro', kind: 'Evento', cost: 2, atk: 0, hp: 0,
+    id: 'a11', name: 'Muerte del Minotauro', kind: 'Evento', cost: 2, atk: 0, hp: 0,
     icon: 'fa-skull',
     desc: 'Al entrar: Daño 4 al rival con mas ATK.',
     lore: 'En el centro del Laberinto, Teseo se enfrentó a Asterión. La bestia rugió y cargó contra él, pero el héroe ateniense esquivó sus embestidas y, con un golpe certero, puso fin a la vida del Minotauro. La sangre de Asterión empapó la piedra del laberinto, y el silencio se instaló en Creta.',
@@ -355,7 +355,7 @@ const ALL_CARDS = [
     startTurn: null
 },
 {
-    id: 'b5', name: 'El Escudo Espejo', kind: 'Evento', cost: 2, atk: 0, hp: 0,
+    id: 'b5', name: 'Escudo Espejo', kind: 'Evento', cost: 2, atk: 0, hp: 0,
     icon: 'fa-shield-halved',
     desc: 'Al entrar: Reflejo 1 a todos los aliados.',
     lore: 'Atenea entregó a Perseo un escudo pulido como un espejo. "No la mires a los ojos", le dijo. "Mírala en el reflejo". El héroe avanzó por la cueva con el escudo en alto, y las serpientes de Medusa se reflejaron en el bronce antes de que pudieran alcanzarlo.',
@@ -372,7 +372,7 @@ const ALL_CARDS = [
     startTurn: null
 },
 {
-    id: 'b6', name: 'Las Sandalias Aladas', kind: 'Evento', cost: 2, atk: 0, hp: 0,
+    id: 'b6', name: 'Sandalias Aladas', kind: 'Evento', cost: 2, atk: 0, hp: 0,
     icon: 'fa-shoe-prints',
     desc: 'Al entrar: Fortalecer 2 al aliado con mas ATK.',
     lore: 'Hermes, el mensajero de los dioses, prestó a Perseo sus sandalias aladas. Con ellas, el héroe podía volar sobre el mar y escapar de cualquier enemigo. Pero las sandalias no protegían de la mirada de la Gorgona: solo de sus garras.',
@@ -388,7 +388,7 @@ const ALL_CARDS = [
     startTurn: null
 },
 {
-    id: 'b7', name: 'El Casco de Invisibilidad', kind: 'Evento', cost: 2, atk: 0, hp: 0,
+    id: 'b7', name: 'Casco de Invisibilidad', kind: 'Evento', cost: 2, atk: 0, hp: 0,
     icon: 'fa-ghost',
     desc: 'Al entrar: Inmune 1 a todos los aliados.',
     lore: 'Hades, el dios del inframundo, prestó a Perseo su casco de invisibilidad. Con él, el héroe podía caminar entre los monstruos sin ser visto. Pero el casco no lo hacía invisible a los dioses: solo a los ojos de los mortales.',
@@ -429,7 +429,7 @@ const ALL_CARDS = [
     startTurn: null
 },
 {
-    id: 'b10', name: 'La Mirada de Piedra', kind: 'Evento', cost: 4, atk: 0, hp: 0,
+    id: 'b10', name: 'Mirada de Piedra', kind: 'Evento', cost: 4, atk: 0, hp: 0,
     icon: 'fa-eye-slash',
     desc: 'Al entrar x2: Exilio 2 a 1 rival aleatorio.',
     lore: 'Quien mire a los ojos de la Gorgona se convierte en piedra. No hay escudo que valga, no hay dios que proteja. La mirada de Medusa es la mirada de Atenea: fría, justa, implacable. Y la piedra que deja no es un castigo: es una advertencia.',
@@ -450,7 +450,7 @@ const ALL_CARDS = [
     effect: null, startTurn: null, bloqueo: 4
 },
 {
-    id: 'e2', name: 'Equidna, la Madre de Monstruos', kind: 'Ser', cost: 7, atk: 0, hp: 4,
+    id: 'e2', name: 'Equidna', kind: 'Ser', cost: 7, atk: 0, hp: 4,
     icon: 'fa-snake',
     desc: 'Inicio de turno (si es la ultima carta de tu columna): Invocar 1 Vastago aleatorio.',
     lore: 'En una cueva de la Argólide, entre rocas húmedas y sombras, vive Equidna: mitad mujer, mitad serpiente. Su cuerpo se arrastra por la piedra con un susurro húmedo, y sus ojos brillan en la oscuridad como ascuas. Su voz hiela la sangre de quien la escucha. No lucha, no caza, no huye: pare. Y cada cría que sale de su vientre es un nuevo terror para Grecia.',
@@ -463,7 +463,7 @@ const ALL_CARDS = [
     }
 },
 {
-    id: 'e3', name: 'Heracles, el Héroe', kind: 'Ser', cost: 8, atk: 3, hp: 5,
+    id: 'e3', name: 'Heracles', kind: 'Ser', cost: 8, atk: 3, hp: 5,
     icon: 'fa-user-shield',
     desc: 'Al entrar: Destruir 1 rival con coste >= 5.',
     lore: 'Heracles es un hombre de hombros anchos y músculos tensos como cuerdas de arco. Su piel curtida por el sol y el polvo de los caminos, y su mirada lleva el peso de las doce pruebas que Euristeo le impuso. Hijo de Zeus y de una mortal, cargó desde niño con la envidia de Hera, que lo persiguió incluso antes de nacer. No lucha por gloria: lucha por redención. Y cada monstruo que cae bajo su maza es un paso más hacia el Olimpo.',
@@ -496,7 +496,7 @@ const ALL_CARDS = [
     effect: null, startTurn: null
 },
 {
-    id: 'talos', name: 'El Talos', kind: 'Ser', cost: 8, atk: 5, hp: 7,
+    id: 'talos', name: 'Talos', kind: 'Ser', cost: 8, atk: 5, hp: 7,
     icon: 'fa-robot',
     desc: 'Al entrar: Daño 2 a todos los rivales.',
     lore: 'En las costas de Creta, un gigante de bronce patrulla la isla. Su cuerpo es metal pulido, sus ojos son ascuas, y su piel no conoce el dolor. Tres veces al día recorre las playas, y a quien se acerca a la orilla le lanza rocas del tamaño de un hombre. No es un dios ni un monstruo: es una máquina, la obra maestra de Dédalo. Y como toda obra maestra, tiene un punto débil: un clavo en el tobillo que guarda su vida.',
@@ -564,7 +564,7 @@ const ALL_CARDS = [
     startTurn: null
 },
 {
-    id: 'altar_zeus', name: 'El Altar de Zeus', kind: 'Evento', cost: 2, atk: 0, hp: 0,
+    id: 'altar_zeus', name: 'Altar de Zeus', kind: 'Evento', cost: 2, atk: 0, hp: 0,
     icon: 'fa-monument',
     desc: 'Al entrar: Fortalecer 2 a todos los aliados.',
     lore: 'La plegaria no cayo en el vacio. Sobre la colina sagrada, donde los pastores habian alzado sus manos al cielo, un rayo partio el aire y encendio un fuego que no se apagaba. Los mortales comprendieron que Zeus los habia escuchado, y levantaron un altar de piedra negra en su honor. Desde entonces, cada tribu que se acercaba al altar recibia una chispa de la voluntad del dios: los guerreros sentian fuerza en los brazos, los ancianos veian el futuro en el humo, y los ninos crecian sin miedo a la noche.',
@@ -580,7 +580,7 @@ const ALL_CARDS = [
     startTurn: null
 },
 {
-    id: 'tocado_rayo', name: 'El Tocado por el Rayo', kind: 'Ser', cost: 5, atk: 1, hp: 1,
+    id: 'tocado_rayo', name: 'Tocado por el Rayo', kind: 'Ser', cost: 5, atk: 1, hp: 1,
     icon: 'fa-bolt',
     desc: 'Al entrar: Destruir 1 rival con coste >= 4.',
     lore: 'Zeus no solo escucho: eligio. Entre los mortales que se arrodillaban ante el altar, uno fue tocado por el rayo. Su carne se volvio bronce, sus ojos se encendieron con la luz del Olimpo, y su voz sono como un trueno. Los demas mortales lo llamaron "el Tocado", y el camino entre ellos no como un rey, sino como un heraldo de la voluntad de Zeus. Cuando el Tocado alzaba su lanza, los enemigos de la Helade temblaban, porque sabian que no luchaban contra un hombre, sino contra el mismisimo padre de los dioses.',
@@ -596,7 +596,7 @@ const ALL_CARDS = [
     startTurn: null
 },
 {
-    id: 'sombra_niebla', name: 'La Sombra en la Niebla', kind: 'Ser', cost: 3, atk: 2, hp: 2,
+    id: 'sombra_niebla', name: 'La Sombra', kind: 'Ser', cost: 3, atk: 2, hp: 2,
     icon: 'fa-ghost',
     desc: 'Inicio de turno (si hay un Ser exiliado): Exilio 1 a 1 rival aleatorio.',
     lore: 'La niebla no era solo niebla. Los mortales que se adentraban en ella empezaron a ver formas: primero sombras, luego siluetas, luego ojos que los miraban desde la oscuridad. La Sombra no es un hombre ni una bestia: es la niebla misma tomando forma, un reflejo de los miedos de quien la mira. Los que se cruzan con ella sienten que el mundo se estrecha, que el aire se vuelve pesado, que sus propios pensamientos se vuelven contra ellos. La Sombra no ataca: te envuelve. Y cuando te envuelve, ya no sabes si estas vivo o si siempre has sido parte de la niebla.',
@@ -610,7 +610,7 @@ const ALL_CARDS = [
     }
 },
 {
-    id: 'espectro_niebla', name: 'El Espectro de la Niebla', kind: 'Ser', cost: 5, atk: 1, hp: 1,
+    id: 'espectro_niebla', name: 'El Espectro', kind: 'Ser', cost: 5, atk: 1, hp: 1,
     icon: 'fa-ghost',
     desc: 'Al morir: Destruir 1 rival con el ATK mas alto.',
     lore: 'Los que se pierden en la niebla no mueren: se convierten en ella. El Espectro es el recuerdo de un mortal que nunca volvio, condenado a vagar por la oscuridad que lo reclamo. No tiene rostro, no tiene voz, solo una mano fria que se posa sobre el hombro de los vivos. Cuando el Espectro te toca, la niebla te reclama, y tu nombre se borra de la memoria de los hombres. Los ancianos dicen que hay tantos espectros como mortales se han perdido en la niebla desde el principio de los tiempos, y que cada uno busca lo que perdio: un nombre, un rostro, una vida que ya no recuerda.',
@@ -628,7 +628,7 @@ const ALL_CARDS = [
     }
 },
 {
-    id: 'canto_fuente', name: 'El Canto de la Fuente', kind: 'Evento', cost: 2, atk: 0, hp: 0,
+    id: 'canto_fuente', name: 'Canto de la Fuente', kind: 'Evento', cost: 2, atk: 0, hp: 0,
     icon: 'fa-music',
     desc: 'Al entrar: Exilio 1 a 1 rival aleatorio. Gloria 4.',
     lore: 'Cuando la luna se refleja en el agua estancada, las ninfas corrompidas alzan su canto. No es un canto de mujer, ni de pájaro, ni de viento: es un sonido que no existe en la naturaleza, un lamento que se cuela en los oídos y borra todos los pensamientos. Los mortales que lo escuchan olvidan por qué caminaban, hacia dónde iban, quiénes eran. Se quedan quietos junto a la fuente, mirando el agua negra, hasta que el hambre o la sed los reclaman. Y entonces la ninfa los envuelve con sus brazos fríos y se los lleva al fondo, donde el agua no tiene superficie.',
@@ -642,7 +642,7 @@ const ALL_CARDS = [
     startTurn: null
 },
 {
-    id: 'ninfa_ahogada', name: 'La Ninfa Ahogada', kind: 'Ser', cost: 5, atk: 3, hp: 3,
+    id: 'ninfa_ahogada', name: 'Ninfa Ahogada', kind: 'Ser', cost: 5, atk: 3, hp: 3,
     icon: 'fa-water',
     desc: 'Al morir: Daño 4 a 1 rival aleatorio.',
     lore: 'La ninfa que se ahogó en su propia fuente no descansa. Se arrastra por el fondo del agua negra, con el cabello cubierto de limo y los ojos blancos como la luna. Cuando un mortal se acerca a beber, ella alarga la mano desde el fondo y lo arrastra al abismo. No lo mata: lo guarda. Los que se ahogan en la fuente no mueren, se convierten en parte de ella, y sus rostros se ven en el agua negra como sombras que gritan sin voz. La Ninfa Ahogada no busca venganza: busca compañía. Y cada mortal que se lleva es un nuevo rostro en el fondo de la fuente.',
@@ -660,7 +660,7 @@ const ALL_CARDS = [
     }
 },
 {
-    id: 'jabali_capturado', name: 'El Jabalí Capturado', kind: 'Ser', cost: 4, atk: 2, hp: 2,
+    id: 'jabali_capturado', name: 'Jabali Capturado', kind: 'Ser', cost: 4, atk: 2, hp: 2,
     icon: 'fa-hippo',
     desc: 'Al entrar: Debilitar 2 a todos los rivales.',
     lore: 'El Jabalí no entendía las cadenas. Había nacido en las cumbres del Erimanto, donde la nieve no se derrite y el viento aulla como un lobo. Había arrasado cultivos, había atravesado lanzas con su piel acorazada, había hecho huir a ejércitos enteros. Pero ahora estaba atado con cadenas de bronce, cargado sobre los hombros de un hombre que olía a gloria y a sudor. El Jabalí rugió, y los habitantes de Micenas huyeron aterrorizados al verlo vivo. No era la muerte lo que temían: era la bestia misma, la naturaleza salvaje que se negaba a ser domesticada. Heracles lo encerró en los establos reales, y durante la noche, los guardias temblaban al oír sus colmillos contra la piedra.',
@@ -679,7 +679,7 @@ const ALL_CARDS = [
     startTurn: null
 },
 {
-    id: 'colmillos_jabali', name: 'Los Colmillos del Jabalí', kind: 'Evento', cost: 2, atk: 0, hp: 0,
+    id: 'colmillos_jabali', name: 'Colmillos del Jabali', kind: 'Evento', cost: 2, atk: 0, hp: 0,
     icon: 'fa-tooth',
     desc: 'Al entrar: Fortalecer 2 a todos los aliados.',
     lore: 'Cuando el Jabalí cayó, los cazadores no lo enterraron. Le arrancaron los colmillos y los exhibieron en el centro del poblado, como trofeo y advertencia: la bestia que había arrasado los cultivos durante generaciones ya no volvería. Pero los colmillos seguían brillando con una luz extraña, y los que los tocaban sentían la furia del animal recorrerles los brazos: los ancianos recuperaban la fuerza de su juventud, los cobardes se volvían valientes, los guerreros sentían el impulso de embestir como el Jabalí. Los sacerdotes dijeron que los colmillos debían ser ofrecidos a Artemisa, la diosa de la caza, o la maldición del Jabalí caería sobre el pueblo. Y así se hizo: los colmillos fueron clavados en el altar de la diosa, y desde entonces, cada cazador que los toca antes de partir recibe la furia del Jabalí en sus manos.',
@@ -695,7 +695,7 @@ const ALL_CARDS = [
     startTurn: null
 },
 {
-    id: 'juicio_tiresias', name: 'El Juicio de Tiresias', kind: 'Ser', cost: 3, atk: 1, hp: 3,
+    id: 'juicio_tiresias', name: 'Juicio de Tiresias', kind: 'Ser', cost: 3, atk: 1, hp: 3,
     icon: 'fa-eye-slash',
     desc: 'Al morir: Exilio 1 a 1 rival aleatorio.',
     lore: 'Tiresias fue consultado en la disputa entre Zeus y Hera. "¿Quién disfruta más del amor, el hombre o la mujer?", preguntaron los dioses. Tiresias, que había sido hombre y mujer, respondió sin dudar: "La mujer, tres veces más". Hera, ofendida, lo cegó con un toque de sus dedos. Zeus, compadecido, le dio el don de la profecía como compensación. Desde entonces, Tiresias ve el futuro con una claridad que los dioses le concedieron a cambio de sus ojos. Pero la sentencia de Hera no fue solo la ceguera: fue el juicio mismo, que cae sobre quien se atreve a contradecir a los dioses. Y Tiresias, ciego, se convirtió en el juez de los que osan desafiar al Olimpo.',
@@ -709,7 +709,7 @@ const ALL_CARDS = [
     }
 },
 {
-    id: 'vara_tiresias', name: 'La Vara de Tiresias', kind: 'Evento', cost: 4, atk: 0, hp: 0,
+    id: 'vara_tiresias', name: 'Vara de Tiresias', kind: 'Evento', cost: 4, atk: 0, hp: 0,
     icon: 'fa-staff-snake',
     desc: 'Al entrar: Destruir 1 rival con el ATK mas alto.',
     lore: 'Tiresias caminaba con una vara de olivo que lo guiaba por el mundo. No era un simple bastón: era el símbolo de su don, la herramienta con la que tocaba el mundo y lo comprendía. Cuando Tiresias clavaba la vara en la tierra, el futuro se abría ante él como un libro. Los que se atrevían a tocar la vara sentían el peso de la profecía: no era un objeto, era una sentencia. Y cuando Tiresias murió, la vara quedó en el templo de Apolo, esperando a quien se atreviera a empuñarla. El que la empuña ve el futuro, pero también ve su propio final, y eso lo destruye.',
@@ -725,7 +725,7 @@ const ALL_CARDS = [
     startTurn: null
 },
 {
-    id: 'ofrenda_hades', name: 'La Ofrenda a Hades', kind: 'Evento', cost: 1, atk: 0, hp: 0,
+    id: 'ofrenda_hades', name: 'Ofrenda a Hades', kind: 'Evento', cost: 1, atk: 0, hp: 0,
     icon: 'fa-droplet',
     desc: 'Sacrificio 2: Fortalecer 2 a todos los aliados.',
     lore: 'El altar de piedra negra se alzaba en el centro del poblado, y sobre él, los cazadores dejaban su sangre. No era un sacrificio cualquiera: era un pacto. Hades, el dios que no escucha plegarias, aceptaba la ofrenda y, a cambio, apartaba a los males de la aldea. Pero la sangre derramada no desaparecía: se filtraba en la tierra y llegaba al Inframundo, donde los muertos la bebían y recordaban su vida. Y los que quedaban en la aldea sentían esa sangre correr por sus venas, como si los cazadores muertos les prestaran su fuerza.',
@@ -743,7 +743,7 @@ const ALL_CARDS = [
     startTurn: null
 },
 {
-    id: 'deuda_sangre', name: 'La Deuda de Sangre', kind: 'Evento', cost: 2, atk: 0, hp: 0,
+    id: 'deuda_sangre', name: 'Deuda de Sangre', kind: 'Evento', cost: 2, atk: 0, hp: 0,
     icon: 'fa-skull',
     desc: 'Sacrificio 4: Exilio 4 a 1 rival aleatorio.',
     lore: 'El pacto se cumplió, pero los dioses no olvidan. La sangre derramada en el altar no era una ofrenda: era una deuda. Y cuando llegó el momento de pagarla, Hades envió a sus espectros para cobrar. Los mortales que habían participado en el ritual empezaron a morir uno a uno, y sus almas eran arrastradas al Inframundo. La deuda no se olvidó: cada generación, alguien debía derramar sangre en el altar para mantener a los espectros alejados. Y así, el pacto se convirtió en una cadena que nunca se rompería.',
@@ -757,7 +757,7 @@ const ALL_CARDS = [
     startTurn: null
 },
 {
-    id: 'roble_dodona', name: 'El Roble de Dodona', kind: 'Ser', cost: 3, atk: 0, hp: 3,
+    id: 'roble_dodona', name: 'Roble de Dodona', kind: 'Ser', cost: 3, atk: 0, hp: 3,
     icon: 'fa-tree',
     desc: 'Al entrar: Bloqueo 3.',
     lore: 'En el centro del bosque sagrado de Dodona se alza un roble milenario, el árbol más antiguo de Grecia. Sus raíces llegan al centro de la tierra, y sus hojas susurran las profecías de Zeus cuando el viento las agita. Los sacerdotes, llamados Selloi, duermen en el suelo a su sombra y no se lavan los pies para mantener contacto con la tierra. Los que intentan talar el roble mueren antes de levantar el hacha: el árbol es sagrado, y su corteza es tan dura como el bronce. El Roble de Dodona no habla: susurra. Pero los que saben escuchar, entienden.',
@@ -771,7 +771,7 @@ const ALL_CARDS = [
     bloqueo: 3
 },
 {
-    id: 'palomas_dodona', name: 'Las Palomas de Dodona', kind: 'Evento', cost: 4, atk: 0, hp: 0,
+    id: 'palomas_dodona', name: 'Palomas de Dodona', kind: 'Evento', cost: 4, atk: 0, hp: 0,
     icon: 'fa-dove',
     desc: 'Al entrar: Destruir 1 rival con el ATK mas alto.',
     lore: 'Dos palomas negras salieron de Egipto y cruzaron el mar. Una fundó el oráculo de Dodona, la otra el de Ammon en Libia. Desde entonces, las palomas de Dodona son las mensajeras de Zeus: su vuelo trae la sentencia divina, y su arrullo anuncia la muerte. Los que las ven posarse sobre el roble sagrado saben que su destino está escrito. Y cuando las palomas alzan el vuelo, el cielo se oscurece, y el hombre más fuerte del lugar cae sin vida. No es un castigo: es la voluntad de Zeus, que no tolera que los mortales olviden su poder.',
@@ -821,7 +821,7 @@ const ALL_CARDS = [
     startTurn: null
 },
 {
-    id: 'esteno_protectora', name: 'Esteno, la Protectora de Medusa', kind: 'Ser', cost: 4, atk: 4, hp: 4,
+    id: 'esteno_protectora', name: 'Esteno, la Protectora', kind: 'Ser', cost: 4, atk: 4, hp: 4,
     icon: 'fa-shield-halved',
     desc: 'Embestida 2: Blindar 2 a todos los aliados.',
     lore: 'Cuando Medusa llegó al norte, huyendo de los hombres que la buscaban, Esteno la abrazó como a una hermana. "No temas", le dijo. "Mientras yo esté a tu lado, nadie te tocará". Y así fue: Esteno se plantó en la entrada de la cueva de las Gorgonas, y ningún hombre que intentó entrar volvió a salir. Su lealtad era más fuerte que su fuerza, y su amor de hermana, más duro que su piel de bronce.',
@@ -863,7 +863,7 @@ const ALL_CARDS = [
     }
 },
 {
-    id: 'euriale_advirtio', name: 'Euriale, la que Advirtió a Medusa', kind: 'Ser', cost: 3, atk: 1, hp: 1,
+    id: 'euriale_advirtio', name: 'Euriale, la Vidente', kind: 'Ser', cost: 3, atk: 1, hp: 1,
     icon: 'fa-eye',
     desc: 'Al entrar: Descuento 2 a tu siguiente Ser.',
     lore: 'Cuando Euriale vio en el vuelo de los cuervos que un héroe con sandalias aladas cruzaba el mar, corrió a advertir a Medusa. "Perseo viene", le dijo. "Y no viene solo: los dioses lo protegen". Pero Medusa ya no podía escuchar: la maldición de Atenea le había nublado el juicio, y su orgullo era más fuerte que la advertencia de su hermana. Euriale lo intentó de nuevo, pero Medusa la apartó con desprecio, y cuando Perseo llegó, Euriale ya no estaba.',
@@ -876,7 +876,7 @@ const ALL_CARDS = [
     startTurn: null
 },
 {
-    id: 'euriale_lloro', name: 'Euriale, la que Lloró a Medusa', kind: 'Ser', cost: 3, atk: 2, hp: 2,
+    id: 'euriale_lloro', name: 'Euriale, la Llorona', kind: 'Ser', cost: 3, atk: 2, hp: 2,
     icon: 'fa-water',
     desc: 'Al morir: Gloria 4.',
     lore: 'Cuando supo que Perseo había cortado la cabeza de Medusa, Euriale no buscó venganza: buscó el silencio. Se retiró a las montañas más altas, donde los cuervos no vuelan, y allí lloró durante siete días y siete noches. Sus lágrimas se convirtieron en los ríos que bajan de las montañas, y su dolor, en el viento que aúlla en las cumbres. Desde entonces, Euriale no vuelve a ver el futuro: solo ve el pasado, y el pasado está lleno de Medusa.',
@@ -890,7 +890,7 @@ const ALL_CARDS = [
     }
 },
 {
-    id: 'pegaso_belerofonte', name: 'Pegaso, el que Derribo a Belerofonte', kind: 'Ser', cost: 4, atk: 3, hp: 3,
+    id: 'pegaso_belerofonte', name: 'Pegaso, el Derribador', kind: 'Ser', cost: 4, atk: 3, hp: 3,
     icon: 'fa-horse',
     desc: 'Al entrar: Dano 3 a 1 rival aleatorio.',
     lore: 'Pegaso llevo a Belerofonte a la victoria contra la Quimera y las Amazonas, pero el heroe se volvio arrogante. Cuando Belerofonte quiso volar al Olimpo para sentarse entre los dioses, Pegaso se nego. El caballo alado derribo a su jinete en pleno vuelo, y Belerofonte cayo a la tierra, condenado a vagar ciego y solo. Pegaso volvio al Olimpo, fiel a Zeus, y desde entonces ningun mortal volvio a montarlo.',
@@ -906,7 +906,7 @@ const ALL_CARDS = [
     startTurn: null
 },
 {
-    id: 'pegaso_zeus', name: 'Pegaso, el Corcel de Zeus', kind: 'Ser', cost: 5, atk: 3, hp: 3,
+    id: 'pegaso_zeus', name: 'Pegaso, el Corcel', kind: 'Ser', cost: 5, atk: 3, hp: 3,
     icon: 'fa-bolt',
     desc: 'Al entrar: Fortalecer 2 a todos los aliados.',
     lore: 'Tras la caida de Belerofonte, Pegaso volvio al Olimpo y se convirtio en el corcel de Zeus. Desde entonces, lleva el rayo del dios a traves del cielo, y su vuelo anuncia la tormenta. Los mortales que ven su silueta entre las nubes saben que Zeus los observa, y que su furia puede caer en cualquier momento. Pero Pegaso no es un arma: es un mensajero, y su vuelo trae tanto la bendicion como el castigo.',
@@ -922,7 +922,7 @@ const ALL_CARDS = [
     startTurn: null
 },
 {
-    id: 'crisaor_cabeza', name: 'Crisaor, el que Recogio la Cabeza de Medusa', kind: 'Ser', cost: 4, atk: 2, hp: 3,
+    id: 'crisaor_cabeza', name: 'Crisaor, el Portador', kind: 'Ser', cost: 4, atk: 2, hp: 3,
     icon: 'fa-sword',
     desc: 'Al entrar: Exilio 1 a 1 rival aleatorio.',
     lore: 'Cuando Perseo corto la cabeza de Medusa, nadie se atrevio a tocarla. Las serpientes seguian moviendose, y la mirada de piedra aun brillaba en los ojos vacios. Pero Crisaor, nacido de la misma sangre que Medusa, se acerco sin miedo. Recogio la cabeza con sus propias manos y la entrego a Atenea, que la clavo en su egida, y desde entonces su espada de oro protege el trofeo de los que osan robarlo.',
@@ -934,7 +934,7 @@ const ALL_CARDS = [
     startTurn: null
 },
 {
-    id: 'crisaor_gerion', name: 'Crisaor, el Padre de Gerion', kind: 'Ser', cost: 4, atk: 2, hp: 2,
+    id: 'crisaor_gerion', name: 'Crisaor, el Padre', kind: 'Ser', cost: 4, atk: 2, hp: 2,
     icon: 'fa-users',
     desc: 'Al morir: Dano 4 a 1 rival aleatorio.',
     lore: 'Crisaor se caso con Calirroe, hija de Oceano, y de esa union nacio Gerion, el gigante de tres cuerpos. Gerion crecio en la isla de Eritia, al oeste del mundo, y se convirtio en un pastor de rebanos rojos. Pero su sangre era la de Medusa, y su destino estaba escrito: Heracles lo mataria para robarle sus rebanos. Crisaor lo sabia, pero no hizo nada por evitarlo, porque sabia que el destino de los hijos de Medusa era morir a manos de los heroes.',
@@ -952,7 +952,7 @@ const ALL_CARDS = [
     }
 },
 {
-    id: 'estatua_gorgona', name: 'La Estatua de la Gorgona', kind: 'Evento', cost: 1, atk: 0, hp: 0,
+    id: 'estatua_gorgona', name: 'La Estatua', kind: 'Evento', cost: 1, atk: 0, hp: 0,
     icon: 'fa-monument',
     desc: 'Al entrar: Debilitar 1 a todos los rivales.',
     lore: 'Cuando Medusa fue decapitada, su cuerpo se convirtio en piedra. Pero la piedra no murio: siguio esperando, siguio odiando. Los que tocan la estatua sienten el frio de la muerte, y su piel se vuelve marmol. Y la estatua, erguida en el centro de la cueva, sigue debilitando a los que se atreven a acercarse.',
@@ -971,7 +971,7 @@ const ALL_CARDS = [
     startTurn: null
 },
 {
-    id: 'grito_gorgona', name: 'El Grito de la Gorgona', kind: 'Evento', cost: 2, atk: 0, hp: 0,
+    id: 'grito_gorgona', name: 'El Grito', kind: 'Evento', cost: 2, atk: 0, hp: 0,
     icon: 'fa-bullhorn',
     desc: 'Al entrar: Dano 2 a todos los rivales.',
     lore: 'Cuando Medusa fue decapitada, su grito resonó en toda la cueva. Los que lo oyeron quedaron petrificados de terror, no por la mirada, sino por el sonido. El grito sigue en el aire, esperando a quien se atreva a escucharlo. Y cuando alguien lo oye, su cuerpo se desgarra desde dentro, y su alma se queda atrapada en el marmol para siempre.',
