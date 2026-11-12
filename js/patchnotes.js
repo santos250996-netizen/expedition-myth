@@ -7,6 +7,30 @@
 
 const PATCH_NOTES = [
     {
+        version: '1.11.0',
+        date: '2026-11-12',
+        title: 'Sistema de audio',
+        highlights: [
+            '20 sonidos generados con Soundbox: 12 keywords, 6 triggers, 2 base',
+            'Reproductor de SFX con volumen configurable',
+            'Integracion automatica en FX y motor de juego'
+        ],
+        changes: {
+            new: [
+                'assets/audio/ con 20 archivos .ogg (generados con Soundbox).',
+                'js/audio.js: reproductor playSfx(), cache, preload, volumen.',
+                'Slider de efectos conectado al volumen real del audio.',
+                'Sonidos integrados en fx.js (cada FX dispara su sonido).',
+                'Sonidos integrados en game.js (triggers, turnos, cartas).',
+                'Los 20 .ogg anadidos a PRECACHE de sw.js.'
+            ],
+            buffs: [],
+            nerfs: [],
+            fixes: [],
+            removed: []
+        }
+    },
+    {
         version: '1.10.8',
         date: '2026-11-11',
         title: 'Nombres cortos y correccion de misiones',

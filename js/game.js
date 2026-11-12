@@ -71,6 +71,7 @@ function dealDamage(target, amount, side, sourcePlayer) {
     let dmg = bloqueoAbsorb(target, amount);
     if (dmg <= 0) return;
     target.hp -= dmg;
+    playSfx('dano');
     // Trigger Enfurecer: acumula daño recibido. Si llega al
     // umbral de la carta, dispara su efecto y resetea.
     if (target.enfurecerThreshold) {
@@ -93,6 +94,7 @@ function dealDamage(target, amount, side, sourcePlayer) {
 function embestida(self, player, opp, X) {
     if (self.atk < X || self.hp < X) return;
     if (!opp.activeBoard.some(c => !c.dying)) return;
+    playSfx('embestida');
     self.atk -= X;
     self.hp -= X;
     queueFx({ t: 'clash', side: sideOf(player), uidA: self.uid });
@@ -116,6 +118,7 @@ function enfurecer(target, dmg) {
     target.enfurecerCounter = (target.enfurecerCounter || 0) + dmg;
     if (target.enfurecerCounter >= target.enfurecerThreshold) {
         target.enfurecerCounter = 0;
+        playSfx('enfurecer');
         try {
             target.enfurecerEffect(target, gameState[ownerSideOf(target)]);
         } catch (e) { console.error('enfurecer:', e); }
@@ -138,6 +141,7 @@ function exilio(player, opp, X) {
     target.atk = 0;
     target.hp = 0;
     queueFx({ t: 'exilio', side: sideOf(opp), uid: target.uid });
+    playSfx('exilio');
 
     // Mision exile_with: exilios a Seres rivales mientras la carta
     // previousCardId esta viva en el tablero del jugador (v1.9.4).
@@ -168,6 +172,7 @@ function sacrificio(player, X, applyEffect) {
         .filter(c => !c.dying && c.kind === 'Ser')
         .reduce((sum, c) => sum + c.hp, 0);
     if (totalHp < X) return false;
+    playSfx('sacrificio');
 
     // Reparte X HP de mas HP a menos.
     let remaining = X;
@@ -281,6 +286,7 @@ function canStillScore(player) {
 
 function gameTick() {
             gameState.turn++;
+            playSfx('turno');
             // --- MENSAJES DEL TUTORIAL (solo Capítulo 1.0) ---
             if (tutorialActive && currentChapter && currentChapter.id === 1) {
                 if (gameState.turn === 1) {
@@ -441,6 +447,7 @@ function gameTick() {
 
             player.energy -= effectiveCost;
             player.deckPointer++;
+            playSfx('carta_jugada');
             return {
                 card: nextCard,
                 inst: { ...nextCard, uid: Math.random().toString(36).slice(2, 9), tempAtkMod: 0, tempHpMod: 0, stunned: false, exilioTurns: 0, reflectCharges: 0, bloqueo: nextCard.bloqueo || 0, enfurecerCounter: 0 },

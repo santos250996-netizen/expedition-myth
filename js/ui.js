@@ -1339,10 +1339,8 @@ function setMusicVolume(value) {
     safeStorageSet('nexo_music_vol', value);
     // Aquí podrías ajustar el volumen de un objeto Audio si tienes música
 }
-
-function setSfxVolume(value) {
-    safeStorageSet('nexo_sfx_vol', value);
-}
+// setSfxVolume vive en audio.js (v1.11.0): guarda nexo_sfx_vol y aplica el
+// volumen real a los Audio objects cacheados. El slider de Opciones la invoca.
 
 function showCredits() {
     alert("Ecos del Olimpo\n\nUn juego de cartas mitológico.\nCreado por [Tu Nombre].\n\n¡Gracias por jugar!");

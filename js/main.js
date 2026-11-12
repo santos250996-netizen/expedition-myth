@@ -127,6 +127,9 @@ window.onload = () => {
     if (isDevMode() && typeof mountDevUI === 'function') {
         mountDevUI();
     }
+
+    // v1.11.0: precargar los 20 SFX en la cache de Audio objects.
+    preloadSfx();
 };
 
 // --- BOTÓN ATRÁS DE ANDROID (CAPACITOR) ---

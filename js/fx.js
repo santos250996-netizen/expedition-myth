@@ -159,16 +159,20 @@
                                 fxEventCast(fx.card, fx.side);
                                 break;
                             case 'gloria':
+                                playSfx('gloria');
                                 fxGloriaBeam(fx.side, 'fx-beam-soft');
                                 fxFlash(fx.uid, 'gold');
                                 fxFloatOver(fx.side, fx.uid, fx.text, 'fx-gold fx-float-big', fx.icon);
                                 fxScorePop(fx.side, fx.num);
                                 break;
                             case 'buff':
+                                playSfx('fortalecer');
                                 fxFlash(fx.uid, 'green');
                                 fxFloatOver(fx.side, fx.uid, fx.text, 'fx-green fx-float-big', fx.icon);
                                 break;
                             case 'debuff':
+                                if (fx.cls === 'fx-gray') playSfx('debilitar');
+                                else playSfx('dano');
                                 fxFlash(fx.uid, 'purple');
                                 if (fx.overlay === 'fog') fxOverlayOnCard(fx.uid, 'fx-fog-ov');
                                 if (fx.overlay === 'tears') fxOverlayOnCard(fx.uid, 'fx-tears-ov');
@@ -180,6 +184,7 @@
                                 // Embestida: la carta atacante se desplaza hacia
                                 // la víctima (charge) + flash rojo en ambas +
                                 // sacudida fuerte + overlay de impacto + texto.
+                                playSfx('embestida');
                                 let chargeCls = fx.side === 'p1' ? 'fx-charge-right' : 'fx-charge-left';
                                 fxClassOnCard(fx.uidA, chargeCls);
                                 fxFlash(fx.uidA, 'red');
@@ -191,11 +196,13 @@
                                 fxFloatOver(fx.side, fx.uidA, '-1 HP', 'fx-red fx-float-big', 'fa-heart-crack');
                                 break;
                             case 'sacrifice':
+                                playSfx('destruir');
                                 fxFlash(fx.uid, 'red');
                                 fxOverlayOnCard(fx.uid, 'fx-blood-ov');
                                 fxShakeHard(fx.uid);
                                 break;
                             case 'wave':
+                                playSfx('debilitar');
                                 fxLeafWave(fx.side);
                                 // Flash rojo en todas las cartas del tablero afectado.
                                 let board = boardEl(fx.side);
@@ -205,10 +212,12 @@
                                 });
                                 break;
                             case 'discount':
+                                playSfx('descuento');
                                 fxDiscountPop(fx.side, fx.text || '−1');
                                 break;
                             case 'exilio':
                                 // Atrapar: encoge + oscurece + icono. SIN texto.
+                                playSfx('exilio');
                                 fxExilioTrap(fx.uid);
                                 break;
                             case 'liberado':
@@ -217,11 +226,13 @@
                                 break;
                             case 'summon':
                                 // Invocación: la carta cae con rebote + flash azul.
+                                playSfx('invocar');
                                 fxDropIn(fx.uid);
                                 fxFlash(fx.uid, 'blue');
                                 fxFloatOver(fx.side, fx.uid, 'INVOCADO', 'fx-blue fx-float-big', 'fa-wand-sparkles');
                                 break;
                             case 'bloqueo':
+                                playSfx('bloqueo');
                                 fxFlash(fx.uid, 'gold');
                                 fxFloatOver(fx.side, fx.uid, fx.text, 'fx-gold fx-float-big', fx.icon);
                                 break;
