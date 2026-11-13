@@ -61,133 +61,129 @@ function preloadSfx() {
     });
 }
 
-// --- BGM: musica del menu (v1.11.1) ---
-// Loop gapless: intento WebAudio (AudioBufferSourceNode con loop=true,
-// empalme sample-perfect porque el fichero de 60s es ciclico por
-// construccion); si no hay AudioContext o falla la carga, fallback a
-// Audio element con loop=true. El slider "Musica" de Opciones llama a
-// setMusicVolume (nexo_music_vol, 0-100). La politica de autoplay exige
-// un gesto: si el contexto esta suspendido se engancha el primer
-// pointerdown/keydown/touchstart y ahi arranca.
-const BGM_PATH = 'assets/audio/bgm/bgm_menu.ogg';
-const BGM_VOLUME_DEFAULT = 0.5;
-let BGM_buffer = null, BGM_ctx = null, BGM_gain = null, BGM_src = null;
-let BGM_fallback = null, BGM_playing = false, BGM_mode = '';
-let BGM_fadeTimer = null, BGM_gestureHooked = false;
+// --- MUSICA DE FONDO (BGM) v1.11.1 ---
+// Canal separado del de SFX. Reproduce una BGM en loop (o una sola vez)
+// con fade in/out entre pistas. El slider "Musica" de Opciones llama a
+// setMusicVolume (nexo_music_vol, 0-100), que solo afecta a la BGM.
+
+let BGM_CURRENT = null;        // nombre de la BGM actual
+let BGM_AUDIO = null;          // objeto Audio actual
+let BGM_FADE_TIMER = null;     // timer del fade
+let BGM_GESTURE_HOOKED = false;
 
 function getMusicVolume() {
     let raw = safeStorageGet('nexo_music_vol');
-    if (raw === null || raw === undefined) return BGM_VOLUME_DEFAULT;
+    if (raw === null || raw === undefined) return 0.5;
     let v = parseFloat(raw);
-    if (isNaN(v)) return BGM_VOLUME_DEFAULT;
+    if (isNaN(v)) return 0.5;
     return Math.max(0, Math.min(1, v / 100));
 }
 
 function setMusicVolume(value) {
     safeStorageSet('nexo_music_vol', value);
-    applyMusicVolume();
-}
-
-function applyMusicVolume() {
-    let v = getMusicVolume();
-    if (BGM_gain && BGM_ctx) BGM_gain.gain.value = v;
-    if (BGM_fallback) BGM_fallback.volume = v;
-}
-
-function getBgmState() {
-    return { playing: BGM_playing, mode: BGM_mode, ready: !!(BGM_buffer || BGM_fallback) };
-}
-
-function newBgmFallback() {
-    BGM_fallback = new Audio(BGM_PATH);
-    BGM_fallback.loop = true;
-    BGM_fallback.preload = 'auto';
-    BGM_fallback.volume = getMusicVolume();
-}
-
-function preloadBgm() {
-    if (!(window.AudioContext || window.webkitAudioContext)) { newBgmFallback(); return; }
-    if (BGM_ctx || BGM_buffer || BGM_fallback) return;
-    try {
-        BGM_ctx = new (window.AudioContext || window.webkitAudioContext)();
-        BGM_gain = BGM_ctx.createGain();
-        BGM_gain.gain.value = getMusicVolume();
-        BGM_gain.connect(BGM_ctx.destination);
-        fetch(BGM_PATH).then(r => {
-            if (!r.ok) throw new Error('HTTP ' + r.status);
-            return r.arrayBuffer();
-        }).then(b => BGM_ctx.decodeAudioData(b)).then(buf => {
-            BGM_buffer = buf;
-            if (BGM_playing && BGM_ctx.state === 'running') playBgmSource();
-        }).catch(() => {
-            if (!BGM_fallback) { newBgmFallback(); if (BGM_playing) BGM_fallback.play().catch(() => {}); }
-        });
-    } catch (e) {
-        BGM_ctx = null; BGM_gain = null;
-        newBgmFallback();
+    if (BGM_AUDIO) {
+        BGM_AUDIO.volume = getMusicVolume();
     }
 }
 
-function playBgmSource() {
-    if (!BGM_ctx || !BGM_buffer || BGM_src) return;
-    try {
-        BGM_src = BGM_ctx.createBufferSource();
-        BGM_src.buffer = BGM_buffer;
-        BGM_src.loop = true; // empalme sample-perfect: el fichero es ciclico
-        BGM_src.connect(BGM_gain);
-        BGM_src.start();
-        BGM_mode = 'webaudio';
-    } catch (e) { BGM_src = null; }
+function getBgmPath(name) {
+    return 'assets/audio/bgm/bgm_' + name + '.ogg';
 }
 
-function hookBgmGesture() {
-    if (BGM_gestureHooked) return;
-    BGM_gestureHooked = true;
+function playBgm(name, options) {
+    // name: 'menu', 'combate', 'victoria', 'derrota'
+    // options: { loop: true/false, fadeIn: ms, fadeOut: ms }
+    if (BGM_CURRENT === name) return; // ya esta sonando
+    let opts = options || {};
+    let loop = opts.loop !== undefined ? opts.loop : (name === 'menu' || name === 'combate');
+    let fadeIn = opts.fadeIn !== undefined ? opts.fadeIn : 800;
+    let fadeOut = opts.fadeOut !== undefined ? opts.fadeOut : 600;
+
+    // Fade out de la BGM actual (si hay)
+    if (BGM_AUDIO) {
+        let oldAudio = BGM_AUDIO;
+        let oldVol = oldAudio.volume;
+        let steps = 20;
+        let stepTime = fadeOut / steps;
+        let step = 0;
+        let fadeOutTimer = setInterval(() => {
+            step++;
+            oldAudio.volume = Math.max(0, oldVol * (1 - step / steps));
+            if (step >= steps) {
+                clearInterval(fadeOutTimer);
+                oldAudio.pause();
+                oldAudio.currentTime = 0;
+            }
+        }, stepTime);
+    }
+
+    // Fade in de la nueva BGM
+    let audio = new Audio(getBgmPath(name));
+    audio.loop = loop;
+    audio.volume = 0;
+    audio.preload = 'auto';
+    BGM_AUDIO = audio;
+    BGM_CURRENT = name;
+
+    // Autoplay: si el navegador rechaza el arranque sin gesto, se engancha
+    // el primer pointerdown/keydown/touchstart y ahi re-intenta (v1.11.1).
+    audio.play().catch(() => hookBgmGesture(audio));
+
+    let targetVol = getMusicVolume();
+    let steps = 20;
+    let stepTime = fadeIn / steps;
+    let step = 0;
+    if (BGM_FADE_TIMER) clearInterval(BGM_FADE_TIMER);
+    BGM_FADE_TIMER = setInterval(() => {
+        step++;
+        audio.volume = Math.min(targetVol, targetVol * (step / steps));
+        if (step >= steps) {
+            clearInterval(BGM_FADE_TIMER);
+            BGM_FADE_TIMER = null;
+        }
+    }, stepTime);
+}
+
+function stopBgm(fadeOut) {
+    if (!BGM_AUDIO) return;
+    let ms = fadeOut !== undefined ? fadeOut : 600;
+    let audio = BGM_AUDIO;
+    let oldVol = audio.volume;
+    let steps = 20;
+    let stepTime = ms / steps;
+    let step = 0;
+    let timer = setInterval(() => {
+        step++;
+        audio.volume = Math.max(0, oldVol * (1 - step / steps));
+        if (step >= steps) {
+            clearInterval(timer);
+            audio.pause();
+            audio.currentTime = 0;
+            BGM_AUDIO = null;
+            BGM_CURRENT = null;
+        }
+    }, stepTime);
+}
+
+// Reintenta la BGM pendiente con el primer gesto del usuario (politica de
+// autoplay del WebView: el play() inicial puede ser rechazado sin gesto).
+function hookBgmGesture(audio) {
+    if (BGM_GESTURE_HOOKED) return;
+    BGM_GESTURE_HOOKED = true;
     let go = () => {
-        BGM_gestureHooked = false;
+        BGM_GESTURE_HOOKED = false;
         document.removeEventListener('pointerdown', go);
         document.removeEventListener('keydown', go);
         document.removeEventListener('touchstart', go);
-        if (!BGM_playing) return;
-        if (BGM_ctx && BGM_ctx.state === 'suspended') {
-            BGM_ctx.resume().then(() => { if (BGM_playing && !BGM_src) playBgmSource(); }).catch(() => {});
-        }
-        if (BGM_fallback && BGM_playing) BGM_fallback.play().catch(() => {});
+        let a = (audio && audio === BGM_AUDIO) ? audio : BGM_AUDIO;
+        if (a) a.play().catch(() => {});
     };
     document.addEventListener('pointerdown', go);
     document.addEventListener('keydown', go);
     document.addEventListener('touchstart', go);
 }
 
-function startBgm() {
-    if (BGM_playing) return;
-    BGM_playing = true;
-    clearInterval(BGM_fadeTimer);
-    if (BGM_ctx) {
-        if (BGM_ctx.state === 'suspended') hookBgmGesture();
-        else if (BGM_buffer) playBgmSource();
-    }
-    if (BGM_fallback) BGM_fallback.play().catch(() => hookBgmGesture());
-    if (!BGM_ctx && !BGM_fallback) { preloadBgm(); hookBgmGesture(); }
-}
-
-function stopBgm(fadeSec) {
-    if (!BGM_playing) return;
-    BGM_playing = false;
-    clearInterval(BGM_fadeTimer);
-    let steps = Math.max(1, Math.round((fadeSec || 0) * 1000 / 60));
-    let step = 0;
-    let base = BGM_ctx ? BGM_gain.gain.value : (BGM_fallback ? BGM_fallback.volume : 0);
-    BGM_fadeTimer = setInterval(() => {
-        step++;
-        let v = Math.max(0, base * (1 - step / steps));
-        if (BGM_ctx) BGM_gain.gain.value = v;
-        if (BGM_fallback) BGM_fallback.volume = v;
-        if (step >= steps) {
-            clearInterval(BGM_fadeTimer);
-            if (BGM_src) { try { BGM_src.stop(); } catch (e) {} BGM_src = null; }
-            if (BGM_fallback) BGM_fallback.pause();
-            applyMusicVolume(); // deja el nivel listo para el proximo arranque
-        }
-    }, 60);
+// Estado actual del canal de musica (para verificacion y test).
+function getBgmState() {
+    return { current: BGM_CURRENT, playing: !!(BGM_AUDIO && !BGM_AUDIO.paused) };
 }

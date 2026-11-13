@@ -7,6 +7,31 @@
 
 const PATCH_NOTES = [
     {
+        version: '1.11.1',
+        date: '2026-11-13',
+        title: 'Musica de fondo completa',
+        highlights: [
+            '3 BGM nuevas: combate, victoria, derrota',
+            'Canal de musica separado del de SFX',
+            'Fade in/out entre BGM',
+            'Slider de musica conectado'
+        ],
+        changes: {
+            new: [
+                'assets/audio/bgm/bgm_combate.ogg (60s, loop).',
+                'assets/audio/bgm/bgm_victoria.ogg (15s, sin loop).',
+                'assets/audio/bgm/bgm_derrota.ogg (15s, sin loop).',
+                'Canal de musica separado en audio.js (playBgm, stopBgm, getMusicVolume, setMusicVolume).',
+                'Fade in/out entre BGM (800ms in, 600ms out).',
+                'Slider de musica conectado al volumen real.'
+            ],
+            buffs: [],
+            nerfs: [],
+            fixes: [],
+            removed: []
+        }
+    },
+    {
         version: '1.11.0',
         date: '2026-11-12',
         title: 'Sistema de audio',

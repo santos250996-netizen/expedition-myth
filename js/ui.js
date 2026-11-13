@@ -674,6 +674,9 @@ function showGameOver() {
     if (p1Score > p2Score) { title.innerText = "¡VICTORIA!"; title.className = "text-3xl font-orbitron font-black text-amber-400 mb-2 glow-text-blue"; }
     else if (p1Score < p2Score) { title.innerText = "DERROTA"; title.className = "text-3xl font-orbitron font-black text-red-500 mb-2"; }
     else { title.innerText = "EMPATE"; title.className = "text-3xl font-orbitron font-black text-slate-300 mb-2"; }
+    // v1.11.1 (Bloque 4b): musica de resultado — victoria si gana el
+    // jugador; derrota si pierde o empata (sin loop, suena una vez).
+    playBgm(p1Score > p2Score ? 'victoria' : 'derrota', { loop: false, fadeIn: 400 });
 
     document.getElementById('final-p1').innerText = p1Score;
     document.getElementById('final-p2').innerText = p2Score;
@@ -889,7 +892,7 @@ function closeGameOverModal() {
     let rc = document.getElementById('gameover-reward-slot');
     if (rc) { rc.innerHTML = ''; rc.classList.add('hidden-view'); }
 }
-function closeGameOverAndRestart() { closeGameOverModal(); resetMatch(); startGame(); }
+function closeGameOverAndRestart() { closeGameOverModal(); resetMatch(); startGame(); playBgm('combate', { loop: true, fadeIn: 800 }); } // v1.11.1 (Bloque 5b)
 
 // --- FONDO GLOBAL POR CAPÍTULO ---
 // Regla: el combate muestra siempre el capítulo en juego; el resto de
@@ -1137,6 +1140,9 @@ function launchChapterCombat() {
     // demas vistas (home, mazos, perfil, opciones).
     safeStorageSet('nexo_last_chapter_art_v1', currentChapter.art);
     startGame();
+    // v1.11.1 (Bloque 5a): musica de combate en loop (el fade out de la
+    // BGM anterior lo hace playBgm).
+    playBgm('combate', { loop: true, fadeIn: 800 });
     // Tutorial: el paso 4 se activa DESPUÉS de arrancar el combate, para que
     // el toast didáctico encuentre el juego en marcha y pueda pausarlo.
     if (tutorialActive && tutorialStep === 3) setTutorialStep(4);
@@ -1334,11 +1340,8 @@ function openAvatarGallery() {
 
 // --- LÓGICA DE OPCIONES ---
 
-function setMusicVolume(value) {
-    // Guardar en localStorage
-    safeStorageSet('nexo_music_vol', value);
-    // Aquí podrías ajustar el volumen de un objeto Audio si tienes música
-}
+// setMusicVolume vive en audio.js (v1.11.1, canal BGM): guarda nexo_music_vol
+// y aplica el volumen real a la BGM sonando. El slider de Opciones la invoca.
 // setSfxVolume vive en audio.js (v1.11.0): guarda nexo_sfx_vol y aplica el
 // volumen real a los Audio objects cacheados. El slider de Opciones la invoca.
 

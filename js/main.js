@@ -41,10 +41,9 @@ function switchView(viewId) {
         setTutorialStep(6);
     }
 
-    // v1.11.1: BGM del menu — suena en toda la navegacion y hace fade out
-    // al entrar en combate; vuelve al regresar a cualquier vista de menu.
-    if (viewId === 'view-game') stopBgm(1.5);
-    else startBgm();
+    // v1.11.1 (Bloque 5d): al volver al menu desde cualquier vista vuelve
+    // la BGM del menu; playBgm es idempotente si ya esta sonando.
+    if (viewId === 'view-home') playBgm('menu', { loop: true, fadeIn: 800 });
 
     updateEventsButtonState();
 }
@@ -146,10 +145,10 @@ window.onload = () => {
     // v1.11.0: precargar los 20 SFX en la cache de Audio objects.
     preloadSfx();
 
-    // v1.11.1: precargar y pedir la BGM del menu; el arranque real ocurre
-    // con el primer gesto del usuario (politica de autoplay del WebView).
-    preloadBgm();
-    startBgm();
+    // v1.11.1 (Bloque 3): musica del menu por el canal BGM (fades dentro de
+    // playBgm). El arranque real ocurre con el primer gesto del usuario:
+    // si el navegador rechaza el autoplay, playBgm engancha pointerdown.
+    playBgm('menu', { loop: true, fadeIn: 1000 });
 };
 
 // --- BOTÓN ATRÁS DE ANDROID (CAPACITOR) ---
