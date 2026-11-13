@@ -41,6 +41,11 @@ function switchView(viewId) {
         setTutorialStep(6);
     }
 
+    // v1.11.1: BGM del menu — suena en toda la navegacion y hace fade out
+    // al entrar en combate; vuelve al regresar a cualquier vista de menu.
+    if (viewId === 'view-game') stopBgm(1.5);
+    else startBgm();
+
     updateEventsButtonState();
 }
 
@@ -83,6 +88,16 @@ function preloadGameArt() {
 
 window.onload = () => {
     initDevMode();
+
+    // v1.11.1: registrar errores de consola para el test de regresion.
+    if (!window.__console_errors) {
+        window.__console_errors = [];
+        let origError = console.error;
+        console.error = function () {
+            window.__console_errors.push(Array.prototype.join.call(arguments, ' '));
+            origError.apply(console, arguments);
+        };
+    }
 
     // Cargar perfil y configuración
     loadProfile();
@@ -130,6 +145,11 @@ window.onload = () => {
 
     // v1.11.0: precargar los 20 SFX en la cache de Audio objects.
     preloadSfx();
+
+    // v1.11.1: precargar y pedir la BGM del menu; el arranque real ocurre
+    // con el primer gesto del usuario (politica de autoplay del WebView).
+    preloadBgm();
+    startBgm();
 };
 
 // --- BOTÓN ATRÁS DE ANDROID (CAPACITOR) ---
