@@ -7,7 +7,7 @@
 //    revalidate: respuesta instantánea desde caché y refresco en segundo
 //    plano. Reabrir el juego no vuelve a descargar ninguna imagen.
 // Para publicar cambios: subir la versión de CACHE (y los ?v= del HTML).
-const CACHE = 'nexo-v20261122q';
+const CACHE = 'nexo-v20261122r';
 
 const PRECACHE = [
     './', './index.html', './manifest.json', './icon.svg',
@@ -102,7 +102,9 @@ const PRECACHE = [
     './assets/audio/triggers/enfurecer.ogg',
     './assets/audio/triggers/sacrificio.ogg',
     './assets/audio/base/carta_jugada.ogg',
-    './assets/audio/base/turno.ogg'
+    './assets/audio/base/turno.ogg',
+    // Audio (BGM del menu; 60s, loop perfecto)
+    './assets/audio/bgm/bgm_menu.ogg'
 ];
 
 self.addEventListener('install', (event) => {
