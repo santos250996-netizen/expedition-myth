@@ -1052,6 +1052,60 @@ const ALL_CARDS = [
         queueFx({ t: 'buff', side: sideOf(p), text: 'BENDICION 2', icon: 'fa-sun' });
     },
     startTurn: null
+},
+{
+    id: 'boreas_viento', name: 'Boreas, el Viento del Norte', kind: 'Ser', cost: 5, atk: 1, hp: 1,
+    icon: 'fa-wind',
+    desc: 'Al entrar: Devolver 1 rival al mazo.',
+    lore: 'Boreas es el dios del viento del norte, el que trae el frio y la tormenta. Su aliento arrastra a los hombres fuera de sus casas, y su furia es tan grande que los propios dioses le temen. Cuando sopla, los Seres del tablero sienten que el suelo se les escapa, y son arrastrados al fondo del mazo. No es un asesino: es un viento que no se puede detener.',
+    art: 'assets/cartas/boreas-viento-del-norte.webp',
+    substory: 'boreas',
+    effect: (p, opp) => {
+        devolver(opp, 1);
+        queueFx({ t: 'debuff', side: sideOf(opp), text: 'DEVUELTO', icon: 'fa-wind' });
+    },
+    startTurn: null
+},
+{
+    id: 'boreas_raptor', name: 'Boreas, el Raptor', kind: 'Ser', cost: 9, atk: 1, hp: 1,
+    icon: 'fa-wind',
+    desc: 'Al entrar: Devolver 2 rivales al mazo.',
+    lore: 'Boreas no solo sopla: tambien rapta. Se llevo a Oritia, la hija del rey ateniense, y la hizo su esposa. Desde entonces, el viento del norte no se conforma con arrastrar a uno: se lleva a dos, a tres, a todos los que se cruzan en su camino. Los que son raptados por Boreas no vuelven al tablero: vuelven al fondo del mazo, donde el viento los guarda.',
+    art: 'assets/cartas/boreas-raptor.webp',
+    substory: 'boreas',
+    effect: (p, opp) => {
+        devolver(opp, 2);
+        queueFx({ t: 'debuff', side: sideOf(opp), text: 'DEVUELTOS 2', icon: 'fa-wind' });
+    },
+    startTurn: null
+},
+{
+    id: 'ojo_ciclon', name: 'El Ojo del Ciclon', kind: 'Evento', cost: 8, atk: 0, hp: 0,
+    icon: 'fa-hurricane',
+    desc: 'Al entrar: devuelve todos los Seres (aliados y rivales) al fondo de sus mazos.',
+    lore: 'En el centro de la tormenta, hay un ojo. Un lugar de calma absoluta, donde el viento no sopla y el mar no se mueve. Pero cuando el ojo se abre, todo lo que esta a su alrededor es arrastrado: aliados, rivales, Seres y Tokens. No queda nada en el tablero. Solo el silencio, y el recuerdo de lo que una vez estuvo alli.',
+    art: 'assets/cartas/boreas-ojo-ciclon.webp',
+    substory: 'boreas',
+    effect: (p, opp) => {
+        // Devuelve todos los Seres de ambos tableros al fondo de sus mazos.
+        let allP1 = p.activeBoard.slice();
+        let allP2 = opp.activeBoard.slice();
+        allP1.forEach(c => {
+            if (c.kind === 'Ser') {
+                p.activeBoard.splice(p.activeBoard.indexOf(c), 1);
+                p.deck.push({ ...c });
+                queueFx({ t: 'debuff', side: sideOf(p), uid: c.uid, text: 'DEVUELTO', icon: 'fa-hurricane' });
+            }
+        });
+        allP2.forEach(c => {
+            if (c.kind === 'Ser') {
+                opp.activeBoard.splice(opp.activeBoard.indexOf(c), 1);
+                opp.deck.push({ ...c });
+                queueFx({ t: 'debuff', side: sideOf(opp), uid: c.uid, text: 'DEVUELTO', icon: 'fa-hurricane' });
+            }
+        });
+    },
+    startTurn: null
 }
         ];
 

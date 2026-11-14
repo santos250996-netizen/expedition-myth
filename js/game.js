@@ -809,3 +809,19 @@ function addBendicion(player, X) {
         player.deck.push({ ...bendiciones[0] });
     }
 }
+
+// --- KEYWORD: DEVOLVER X ---
+// Devuelve X Seres del tablero al mazo de su dueno (al fondo).
+// No mata: el Ser desaparece del tablero y se anade al fondo
+// del mazo (tarda en volver a jugarse).
+function devolver(player, X) {
+    let serres = player.activeBoard.filter(c => c.kind === 'Ser' && !c.dying);
+    if (!serres.length) return;
+    for (let i = 0; i < X && serres.length > 0; i++) {
+        let chosen = serres[Math.floor(Math.random() * serres.length)];
+        player.activeBoard.splice(player.activeBoard.indexOf(chosen), 1);
+        player.deck.push({ ...chosen });
+        serres = serres.filter(c => c !== chosen);
+        queueFx({ t: 'debuff', side: sideOf(player), uid: chosen.uid, text: 'DEVUELTO', icon: 'fa-wind' });
+    }
+}

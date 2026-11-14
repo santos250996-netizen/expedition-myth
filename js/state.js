@@ -297,6 +297,11 @@ const CARD_FAMILIES = {
         id: 'apolo',
         name: 'Oraculo de Apolo',
         forms: ['oraculo_apolo', 'heraldo_peste', 'bendecida_apolo']
+    },
+    boreas: {
+        id: 'boreas',
+        name: 'Boreas, el Viento del Norte',
+        forms: ['boreas_viento', 'boreas_raptor', 'ojo_ciclon']
     }
 };
 
@@ -967,6 +972,38 @@ const CARD_MISSIONS = {
         type: 'wins', count: 5, previousCardId: 'heraldo_peste',
         familyId: 'apolo', formIndex: 2,
         description: 'Gana 5 combates con Heraldo de la Peste en el tablero.'
+    },
+
+    // Familia boreas
+    boreas_raptor: {
+        type: 'games_with', count: 10, previousCardId: 'boreas_viento',
+        familyId: 'boreas', formIndex: 1,
+        description: 'Juega a Boreas, el Viento del Norte en 10 partidas distintas.'
+    },
+    boreas_raptor_2: {
+        type: 'wins', count: 5, previousCardId: 'boreas_viento',
+        familyId: 'boreas', formIndex: 1,
+        description: 'Gana 5 combates con Boreas, el Viento del Norte en el tablero.'
+    },
+    ojo_ciclon: {
+        type: 'games_with', count: 15, previousCardId: 'boreas_viento',
+        familyId: 'boreas', formIndex: 2,
+        description: 'Juega a Boreas, el Viento del Norte en 15 partidas distintas.'
+    },
+    ojo_ciclon_2: {
+        type: 'wins', count: 10, previousCardId: 'boreas_viento',
+        familyId: 'boreas', formIndex: 2,
+        description: 'Gana 10 combates con Boreas, el Viento del Norte en el tablero.'
+    },
+    ojo_ciclon_3: {
+        type: 'games_with', count: 10, previousCardId: 'boreas_raptor',
+        familyId: 'boreas', formIndex: 2,
+        description: 'Juega a Boreas, el Raptor en 10 partidas distintas.'
+    },
+    ojo_ciclon_4: {
+        type: 'wins', count: 5, previousCardId: 'boreas_raptor',
+        familyId: 'boreas', formIndex: 2,
+        description: 'Gana 5 combates con Boreas, el Raptor en el tablero.'
     }
 };
 

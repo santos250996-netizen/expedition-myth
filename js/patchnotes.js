@@ -7,6 +7,26 @@
 
 const PATCH_NOTES = [
     {
+        version: '1.11.7',
+        date: '2026-11-14',
+        title: 'Familia boreas + Devolver X',
+        highlights: [
+            'Nueva familia boreas: Boreas Viento, Boreas Raptor, Ojo del Ciclon',
+            'Nueva keyword Devolver X (devuelve Seres al mazo)',
+            'Devolver X = 8 PPT, multi-target x2'
+        ],
+        changes: {
+            new: [
+                'Familia boreas: boreas_viento (base, Devolver 1), boreas_raptor (forma 2, Devolver 2), ojo_ciclon (forma 3, devuelve todos los Seres).',
+                'Keyword Devolver X: devuelve X Seres al mazo de su dueno (al fondo). PPT 8 (multi-target x2).'
+            ],
+            buffs: [],
+            nerfs: [],
+            fixes: [],
+            removed: []
+        }
+    },
+    {
         version: '1.11.6',
         date: '2026-11-14',
         title: 'Familia apolo + Laberinto de Creta',
