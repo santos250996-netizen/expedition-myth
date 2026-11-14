@@ -7,7 +7,11 @@
 //    revalidate: respuesta instantánea desde caché y refresco en segundo
 //    plano. Reabrir el juego no vuelve a descargar ninguna imagen.
 // Para publicar cambios: subir la versión de CACHE (y los ?v= del HTML).
-const CACHE = 'nexo-v20261122s';
+// v1.11.2: los 20 SFX cambian de CONTENIDO sin cambiar de ruta (sin ?v=),
+// y un 304 Not Modified impide que el SWR refresque una misma URL. Un CACHE
+// nuevo fuerza reinstall + precache completo (los .ogg se re-descargan) y
+// el activate purga el cache anterior con los SFX viejos.
+const CACHE = 'nexo-v20261122t';
 
 const PRECACHE = [
     './', './index.html', './manifest.json', './icon.svg',
