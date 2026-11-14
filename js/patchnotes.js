@@ -7,6 +7,29 @@
 
 const PATCH_NOTES = [
     {
+        version: '1.11.3',
+        date: '2026-11-14',
+        title: 'Sonidos agrupados, avatar en perfil y fix eventos',
+        highlights: [
+            'Los sonidos del mismo tipo suenan una sola vez por tick',
+            'El boton de perfil muestra el avatar seleccionado',
+            'Fix: los eventos se desbloquean correctamente al ganar el Cap 1'
+        ],
+        changes: {
+            new: [
+                'Boton de perfil con imagen del avatar seleccionado (fallback al icono de usuario).',
+                'Agrupacion de sonidos por tick: si el mismo sonido se dispara 2+ veces en el mismo tick, suena una sola vez.'
+            ],
+            buffs: [],
+            nerfs: [],
+            fixes: [
+                'Los eventos se desbloquean al ganar el Cap 1 (comparacion de id numero/string normalizada).',
+                'El boton de eventos se actualiza inmediatamente al terminar la partida (updateEventsButtonState en showGameOver).'
+            ],
+            removed: []
+        }
+    },
+    {
         version: '1.11.1',
         date: '2026-11-13',
         title: 'Musica de fondo completa',

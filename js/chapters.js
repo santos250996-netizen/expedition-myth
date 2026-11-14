@@ -91,7 +91,11 @@ function getCompletedChapters() {
     try { return JSON.parse(raw); } catch(e) { return []; }
 }
 
-function isChapterCompleted(id) { return getCompletedChapters().includes(id); }
+// v1.11.3: comparacion de id normalizada a string (el id puede haberse
+// guardado como numero 1 y compararse con '1', o viceversa).
+function isChapterCompleted(id) {
+    return getCompletedChapters().some(cid => String(cid) === String(id));
+}
 
 function markChapterCompleted(id) {
     let done = getCompletedChapters();

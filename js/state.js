@@ -95,7 +95,11 @@ function getCompletedEvents() {
     try { return JSON.parse(raw); } catch(e) { return []; }
 }
 
-function isEventCompleted(id) { return getCompletedEvents().includes(id); }
+// v1.11.3: comparacion de id normalizada a string (numero vs string).
+// La funcion vive aqui, no en chapters.js como decia el mapa del paquete.
+function isEventCompleted(id) {
+    return getCompletedEvents().some(eid => String(eid) === String(id));
+}
 
 function markEventCompleted(id) {
     let done = getCompletedEvents();

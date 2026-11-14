@@ -100,6 +100,7 @@ window.onload = () => {
 
     // Cargar perfil y configuración
     loadProfile();
+    updateProfileButton();
     renderProfile();
     checkNewVersion();
     updateEventsButtonState();

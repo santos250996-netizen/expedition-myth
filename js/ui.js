@@ -1321,6 +1321,23 @@ function renderProfile() {
             </div>
         `;
     }
+    updateProfileButton();
+}
+
+// v1.11.3: el boton de perfil del HUD muestra el arte del avatar
+// seleccionado; si el avatar ya no existe, fallback al icono de usuario.
+function updateProfileButton() {
+    let btn = document.getElementById('btn-profile');
+    let icon = document.getElementById('btn-profile-icon');
+    if (!btn) return;
+    let avatarCard = ALL_CARDS.find(c => c.id === playerProfile.avatarId);
+    if (avatarCard) {
+        btn.style.backgroundImage = `url('${avatarCard.art}')`;
+        if (icon) icon.style.display = 'none';
+    } else {
+        btn.style.backgroundImage = '';
+        if (icon) icon.style.display = '';
+    }
 }
 
 function saveProfileName() {

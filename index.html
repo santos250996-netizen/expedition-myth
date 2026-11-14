@@ -12,9 +12,9 @@
          Tailwind va precompilado (solo las clases usadas): el runtime del
          Play CDN recompilaba estilos en cada mutación del DOM y lastraba
          el render. -->
-    <link rel="stylesheet" href="css/vendor/tailwind.min.css?v=20261122s">
+    <link rel="stylesheet" href="css/vendor/tailwind.min.css?v=20261122t">
     <link href="css/vendor/all.min.css" rel="stylesheet">
-    <link rel="stylesheet" href="css/styles.css?v=20261122s">
+    <link rel="stylesheet" href="css/styles.css?v=20261122t">
 </head>
 <body class="bg-black flex justify-center items-center">
 
@@ -28,8 +28,8 @@
         
         <!-- BOTONES GLOBALES -->
         <div id="global-top-buttons" class="absolute top-3 left-0 right-0 z-50 flex justify-between px-3 pointer-events-none">
-            <button id="btn-profile" onclick="switchView('view-profile'); renderProfile();" class="pointer-events-auto w-12 h-12 rounded-full bg-slate-900/80 border border-slate-700 flex items-center justify-center text-slate-300 hover:text-white hover:border-slate-500 transition active:scale-95">
-                <i class="fa-solid fa-user text-xl"></i>
+            <button id="btn-profile" onclick="switchView('view-profile'); renderProfile();" class="pointer-events-auto w-12 h-12 rounded-full bg-slate-900/80 border border-cyan-400 flex items-center justify-center text-slate-300 hover:text-white hover:border-cyan-300 transition active:scale-95 overflow-hidden bg-cover bg-center">
+                <i id="btn-profile-icon" class="fa-solid fa-user text-xl"></i>
             </button>
             <button id="btn-settings" onclick="switchView('view-settings');" class="pointer-events-auto relative w-12 h-12 rounded-full bg-slate-900/80 border border-slate-700 flex items-center justify-center text-slate-300 hover:text-white hover:border-slate-500 transition active:scale-95">
                 <i class="fa-solid fa-gear text-xl"></i>
@@ -453,16 +453,16 @@
     </div>
 
 
-    <script src="js/audio.js?v=20261122s"></script>
-    <script src="js/cards.js?v=20261122s"></script>
-    <script src="js/state.js?v=20261122s"></script>
-    <script src="js/fx.js?v=20261122s"></script>
-    <script src="js/deck.js?v=20261122s"></script>
-    <script src="js/chapters.js?v=20261122s"></script>
-    <script src="js/patchnotes.js?v=20261122s"></script>
-    <script src="js/ui.js?v=20261122s"></script>
-    <script src="js/game.js?v=20261122s"></script>
-    <script src="js/dev.js?v=20261122s"></script>
-<script src="js/main.js?v=20261122s"></script>
+    <script src="js/audio.js?v=20261122t"></script>
+    <script src="js/cards.js?v=20261122t"></script>
+    <script src="js/state.js?v=20261122t"></script>
+    <script src="js/fx.js?v=20261122t"></script>
+    <script src="js/deck.js?v=20261122t"></script>
+    <script src="js/chapters.js?v=20261122t"></script>
+    <script src="js/patchnotes.js?v=20261122t"></script>
+    <script src="js/ui.js?v=20261122t"></script>
+    <script src="js/game.js?v=20261122t"></script>
+    <script src="js/dev.js?v=20261122t"></script>
+<script src="js/main.js?v=20261122t"></script>
 </body>
 </html>
