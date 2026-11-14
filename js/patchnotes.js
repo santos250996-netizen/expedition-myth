@@ -7,6 +7,32 @@
 
 const PATCH_NOTES = [
     {
+        version: '1.11.5',
+        date: '2026-11-14',
+        title: 'Fix del sistema de misiones',
+        highlights: [
+            'Las misiones de kills_with, exile_with e invoke_with cuentan por carta concreta',
+            'Las misiones de eventos (exile_with) ya se completan',
+            'wins y games_with cuentan si la carta estuvo en el mazo',
+            'fortalecer_with y glory_with cuentan por carta concreta'
+        ],
+        changes: {
+            new: [
+                '_currentCaster: el motor propaga la carta que hace la accion por dealDamage, exilio, summonCard, killCard, startTurn, embestida, enfurecer.'
+            ],
+            buffs: [],
+            nerfs: [],
+            fixes: [
+                'kills_with: solo cuenta para la carta que mata (antes sumaba a todas las vivas).',
+                'exile_with: los eventos ya pueden completar sus misiones (antes no estaban en activeBoard).',
+                'invoke_with: solo cuenta para la carta que invoca (antes sumaba a todas las vivas).',
+                'fortalecer_with y glory_with: cuentan por carta concreta (antes sumaban a todas las del mazo/tablero).',
+                'wins y games_with: cuentan si la carta estuvo en el mazo (antes solo si estaba en tablero al final).'
+            ],
+            removed: []
+        }
+    },
+    {
         version: '1.11.4',
         date: '2026-11-14',
         title: 'Accesibilidad y legibilidad',

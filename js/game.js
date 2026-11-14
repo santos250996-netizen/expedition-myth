@@ -1,6 +1,10 @@
 // --- LÓGICA DE COMBATE ---
 // Reloj de turnos, despliegue por energía, resolución de efectos y fin de partida.
 
+// Actor de la accion actual (carta que dispara un efecto). Se usa para
+// trackear misiones por carta concreta, no por todas las del tablero (v1.11.5).
+let _currentCaster = null;
+
 // Descuento de Eventos: cada aura viva en tablero (Profecía c20, Guardián
 // de Delfos c32) abarata los Eventos en 1 Energía, mínimo 0; el Oráculo c8
 // aporta -1 SOLO para el próximo Evento (trigger al entrar, se consume al
@@ -31,7 +35,7 @@ function expireTempHp(card) {
 // Cuando una carta llega a 0 HP, se marca como dying, se mueve a deathQueue
 // (para que se vea su animación) y se RETIRA del tablero inmediatamente.
 // Así no ocupa fila y los efectos posteriores ya no la ven.
-function killCard(card, side) {
+function killCard(card, side, caster) {
     if (!card || card.dying) return;
     card.dying = true;
     if (!gameState.deathQueue) gameState.deathQueue = [];
@@ -39,10 +43,10 @@ function killCard(card, side) {
     let board = side === 'p1' ? gameState.p1.activeBoard : gameState.p2.activeBoard;
     let idx = board.indexOf(card);
     if (idx > -1) board.splice(idx, 1);
-    // Mision kills_with: Seres rivales destruidos mientras la carta
-    // previousCardId esta viva en el tablero del jugador (v1.9.4).
-    if (card.kind === 'Ser' && side === 'p2') {
-        gameState.p1.activeBoard.forEach(k => { if (!k.dying) trackMission(k.id, 'kills_with', 1); });
+    // Mision kills_with: solo cuenta para la carta que mato (caster),
+    // no para todas las vivas del tablero (v1.11.5).
+    if (card.kind === 'Ser' && side === 'p2' && caster) {
+        trackMission(caster.id, 'kills_with', 1);
     }
     // Reacción al morir (Vaca de Madera Hueca a8, Serpientes de la Cabeza b2).
     if (card.onDeath) {
@@ -56,7 +60,7 @@ function killCard(card, side) {
 // fuente de daño (choques de Embestida y eventos) pasa por aquí para que
 // la reacción al daño (Titán Menor c12: +1 ATK permanente) no dependa de
 // quién golpea; la reacción solo dispara si el golpeado sobrevive.
-function dealDamage(target, amount, side, sourcePlayer) {
+function dealDamage(target, amount, side, sourcePlayer, caster) {
     if (!target || target.dying || target.stunned) return;
     // Reflejo: si el target tiene Reflejo y el atacante es un jugador concreto
     // (sourcePlayer), se refleja el daño.
@@ -79,7 +83,7 @@ function dealDamage(target, amount, side, sourcePlayer) {
     }
     if (target.hp <= 0) {
         target.hp = 0;
-        killCard(target, side || ownerSideOf(target));
+        killCard(target, side || ownerSideOf(target), caster || _currentCaster);
         return;
     }
     if (target.damageReact) target.damageReact(target);
@@ -106,7 +110,9 @@ function embestida(self, player, opp, X) {
     // El trigger dispara el efecto que le siga. El efecto
     // decide el objetivo.
     if (typeof self.embestidaEffect === 'function') {
+        _currentCaster = self;
         self.embestidaEffect(self, player, opp);
+        _currentCaster = null;
     }
 }
 
@@ -120,7 +126,9 @@ function enfurecer(target, dmg) {
         target.enfurecerCounter = 0;
         playSfx('enfurecer');
         try {
+            _currentCaster = target;
             target.enfurecerEffect(target, gameState[ownerSideOf(target)]);
+            _currentCaster = null;
         } catch (e) { console.error('enfurecer:', e); }
     }
 }
@@ -143,10 +151,10 @@ function exilio(player, opp, X) {
     queueFx({ t: 'exilio', side: sideOf(opp), uid: target.uid });
     playSfx('exilio');
 
-    // Mision exile_with: exilios a Seres rivales mientras la carta
-    // previousCardId esta viva en el tablero del jugador (v1.9.4).
-    if (player === gameState.p1 && target.kind === 'Ser') {
-        gameState.p1.activeBoard.forEach(k => { if (!k.dying) trackMission(k.id, 'exile_with', 1); });
+    // Mision exile_with: solo cuenta para la carta que exilia (caster),
+    // incluidos los Eventos, que no estan en activeBoard (v1.11.5).
+    if (player === gameState.p1 && target.kind === 'Ser' && _currentCaster) {
+        trackMission(_currentCaster.id, 'exile_with', 1);
     }
 
     // SISTEMA DE FAMILIAS: mision exilio_received
@@ -217,10 +225,10 @@ function summonCard(player, cardTemplate) {
         immuneThisTurn: false,
         enfurecerCounter: 0
     };
-    // Mision invoke_with: invocaciones hechas desde un efecto mientras la
-    // carta previousCardId esta viva en el tablero del jugador (v1.9.4).
-    if (gameState._inEffect && player === gameState.p1) {
-        gameState.p1.activeBoard.forEach(k => { if (!k.dying) trackMission(k.id, 'invoke_with', 1); });
+    // Mision invoke_with: solo cuenta para la carta que invoca (caster)
+    // desde un efecto; los Eventos tambien cuentan, no estan en activeBoard (v1.11.5).
+    if (gameState._inEffect && player === gameState.p1 && _currentCaster) {
+        trackMission(_currentCaster.id, 'invoke_with', 1);
     }
     player.activeBoard.unshift(inst);
     gameState.justDeployed.push(inst.uid);
@@ -329,12 +337,18 @@ function gameTick() {
             (gameState.pendingStrikes || []).splice(0).forEach(s => {
                 let t = s.opp.activeBoard[0];
                 if (t && !t.dying) {
-                    dealDamage(t, 3, sideOf(s.opp));
+                    _currentCaster = s.caster;
+                    dealDamage(t, 3, sideOf(s.opp), null, s.caster);
                     queueFx({ t: 'debuff', side: sideOf(s.opp), uid: t.uid, text: '-3 HP', icon: 'fa-house-crack', overlay: 'hit' });
+                    _currentCaster = null;
                 }
             });
-            gameState.p1.activeBoard.slice().forEach(card => { if(card.startTurn) card.startTurn(card, gameState.p1, gameState.p2); });
-            gameState.p2.activeBoard.slice().forEach(card => { if(card.startTurn) card.startTurn(card, gameState.p2, gameState.p1); });
+            gameState.p1.activeBoard.slice().forEach(card => {
+                if (card.startTurn) { _currentCaster = card; card.startTurn(card, gameState.p1, gameState.p2); _currentCaster = null; }
+            });
+            gameState.p2.activeBoard.slice().forEach(card => {
+                if (card.startTurn) { _currentCaster = card; card.startTurn(card, gameState.p2, gameState.p1); _currentCaster = null; }
+            });
             gameState.clashQueue.forEach(h => {
                 dealDamage(h.target, h.amount || 1, h.side || ownerSideOf(h.target));
             });
@@ -467,10 +481,12 @@ function gameTick() {
             // Los efectos pueden invocar: los summonCard anidados cuentan
             // para las misiones invoke_with (v1.9.4).
             gameState._inEffect = true;
+            _currentCaster = play.card;
             try {
                 if (play.card.effect) play.card.effect(player, opponent, player.lastPlayed);
             } finally {
                 gameState._inEffect = false;
+                _currentCaster = null;
             }
 
             // Los eventos no entran en tablero: se proyectan como hechizo
@@ -743,18 +759,19 @@ function trackMission(prevCardId, kind, amount) {
 
 // Fortalecer y Gloria se cuentan por FX (los efectos de carta emiten
 // fx 'buff' con '+X ATK' y fx 'gloria' con num/text): el envoltorio
-// mantiene fx.js intacto y suma puntos en contadores globales de partida.
+// mantiene fx.js intacto y suma puntos en contadores POR CARTA concreta,
+// no globales de partida (v1.11.5).
 let _origQueueFx = queueFx;
 queueFx = function(fx) {
     try {
-        if (fx && fx.side === 'p1' && (fx.t === 'buff' || fx.t === 'gloria')) {
+        if (fx && fx.side === 'p1' && (fx.t === 'buff' || fx.t === 'gloria') && _currentCaster) {
             let isAtk = fx.text && fx.text.indexOf('ATK') >= 0;
             if (fx.t === 'buff' && !isAtk) return _origQueueFx(fx);
             let pts = fx.num || 0;
             if (!pts && fx.text) { let m = String(fx.text).match(/\d+/); if (m) pts = parseInt(m[0], 10); }
             if (pts > 0) {
                 if (!gameState.missionCounters) gameState.missionCounters = {};
-                let key = fx.t === 'buff' ? '_fx:fortalecer_with' : '_fx:glory_with';
+                let key = '_caster:' + _currentCaster.id + ':' + (fx.t === 'buff' ? 'fortalecer_with' : 'glory_with');
                 gameState.missionCounters[key] = (gameState.missionCounters[key] || 0) + pts;
             }
         }

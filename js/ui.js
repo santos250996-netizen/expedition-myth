@@ -662,12 +662,12 @@ function flashStat(badge, rose) {
 }
 
 function showGameOver() {
-    // Cartas jugadas por p1 en la partida (tablero + mazo ya robado +
-    // ultima jugada): para misiones de tipo games_with_both.
-    let p1PlayedIds = new Set();
-    gameState.p1.activeBoard.forEach(c => p1PlayedIds.add(c.id));
-    if (gameState.p1.deck) gameState.p1.deck.slice(0, gameState.p1.deckPointer).forEach(c => p1PlayedIds.add(c.id));
-    if (gameState.p1.lastPlayed) p1PlayedIds.add(gameState.p1.lastPlayed.id);
+    // Cartas que el jugador TUVO en el mazo (jugadas o no)
+    // y cartas en tablero al final.
+    let playedIds = new Set();
+    gameState.p1.activeBoard.forEach(c => playedIds.add(c.id));
+    if (gameState.p1.deck) gameState.p1.deck.slice(0, gameState.p1.deckPointer).forEach(c => playedIds.add(c.id));
+    if (gameState.p1.lastPlayed) playedIds.add(gameState.p1.lastPlayed.id);
     let p1Score = gameState.p1.score;
     let p2Score = gameState.p2.score;
     let title = document.getElementById('gameover-title');
@@ -792,8 +792,9 @@ function showGameOver() {
     }
 
     // Trackear misiones de tipo "wins" y "games_with".
-    let uniqueCardIds = new Set(gameState.p1.activeBoard.map(c => c.id));
-    uniqueCardIds.forEach(cardId => {
+    // Para games_with y wins, contar si la previousCardId
+    // esta en playedIds (se jugo o estuvo en el mazo) (v1.11.5).
+    playedIds.forEach(cardId => {
         for (let missionCardId in CARD_MISSIONS) {
             let mission = CARD_MISSIONS[missionCardId];
             if (mission.previousCardId === cardId) {
@@ -808,7 +809,7 @@ function showGameOver() {
                 } else if (mission.type === 'games_with_both') {
                     // Ambas cartas deben haber sido jugadas en la partida.
                     // El desbloqueo lo centraliza consumeMissionCounters.
-                    if (p1PlayedIds.has(mission.previousCardId) && p1PlayedIds.has(mission.secondCardId)) {
+                    if (playedIds.has(mission.previousCardId) && playedIds.has(mission.secondCardId)) {
                         let progress = getProgressFor(missionCardId);
                         updateProgressFor(missionCardId, { gamesWith: (progress.gamesWith || 0) + 1 });
                     }
@@ -846,18 +847,24 @@ function showGameOver() {
 // cuando TODAS sus misiones estan completadas.
 function consumeMissionCounters() {
     let counters = gameState.missionCounters || {};
-    let aliveIds = new Set(gameState.p1.activeBoard.filter(c => !c.dying).map(c => c.id));
-    let prevIds = new Set([...aliveIds, ...playerDeck]);
-    let keyFor = { kills_with: 'killsWith', invoke_with: 'invokeWith', exile_with: 'exileWith', fortalecer_with: 'fortalecerWith', glory_with: 'gloryWith' };
-    let fxKeys = { fortalecer_with: '_fx:fortalecer_with', glory_with: '_fx:glory_with' };
     for (let mid in CARD_MISSIONS) {
         let mission = CARD_MISSIONS[mid];
-        let key = keyFor[mission.type];
+        let key = null;
+        if (mission.type === 'kills_with') key = 'killsWith';
+        if (mission.type === 'invoke_with') key = 'invokeWith';
+        if (mission.type === 'exile_with') key = 'exileWith';
+        if (mission.type === 'fortalecer_with') key = 'fortalecerWith';
+        if (mission.type === 'glory_with') key = 'gloryWith';
         if (!key) continue;
-        let inc;
-        if (fxKeys[mission.type]) {
-            if (!prevIds.has(mission.previousCardId)) continue;
-            inc = counters[fxKeys[mission.type]] || 0;
+        // Buscar el contador por carta concreta.
+        // Para kills/invoke/exile: el contador es directamente
+        // counters[mid] (se incrementa desde trackMission).
+        // Para fortalecer/glory: el contador es
+        // counters['_caster:' + previousCardId + ':' + type].
+        let inc = 0;
+        if (mission.type === 'fortalecer_with' || mission.type === 'glory_with') {
+            let fxKey = '_caster:' + mission.previousCardId + ':' + mission.type;
+            inc = counters[fxKey] || 0;
         } else {
             inc = counters[mid] || 0;
         }
