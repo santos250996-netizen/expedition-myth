@@ -7,6 +7,32 @@
 
 const PATCH_NOTES = [
     {
+        version: '1.11.6',
+        date: '2026-11-14',
+        title: 'Familia apolo + Laberinto de Creta',
+        highlights: [
+            'Laberinto de Creta: coste 4 -> 2, efecto de Gloria por Exilio',
+            'Nueva familia apolo: Oraculo, Heraldo y Bendecida',
+            'Nuevas keywords: Plaga X y Bendicion X',
+            'Tokens de evento Plaga y Bendicion'
+        ],
+        changes: {
+            new: [
+                'Laberinto de Creta (a10): coste 2, durante el resto de la partida cada Exilio da +2 Gloria.',
+                'Familia apolo: Oraculo de Apolo (base, Plaga 3 + Bendicion 3), Heraldo de la Peste (Plaga 4), Bendecida por Apolo (Bendicion 2).',
+                'Tokens de evento: Plaga (resta 2 Gloria al que la juega) y Bendicion (da 2 Gloria al que la juega).',
+                'Keyword Plaga X: anade X cartas de Plaga al mazo rival (al fondo). PPT 0.5X.',
+                'Keyword Bendicion X: anade X cartas de Bendicion a tu mazo (al fondo). PPT 0.5X.'
+            ],
+            buffs: [],
+            nerfs: [
+                'Laberinto de Creta: coste 4 -> 2.'
+            ],
+            fixes: [],
+            removed: []
+        }
+    },
+    {
         version: '1.11.5',
         date: '2026-11-14',
         title: 'Fix del sistema de misiones',

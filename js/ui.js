@@ -390,6 +390,32 @@ function updateHUD() {
     // robo de Hermes (c40) y cualquier mutación del mazo durante el combate.
     renderNextBox('p1', (gameState.p1.deck || playerDeck)[gameState.p1.deckPointer], gameState.p1);
     renderNextBox('p2', (gameState.p2.deck || rivalDeck)[gameState.p2.deckPointer], gameState.p2);
+
+    // Contador de Plaga en el mazo rival (v1.11.6)
+    let p2PlagaCount = (gameState.p2.deck || []).filter(c => c.id === 'plaga').length;
+    let p2PlagaEl = document.getElementById('p2-plaga-count');
+    if (!p2PlagaEl) {
+        p2PlagaEl = document.createElement('div');
+        p2PlagaEl.id = 'p2-plaga-count';
+        p2PlagaEl.className = 'absolute top-16 right-2 text-red-400 text-xs font-bold';
+        let p2Header = document.querySelector('#view-game .flex.items-center.justify-end');
+        if (p2Header) p2Header.parentElement.appendChild(p2PlagaEl);
+    }
+    p2PlagaEl.innerHTML = p2PlagaCount > 0 ? `<i class="fa-solid fa-skull"></i> ${p2PlagaCount}` : '';
+    p2PlagaEl.style.display = p2PlagaCount > 0 ? 'block' : 'none';
+
+    // Contador de Bendicion en tu mazo (v1.11.6)
+    let p1BendCount = (gameState.p1.deck || []).filter(c => c.id === 'bendicion').length;
+    let p1BendEl = document.getElementById('p1-bend-count');
+    if (!p1BendEl) {
+        p1BendEl = document.createElement('div');
+        p1BendEl.id = 'p1-bend-count';
+        p1BendEl.className = 'absolute top-16 left-2 text-amber-400 text-xs font-bold';
+        let p1Header = document.querySelector('#view-game .flex.items-center.gap-2');
+        if (p1Header) p1Header.parentElement.appendChild(p1BendEl);
+    }
+    p1BendEl.innerHTML = p1BendCount > 0 ? `<i class="fa-solid fa-sun"></i> ${p1BendCount}` : '';
+    p1BendEl.style.display = p1BendCount > 0 ? 'block' : 'none';
 }
 
 // Cuenta animada del marcador (rAF, easing de salida).

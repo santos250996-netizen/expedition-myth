@@ -151,6 +151,17 @@ function exilio(player, opp, X) {
     queueFx({ t: 'exilio', side: sideOf(opp), uid: target.uid });
     playSfx('exilio');
 
+    // Efecto del Laberinto de Creta (a10): cada jugador
+    // con laberintoActive gana 2 Gloria por cada Exilio.
+    if (gameState.p1.laberintoActive) {
+        gameState.p1.score += 2;
+        queueFx({ t: 'gloria', side: 'p1', text: '+2 GLORIA', icon: 'fa-dungeon', num: 2 });
+    }
+    if (gameState.p2.laberintoActive) {
+        gameState.p2.score += 2;
+        queueFx({ t: 'gloria', side: 'p2', text: '+2 GLORIA', icon: 'fa-dungeon', num: 2 });
+    }
+
     // Mision exile_with: solo cuenta para la carta que exilia (caster),
     // incluidos los Eventos, que no estan en activeBoard (v1.11.5).
     if (player === gameState.p1 && target.kind === 'Ser' && _currentCaster) {
@@ -597,8 +608,8 @@ function gameTick() {
             gameState.fxQueue = [];
             gameState.clashQueue = [];
             gameState.deathQueue = [];
-            gameState.p1 = { score: 0, energy: 0, deckPointer: 0, activeBoard: [], lastPlayed: null, extraPoints: 0, pendingEventDiscount: 0 };
-            gameState.p2 = { score: 0, energy: 0, deckPointer: 0, activeBoard: [], lastPlayed: null, extraPoints: 0, pendingEventDiscount: 0 };
+            gameState.p1 = { score: 0, energy: 0, deckPointer: 0, activeBoard: [], lastPlayed: null, extraPoints: 0, pendingEventDiscount: 0, laberintoActive: false };
+            gameState.p2 = { score: 0, energy: 0, deckPointer: 0, activeBoard: [], lastPlayed: null, extraPoints: 0, pendingEventDiscount: 0, laberintoActive: false };
             gameState.pendingStrikes = [];
             // Copias de mazo por partida (DESPUÉS de re-crear p1/p2): el robo
             // de Hermes (c40) y cualquier mutación juegan sobre la copia, no
@@ -778,3 +789,23 @@ queueFx = function(fx) {
     } catch (e) { console.error('missionTrackFx:', e); }
     _origQueueFx(fx);
 };
+
+// --- KEYWORD: PLAGA X ---
+// Anade X cartas de Plaga al mazo rival (al fondo).
+function addPlaga(player, X) {
+    let plagas = ALL_CARDS.filter(c => c.id === 'plaga');
+    if (!plagas.length) return;
+    for (let i = 0; i < X; i++) {
+        player.deck.push({ ...plagas[0] });
+    }
+}
+
+// --- KEYWORD: BENDICION X ---
+// Anade X cartas de Bendicion al mazo aliado (al fondo).
+function addBendicion(player, X) {
+    let bendiciones = ALL_CARDS.filter(c => c.id === 'bendicion');
+    if (!bendiciones.length) return;
+    for (let i = 0; i < X; i++) {
+        player.deck.push({ ...bendiciones[0] });
+    }
+}

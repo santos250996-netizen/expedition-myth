@@ -260,13 +260,16 @@ const ALL_CARDS = [
     startTurn: null
 },
 {
-    id: 'a10', name: 'Laberinto de Creta', kind: 'Evento', cost: 4, atk: 0, hp: 0,
+    id: 'a10', name: 'Laberinto de Creta', kind: 'Evento', cost: 2, atk: 0, hp: 0,
     icon: 'fa-dungeon',
-    desc: 'Al entrar: Exilio 2 a 1 rival aleatorio.',
-    lore: 'En las profundidades del palacio de Cnosos, bajo los cimientos de piedra, se extiende una red de pasillos que no llevan a ninguna parte. Sus muros son fríos, sus antorchas no dan calor, y el aire huele a polvo y a miedo. Quien entra en el Laberinto de Creta no encuentra la salida: encuentra el silencio, y luego los pasos de algo que se arrastra en la oscuridad.',
+    desc: 'Al entrar: durante el resto de la partida, cada vez que se exilie una carta, ganas 2 Gloria.',
+    lore: 'En las profundidades del palacio de Cnosos, bajo los cimientos de piedra, se extiende una red de pasillos que no llevan a ninguna parte. Sus muros son frios, sus antorchas no dan calor, y el aire huele a polvo y a miedo. Quien entra en el Laberinto de Creta no encuentra la salida: encuentra el silencio, y luego los pasos de algo que se arrastra en la oscuridad.',
     art: 'assets/cartas/asterion-a10-construccion-laberinto.webp',
     substory: 'asterion',
-    effect: (p, opp) => { exilio(p, opp, 2); },
+    effect: (p) => {
+        p.laberintoActive = true;
+        queueFx({ t: 'buff', side: sideOf(p), text: 'LABERINTO ACTIVO', icon: 'fa-dungeon' });
+    },
     startTurn: null
 },
 {
@@ -982,6 +985,71 @@ const ALL_CARDS = [
             dealDamage(c, 2, sideOf(opp));
             queueFx({ t: 'debuff', side: sideOf(opp), uid: c.uid, text: '-2 HP', icon: 'fa-bullhorn', overlay: 'hit' });
         });
+    },
+    startTurn: null
+},
+{
+    id: 'plaga', name: 'Plaga', kind: 'Token', subtype: 'Evento', cost: 0, atk: 0, hp: 0,
+    icon: 'fa-skull',
+    desc: 'Al jugarse: -2 Gloria al que la juega.',
+    lore: 'Una flecha de Apolo, invisible, se clava en el corazon del campamento. La fiebre prende en los cuerpos, y los hombres caen sin remedio.',
+    art: 'assets/cartas/plaga.webp',
+    effect: (p, opp) => {
+        p.score = Math.max(0, p.score - 2);
+        queueFx({ t: 'debuff', side: sideOf(p), text: '-2 GLORIA', icon: 'fa-skull' });
+    },
+    startTurn: null
+},
+{
+    id: 'bendicion', name: 'Bendicion', kind: 'Token', subtype: 'Evento', cost: 0, atk: 0, hp: 0,
+    icon: 'fa-sun',
+    desc: 'Al jugarse: +2 Gloria al que la juega.',
+    lore: 'La copa de Apolo se derrama sobre el campo, y donde toca la tierra, las plantas crecen y los hombres sanan.',
+    art: 'assets/cartas/bendicion.webp',
+    effect: (p, opp) => {
+        p.score += 2;
+        queueFx({ t: 'gloria', side: sideOf(p), text: '+2 GLORIA', icon: 'fa-sun', num: 2 });
+    },
+    startTurn: null
+},
+{
+    id: 'oraculo_apolo', name: 'Oraculo de Apolo', kind: 'Ser', cost: 4, atk: 2, hp: 3,
+    icon: 'fa-hands-praying',
+    desc: 'Al entrar: Plaga 3 + Bendicion 3.',
+    lore: 'En el templo de Apolo, el sacerdote sostiene dos copas: una llena de veneno, otra de miel. Con la primera maldice a los enemigos del dios; con la segunda bendice a sus fieles. Los que beben del veneno caen enfermos; los que beben de la miel sanan y prosperan. El sacerdote no elige: Apolo decide a traves de el, y su voluntad es tan impredecible como la peste.',
+    art: 'assets/cartas/apolo-oraculo.webp',
+    substory: 'apolo',
+    effect: (p, opp) => {
+        addPlaga(opp, 3);
+        addBendicion(p, 3);
+        queueFx({ t: 'debuff', side: sideOf(opp), text: 'PLAGA 3', icon: 'fa-skull' });
+        queueFx({ t: 'buff', side: sideOf(p), text: 'BENDICION 3', icon: 'fa-sun' });
+    },
+    startTurn: null
+},
+{
+    id: 'heraldo_peste', name: 'Heraldo de la Peste', kind: 'Ser', cost: 4, atk: 3, hp: 3,
+    icon: 'fa-crow',
+    desc: 'Al entrar: Plaga 4.',
+    lore: 'Cuando Apolo quiere castigar a los mortales, no baja del Olimpo: envia a su heraldo. Es un hombre flaco, de mirada hueca y tunica raida, que camina de pueblo en pueblo anunciando la llegada de la peste. Donde el entra, los animales mueren primero, luego los ninos, y despues los adultos. No es un asesino: es un mensajero. Y su mensaje siempre se cumple.',
+    art: 'assets/cartas/apolo-heraldo-peste.webp',
+    substory: 'apolo',
+    effect: (p, opp) => {
+        addPlaga(opp, 4);
+        queueFx({ t: 'debuff', side: sideOf(opp), text: 'PLAGA 4', icon: 'fa-crow' });
+    },
+    startTurn: null
+},
+{
+    id: 'bendecida_apolo', name: 'Bendecida por Apolo', kind: 'Ser', cost: 3, atk: 2, hp: 3,
+    icon: 'fa-sun',
+    desc: 'Al entrar: Bendicion 2.',
+    lore: 'Entre los mortales, hay uno que camina con la luz de Apolo en los ojos. No es un sacerdote, ni un oraculo, ni un rey: es un pastor que, sin saber por que, fue tocado por el dios. Donde el pasa, las cosechas crecen, las heridas sanan, y los hombres sienten que la vida vuelve a sus cuerpos. Pero la bendicion no es gratis: el dios le ha dado su favor, y le ha pedido algo a cambio que el pastor aun no comprende.',
+    art: 'assets/cartas/apolo-bendecida.webp',
+    substory: 'apolo',
+    effect: (p, opp) => {
+        addBendicion(p, 2);
+        queueFx({ t: 'buff', side: sideOf(p), text: 'BENDICION 2', icon: 'fa-sun' });
     },
     startTurn: null
 }

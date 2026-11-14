@@ -11,8 +11,8 @@ let gameState = {
     justDeployed: [],
     fxQueue: [],
     deathQueue: [],
-    p1: { score: 0, energy: 1, deckPointer: 0, activeBoard: [], lastPlayed: null, extraPoints: 0 },
-    p2: { score: 0, energy: 1, deckPointer: 0, activeBoard: [], lastPlayed: null, extraPoints: 0 }
+    p1: { score: 0, energy: 1, deckPointer: 0, activeBoard: [], lastPlayed: null, extraPoints: 0, laberintoActive: false },
+    p2: { score: 0, energy: 1, deckPointer: 0, activeBoard: [], lastPlayed: null, extraPoints: 0, laberintoActive: false }
 };
 
 // --- MODO DESARROLLADOR (DEV) ---
@@ -292,6 +292,11 @@ const CARD_FAMILIES = {
         id: 'mirada',
         name: 'La Mirada de Piedra',
         forms: ['b10', 'estatua_gorgona', 'grito_gorgona']
+    },
+    apolo: {
+        id: 'apolo',
+        name: 'Oraculo de Apolo',
+        forms: ['oraculo_apolo', 'heraldo_peste', 'bendecida_apolo']
     }
 };
 
@@ -930,6 +935,38 @@ const CARD_MISSIONS = {
         type: 'wins', count: 5, previousCardId: 'estatua_gorgona',
         familyId: 'mirada', formIndex: 2,
         description: 'Gana 5 combates con La Estatua de la Gorgona en el mazo.'
+    },
+
+    // Familia apolo
+    heraldo_peste: {
+        type: 'games_with', count: 10, previousCardId: 'oraculo_apolo',
+        familyId: 'apolo', formIndex: 1,
+        description: 'Juega a Oraculo de Apolo en 10 partidas distintas.'
+    },
+    heraldo_peste_2: {
+        type: 'wins', count: 5, previousCardId: 'oraculo_apolo',
+        familyId: 'apolo', formIndex: 1,
+        description: 'Gana 5 combates con Oraculo de Apolo en el tablero.'
+    },
+    bendecida_apolo: {
+        type: 'games_with', count: 15, previousCardId: 'oraculo_apolo',
+        familyId: 'apolo', formIndex: 2,
+        description: 'Juega a Oraculo de Apolo en 15 partidas distintas.'
+    },
+    bendecida_apolo_2: {
+        type: 'wins', count: 10, previousCardId: 'oraculo_apolo',
+        familyId: 'apolo', formIndex: 2,
+        description: 'Gana 10 combates con Oraculo de Apolo en el tablero.'
+    },
+    bendecida_apolo_3: {
+        type: 'games_with', count: 10, previousCardId: 'heraldo_peste',
+        familyId: 'apolo', formIndex: 2,
+        description: 'Juega a Heraldo de la Peste en 10 partidas distintas.'
+    },
+    bendecida_apolo_4: {
+        type: 'wins', count: 5, previousCardId: 'heraldo_peste',
+        familyId: 'apolo', formIndex: 2,
+        description: 'Gana 5 combates con Heraldo de la Peste en el tablero.'
     }
 };
 
