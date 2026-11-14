@@ -1167,3 +1167,40 @@ main,
    text-amber-300 (triggers) y text-cyan-300 (keywords) de Tailwind. --- */
 .keyword-trigger { color: #fbbf24; }  /* ambar */
 .keyword-effect { color: #22d3ee; }   /* cyan */
+
+/* --- ACCESIBILIDAD Y TOUCH (v1.11.4) --- */
+/* Utilidades Tailwind arbitrarias ausentes del build compilado
+   (css/vendor/tailwind.min.css solo genera las clases usadas en origen). */
+.min-h-\[44px\] { min-height: 44px; }
+.min-w-\[44px\] { min-width: 44px; }
+.w-11 { width: 2.75rem; }
+.h-11 { height: 2.75rem; }
+.opacity-60 { opacity: 0.6; }
+
+/* FOCUS VISIBLE (accesibilidad): anillo cian para foco de teclado,
+   sin afectar al raton. Nota: sin border-radius en *:focus-visible
+   porque mutaria la forma del elemento enfocado (botones redondos). */
+*:focus-visible {
+    outline: 2px solid #22d3ee;
+    outline-offset: 2px;
+}
+button:focus-visible,
+a:focus-visible,
+[role="button"]:focus-visible {
+    outline: 2px solid #22d3ee;
+    outline-offset: 2px;
+    box-shadow: 0 0 0 4px rgba(34, 211, 238, 0.3);
+}
+/* Quitar el outline por defecto en :focus (raton) para no duplicar. */
+*:focus:not(:focus-visible) {
+    outline: none;
+}
+
+/* BLOQUE 4: cursor-grab no aporta nada en pantallas tactiles;
+   el drag & drop ya tiene paridad con botones y swipe (deck.js). */
+@media (pointer: coarse) {
+    [draggable="true"] {
+        cursor: default;
+    }
+}
+/* --- FIN ACCESIBILIDAD Y TOUCH (v1.11.4) --- */

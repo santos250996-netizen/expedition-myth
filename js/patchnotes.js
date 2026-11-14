@@ -7,6 +7,33 @@
 
 const PATCH_NOTES = [
     {
+        version: '1.11.4',
+        date: '2026-11-14',
+        title: 'Accesibilidad y legibilidad',
+        highlights: [
+            'Tipografia minima de 11px en labels de sistema',
+            'Touch targets de 44x44 en botones de icono',
+            'Foco visible para teclado (:focus-visible)',
+            'ARIA en modales y toasts',
+            'Contraste mejorado en nav deshabilitado'
+        ],
+        changes: {
+            new: [],
+            buffs: [],
+            nerfs: [],
+            fixes: [
+                'Suelo tipografico de 11px en labels de sistema (antes 8-10px).',
+                'Touch targets de 44x44 en botones de icono (antes 15x25px).',
+                'Anillo de foco visible (:focus-visible) en todos los elementos interactivos.',
+                'Nav deshabilitado (PVP, PROXIMAMENTE) con contraste 7.87:1 (antes 2.66:1).',
+                'ARIA: role="dialog" y aria-modal en modales, aria-live en toasts, aria-label en botones de icono.',
+                'Jerarquia de headings corregida (h4 -> h3).',
+                'cursor-grab oculto en dispositivos tactiles.'
+            ],
+            removed: []
+        }
+    },
+    {
         version: '1.11.3',
         date: '2026-11-14',
         title: 'Sonidos agrupados, avatar en perfil y fix eventos',

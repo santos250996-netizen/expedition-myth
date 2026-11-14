@@ -102,30 +102,30 @@ function renderCardModalContent(card) {
     let typeText = document.getElementById('modal-card-type');
     let statsBox = document.querySelector('.card-stats-box');
     if (displayCard.kind === 'Ser' && displayCard.subtype === 'Vástago') {
-        typeIcon.className = "fa-solid fa-paw text-[8px] text-amber-400";
+        typeIcon.className = "fa-solid fa-paw text-[11px] text-amber-400";
         typeText.innerText = "VÁSTAGO";
-        typeText.className = "bg-amber-600 text-white text-[8px] px-1 rounded font-bold uppercase";
+        typeText.className = "bg-amber-600 text-white text-[11px] px-1 rounded font-bold uppercase";
         document.getElementById('modal-card-atk').innerHTML = displayCard.atk;
         document.getElementById('modal-card-hp').innerHTML = displayCard.hp;
         if (statsBox) statsBox.style.display = 'flex';
     } else if (displayCard.kind === 'Ser') {
-        typeIcon.className = "fa-solid fa-shield-halved text-[8px] text-blue-400";
+        typeIcon.className = "fa-solid fa-shield-halved text-[11px] text-blue-400";
         typeText.innerText = "SER";
-        typeText.className = "bg-blue-600 text-white text-[8px] px-1 rounded font-bold uppercase";
+        typeText.className = "bg-blue-600 text-white text-[11px] px-1 rounded font-bold uppercase";
         document.getElementById('modal-card-atk').innerHTML = displayCard.atk;
         document.getElementById('modal-card-hp').innerHTML = displayCard.hp;
         if (statsBox) statsBox.style.display = 'flex';
     } else if (displayCard.kind === 'Token') {
-        typeIcon.className = "fa-solid fa-shield-halved text-[8px] text-emerald-400";
+        typeIcon.className = "fa-solid fa-shield-halved text-[11px] text-emerald-400";
         typeText.innerText = "TOKEN";
-        typeText.className = "bg-emerald-600 text-white text-[8px] px-1 rounded font-bold uppercase";
+        typeText.className = "bg-emerald-600 text-white text-[11px] px-1 rounded font-bold uppercase";
         document.getElementById('modal-card-atk').innerHTML = displayCard.atk;
         document.getElementById('modal-card-hp').innerHTML = displayCard.hp;
         if (statsBox) statsBox.style.display = 'flex';
     } else {
-        typeIcon.className = "fa-solid fa-bolt text-[8px] text-amber-400";
+        typeIcon.className = "fa-solid fa-bolt text-[11px] text-amber-400";
         typeText.innerText = "EVENTO";
-        typeText.className = "bg-amber-600 text-white text-[8px] px-1 rounded font-bold uppercase";
+        typeText.className = "bg-amber-600 text-white text-[11px] px-1 rounded font-bold uppercase";
         // Los Eventos no tienen stats: se oculta la caja (en modo lore la
         // oculta el CSS con !important, así que no hace falta nada más).
         if (statsBox) statsBox.style.display = 'none';
@@ -145,7 +145,7 @@ function renderCardModalContent(card) {
                 let isTrigger = ['Al entrar','Inicio de turno','Al morir','Embestida','Enfurecer','Sacrificio'].includes(key);
                 let color = isTrigger ? 'text-amber-300' : 'text-cyan-300';
                 let icon = isTrigger ? 'fa-bolt' : 'fa-key';
-                list += `<li class="mb-1 flex gap-1 items-start"><i class="fa-solid ${icon} ${color} text-[8px] mt-1"></i><span class="text-[10px] text-slate-300 leading-tight"><strong class="${color}">${key}:</strong> ${LEYENDAS[key]}</span></li>`;
+                list += `<li class="mb-1 flex gap-1 items-start"><i class="fa-solid ${icon} ${color} text-[11px] mt-1"></i><span class="text-[11px] text-slate-300 leading-tight"><strong class="${color}">${key}:</strong> ${LEYENDAS[key]}</span></li>`;
             });
             infoHtml = `<ul class="space-y-1">${list}</ul>`;
         }
@@ -155,10 +155,10 @@ function renderCardModalContent(card) {
     let infoPanel = document.getElementById('modal-info-content');
     if (infoPanel) {
         if (cardModalMode === 'lore') {
-            infoPanel.innerHTML = `<p class="text-[10px] text-slate-400 italic leading-tight text-center">${displayCard.lore || ''}</p>`;
+            infoPanel.innerHTML = `<p class="text-[11px] text-slate-400 italic leading-tight text-center">${displayCard.lore || ''}</p>`;
         } else {
             let html = infoHtml;
-            if (!html) html = '<p class="text-[10px] text-slate-500 text-center">Sin informacion.</p>';
+            if (!html) html = '<p class="text-[11px] text-slate-500 text-center">Sin informacion.</p>';
             infoPanel.innerHTML = html;
         }
     }
@@ -211,9 +211,9 @@ function renderCardModalContent(card) {
                 if (mission.type === 'glory_with') current = p.gloryWith||0;
                 let completed = current >= mission.count;
                 let pct = Math.min(100, (current / mission.count) * 100);
-                html += `<div class="mb-1"><p class="text-[9px] text-slate-300 leading-tight">${mission.description}</p>`;
+                html += `<div class="mb-1"><p class="text-[11px] text-slate-300 leading-tight">${mission.description}</p>`;
                 html += `<div class="w-full h-1 bg-slate-800 rounded-full overflow-hidden mt-0.5"><div class="h-full ${completed ? 'bg-emerald-500' : 'bg-purple-500'}" style="width:${pct}%"></div></div>`;
-                html += `<p class="text-[8px] text-slate-400 text-right">${current}/${mission.count}</p></div>`;
+                html += `<p class="text-[11px] text-slate-400 text-right">${current}/${mission.count}</p></div>`;
             });
             missionContent.innerHTML = html;
         }
@@ -228,7 +228,7 @@ function renderCardModalContent(card) {
             let family = CARD_FAMILIES[familyId];
             let selectedPhaseId = getSelectedPhase(familyId);
             let inCombat = !document.getElementById('view-game').classList.contains('hidden-view');
-            let html = '<div class="text-[8px] font-orbitron font-bold uppercase tracking-[0.2em] text-amber-300 text-center mb-1">FORMAS</div>';
+            let html = '<div class="text-[11px] font-orbitron font-bold uppercase tracking-[0.2em] text-amber-300 text-center mb-1">FORMAS</div>';
             html += '<div class="flex gap-1 justify-center">';
             family.forms.forEach((formId, idx) => {
                 let isUnlocked = isFormUnlocked(familyId, formId);
@@ -237,14 +237,14 @@ function renderCardModalContent(card) {
                 let color = isSelected ? 'bg-amber-600 text-white' : (isUnlocked ? 'bg-slate-700 text-slate-200' : 'bg-slate-800 text-slate-500');
                 let lockIcon = isUnlocked ? '' : ' 🔒';
                 if (inCombat) {
-                    html += `<span class="px-2 py-1 rounded text-[10px] font-bold ${color} opacity-60 cursor-not-allowed">${label}${lockIcon}</span>`;
+                    html += `<span class="px-2 py-1 rounded text-[11px] font-bold ${color} opacity-60 cursor-not-allowed">${label}${lockIcon}</span>`;
                 } else {
-                    html += `<button onclick="markPhase('${familyId}','${formId}')" class="px-2 py-1 rounded text-[10px] font-bold ${color}">${label}${lockIcon}</button>`;
+                    html += `<button onclick="markPhase('${familyId}','${formId}')" class="px-2 py-1 rounded text-[11px] font-bold ${color}">${label}${lockIcon}</button>`;
                 }
             });
             html += '</div>';
             if (inCombat) {
-                html += '<p class="text-[8px] text-slate-500 text-center mt-1">No puedes cambiar la forma en combate</p>';
+                html += '<p class="text-[11px] text-slate-500 text-center mt-1">No puedes cambiar la forma en combate</p>';
             }
             phaseSelector.innerHTML = html;
             phaseSelector.style.display = 'block';
@@ -287,9 +287,9 @@ function markPhase(familyId, formId) {
                 let isMarked = (family.forms[idx] === formId);
                 let isUnlocked = isFormUnlocked(familyId, family.forms[idx]);
                 if (isMarked) {
-                    btn.className = 'px-2 py-1 rounded text-[10px] font-bold bg-amber-600 text-white ring-2 ring-amber-300';
+                    btn.className = 'px-2 py-1 rounded text-[11px] font-bold bg-amber-600 text-white ring-2 ring-amber-300';
                 } else {
-                    btn.className = 'px-2 py-1 rounded text-[10px] font-bold ' + (isUnlocked ? 'bg-slate-700 text-slate-200' : 'bg-slate-800 text-slate-500');
+                    btn.className = 'px-2 py-1 rounded text-[11px] font-bold ' + (isUnlocked ? 'bg-slate-700 text-slate-200' : 'bg-slate-800 text-slate-500');
                 }
             });
         }
@@ -418,7 +418,7 @@ function renderNextBox(prefix, nextCard, player) {
     if (!box) return;
 
     if (!nextCard) {
-        box.innerHTML = '<span class="text-[9px] text-slate-500 font-bold px-1">Sin cartas</span>';
+        box.innerHTML = '<span class="text-[11px] text-slate-500 font-bold px-1">Sin cartas</span>';
         return;
     }
 
@@ -430,7 +430,7 @@ function renderNextBox(prefix, nextCard, player) {
 
     box.innerHTML = `
         <div class="w-12 h-8 rounded overflow-hidden border ${artBorder} bg-slate-800 bg-cover bg-center shrink-0" style="background-image:url('${nextCard.art}')" title="${nextCard.name}"></div>
-        <div class="w-5 h-5 rounded-full bg-slate-950 border ${costBorder} flex items-center justify-center font-orbitron font-bold text-[10px] shrink-0">${effCost}</div>
+        <div class="w-5 h-5 rounded-full bg-slate-950 border ${costBorder} flex items-center justify-center font-orbitron font-bold text-[11px] shrink-0">${effCost}</div>
     `;
 }
 
@@ -503,6 +503,7 @@ function createCardElement(card, theme, animate) {
     cardDiv.className = `w-full h-[60px] border-2 ${borderColor} rounded-lg relative overflow-hidden flex flex-col justify-between ${animate ? 'animate-deploy' : ''} ${(card.id === 'c20' || card.id === 'c32') ? 'oracle-aura' : ''} ${card.dying ? 'animate-dissolve' : ''} cursor-pointer hover:scale-105 active:scale-95 transition-transform`;
     cardDiv.dataset.uid = card.uid || '';
     cardDiv.onclick = () => openCardModal(card.id);
+    makeActivatable(cardDiv, 'Ver carta: ' + (card.name || ''));
 
     let displayAtk = Math.max(0, card.atk + (card.tempAtkMod || 0));
 
@@ -760,14 +761,14 @@ function showGameOver() {
                 }
                 rewardSlot.innerHTML = `
                     <div class="flex flex-col items-center gap-1">
-                        <div class="text-[9px] font-orbitron font-bold tracking-widest text-amber-300">¡NUEVA CARTA OBTENIDA!</div>
+                        <div class="text-[11px] font-orbitron font-bold tracking-widest text-amber-300">¡NUEVA CARTA OBTENIDA!</div>
                         <div class="relative w-20 h-28 rounded-lg overflow-hidden border-2 border-amber-400 shadow-[0_0_15px_rgba(251,191,36,0.6)]">
                             <div class="absolute inset-0 bg-cover bg-center" style="background-image:url('${card.art}')"></div>
                             <div class="absolute inset-0 bg-gradient-to-t from-black/85 via-black/20 to-black/40"></div>
-                            <div class="absolute top-1 left-1 w-5 h-5 rounded-full bg-cyan-200 text-cyan-900 text-[10px] font-bold flex items-center justify-center border border-white">${card.cost}</div>
+                            <div class="absolute top-1 left-1 w-5 h-5 rounded-full bg-cyan-200 text-cyan-900 text-[11px] font-bold flex items-center justify-center border border-white">${card.cost}</div>
                             <div class="absolute top-1 right-1 ${typeColor} text-white text-[7px] px-1 rounded font-bold">${typeLabel}</div>
                             <div class="absolute bottom-1 left-1 right-1">
-                                <div class="text-white font-orbitron font-bold text-[9px] leading-tight truncate drop-shadow-md">${card.name}</div>
+                                <div class="text-white font-orbitron font-bold text-[11px] leading-tight truncate drop-shadow-md">${card.name}</div>
                                 ${statsHtml}
                             </div>
                         </div>
@@ -828,6 +829,12 @@ function showGameOver() {
         renderProfile();
     }
     document.getElementById('gameover-modal').classList.remove('hidden-view');
+    // v1.11.4: mueve el foco al titulo del modal (a11y: se anuncia como dialog).
+    let goTitle = document.getElementById('gameover-title');
+    if (goTitle) {
+        goTitle.setAttribute('tabindex', '-1');
+        goTitle.focus({ preventScroll: true });
+    }
 }
 
 // --- CONSUMO DE MISIONES NUEVAS (v1.9.4) ---
@@ -1018,21 +1025,22 @@ function renderChapterSelect() {
                     if (unlocked) openChapterIntro(ch.id);
                     else alert("Completa el capítulo anterior para desbloquear este.");
                 };
+                makeActivatable(item, ch.title + (done ? ' (completado)' : (unlocked ? '' : ' (bloqueado)')));
                 item.innerHTML = `
                     <div class="relative rounded-xl overflow-hidden border-2 ${done ? 'border-amber-400/70 shadow-[0_0_15px_rgba(251,191,36,0.25)]' : (unlocked ? 'border-blue-500/70 shadow-[0_0_15px_rgba(59,130,246,0.25)]' : 'border-slate-700 opacity-50')}">
                         <div class="aspect-[16/10] bg-cover bg-center" style="background-image:url('${ch.art}')"></div>
                         <div class="absolute inset-0 bg-gradient-to-t from-black/90 via-black/25 to-black/45"></div>
                         <div class="absolute top-2 left-3 right-3 flex items-center justify-between">
-                            <span class="text-[9px] font-orbitron tracking-[0.25em] text-amber-300 font-bold">CAPÍTULO ${ch.number}</span>
+                            <span class="text-[11px] font-orbitron tracking-[0.25em] text-amber-300 font-bold">CAPÍTULO ${ch.number}</span>
                             ${done
-                                ? '<span class="text-[8px] bg-green-600/90 text-white px-1.5 py-0.5 rounded font-bold">✓ COMPLETADO</span>'
+                                ? '<span class="text-[11px] bg-green-600/90 text-white px-1.5 py-0.5 rounded font-bold">✓ COMPLETADO</span>'
                                 : (unlocked
-                                    ? '<span class="text-[8px] bg-blue-600/90 text-white px-1.5 py-0.5 rounded font-bold">DISPONIBLE</span>'
-                                    : '<span class="text-[8px] bg-slate-600/90 text-white px-1.5 py-0.5 rounded font-bold"><i class="fa-solid fa-lock"></i> BLOQUEADO</span>')}
+                                    ? '<span class="text-[11px] bg-blue-600/90 text-white px-1.5 py-0.5 rounded font-bold">DISPONIBLE</span>'
+                                    : '<span class="text-[11px] bg-slate-600/90 text-white px-1.5 py-0.5 rounded font-bold"><i class="fa-solid fa-lock"></i> BLOQUEADO</span>')}
                         </div>
                         <div class="absolute bottom-2 left-3 right-3">
                             <div class="text-white font-orbitron font-black text-base leading-tight">${ch.title}</div>
-                            <div class="text-[10px] text-slate-300 font-bold mt-0.5">
+                            <div class="text-[11px] text-slate-300 font-bold mt-0.5">
                                 <i class="fa-solid fa-user-ninja text-fuchsia-300"></i> Rival: ${ch.rival.name} · ${(ch.botDecks && ch.botDecks[0] ? ch.botDecks[0].length : (ch.botDeck ? ch.botDeck.length : 0))} cartas
                             </div>
                         </div>
@@ -1059,21 +1067,22 @@ function renderChapterSelect() {
                     if (unlocked) openChapterIntro(ev.id);
                     else alert("Completa el Capítulo " + ev.unlockedBy + " para desbloquear este evento.");
                 };
+                makeActivatable(item, ev.title + (done ? ' (completado)' : (unlocked ? '' : ' (bloqueado)')));
                 item.innerHTML = `
                     <div class="relative rounded-xl overflow-hidden border-2 ${done ? 'border-emerald-400/70 shadow-[0_0_15px_rgba(52,211,153,0.25)]' : (unlocked ? 'border-emerald-500/70 shadow-[0_0_15px_rgba(52,211,153,0.25)]' : 'border-slate-700 opacity-50')}">
                         <div class="aspect-[16/10] bg-cover bg-center" style="background-image:url('${ev.art}')"></div>
                         <div class="absolute inset-0 bg-gradient-to-t from-black/90 via-black/25 to-black/45"></div>
                         <div class="absolute top-2 left-3 right-3 flex items-center justify-between">
-                            <span class="text-[9px] font-orbitron tracking-[0.25em] text-emerald-300 font-bold">EVENTO ${ev.number}</span>
+                            <span class="text-[11px] font-orbitron tracking-[0.25em] text-emerald-300 font-bold">EVENTO ${ev.number}</span>
                             ${done
-                                ? '<span class="text-[8px] bg-green-600/90 text-white px-1.5 py-0.5 rounded font-bold">✓ COMPLETADO</span>'
+                                ? '<span class="text-[11px] bg-green-600/90 text-white px-1.5 py-0.5 rounded font-bold">✓ COMPLETADO</span>'
                                 : (unlocked
-                                    ? '<span class="text-[8px] bg-emerald-600/90 text-white px-1.5 py-0.5 rounded font-bold">DISPONIBLE</span>'
-                                    : '<span class="text-[8px] bg-slate-600/90 text-white px-1.5 py-0.5 rounded font-bold"><i class="fa-solid fa-lock"></i> BLOQUEADO</span>')}
+                                    ? '<span class="text-[11px] bg-emerald-600/90 text-white px-1.5 py-0.5 rounded font-bold">DISPONIBLE</span>'
+                                    : '<span class="text-[11px] bg-slate-600/90 text-white px-1.5 py-0.5 rounded font-bold"><i class="fa-solid fa-lock"></i> BLOQUEADO</span>')}
                         </div>
                         <div class="absolute bottom-2 left-3 right-3">
                             <div class="text-white font-orbitron font-black text-base leading-tight">${ev.title}</div>
-                            <div class="text-[10px] text-slate-300 font-bold mt-0.5">
+                            <div class="text-[11px] text-slate-300 font-bold mt-0.5">
                                 <i class="fa-solid fa-user-ninja text-emerald-300"></i> Rival: ${ev.rival.name} · ${(ev.botDecks && ev.botDecks[0] ? ev.botDecks[0].length : (ev.botDeck ? ev.botDeck.length : 0))} cartas
                             </div>
                         </div>
@@ -1291,6 +1300,7 @@ function renderProfile() {
             saveProfile();
             renderProfile();
         };
+        makeActivatable(el, 'Seleccionar avatar ' + (card.name || id));
         gallery.appendChild(el);
     });
 
@@ -1304,19 +1314,19 @@ function renderProfile() {
             <div class="grid grid-cols-2 gap-2">
                 <div class="bg-slate-900 border border-slate-700 rounded-lg p-2 text-center">
                     <div class="text-lg font-orbitron font-black text-amber-400">${stats.wins || 0}</div>
-                    <div class="text-[9px] text-slate-400 font-bold uppercase">Combates ganados</div>
+                    <div class="text-[11px] text-slate-400 font-bold uppercase">Combates ganados</div>
                 </div>
                 <div class="bg-slate-900 border border-slate-700 rounded-lg p-2 text-center">
                     <div class="text-lg font-orbitron font-black text-emerald-400">${chapters}</div>
-                    <div class="text-[9px] text-slate-400 font-bold uppercase">Capítulos</div>
+                    <div class="text-[11px] text-slate-400 font-bold uppercase">Capítulos</div>
                 </div>
                 <div class="bg-slate-900 border border-slate-700 rounded-lg p-2 text-center">
                     <div class="text-lg font-orbitron font-black text-fuchsia-400">${events}</div>
-                    <div class="text-[9px] text-slate-400 font-bold uppercase">Eventos</div>
+                    <div class="text-[11px] text-slate-400 font-bold uppercase">Eventos</div>
                 </div>
                 <div class="bg-slate-900 border border-slate-700 rounded-lg p-2 text-center">
                     <div class="text-lg font-orbitron font-black text-cyan-400">${cards}</div>
-                    <div class="text-[9px] text-slate-400 font-bold uppercase">Cartas</div>
+                    <div class="text-[11px] text-slate-400 font-bold uppercase">Cartas</div>
                 </div>
             </div>
         `;
@@ -1338,6 +1348,22 @@ function updateProfileButton() {
         btn.style.backgroundImage = '';
         if (icon) icon.style.display = '';
     }
+}
+
+// v1.11.4: activacion por teclado para elementos interactivos que son
+// <div> (a11y: focusable, rol de boton, Enter/Espacio activan).
+function makeActivatable(el, label) {
+    if (!el) return el;
+    el.setAttribute('role', 'button');
+    el.setAttribute('tabindex', '0');
+    if (label) el.setAttribute('aria-label', label);
+    el.addEventListener('keydown', (e) => {
+        if (e.key === 'Enter' || e.key === ' ') {
+            e.preventDefault();
+            el.click();
+        }
+    });
+    return el;
 }
 
 function saveProfileName() {
@@ -1418,28 +1444,28 @@ function renderPatchNotes() {
     let html = '';
     notes.forEach((note, idx) => {
         let isLatest = idx === 0;
-        let devTag = note.dev ? '<span class="bg-red-600 text-white text-[8px] px-1.5 py-0.5 rounded font-bold ml-2">DEV</span>' : '';
+        let devTag = note.dev ? '<span class="bg-red-600 text-white text-[11px] px-1.5 py-0.5 rounded font-bold ml-2">DEV</span>' : '';
         let changesHtml = '';
         if (note.changes) {
             if (note.changes.new && note.changes.new.length) {
-                changesHtml += `<div class="mb-2"><div class="text-emerald-400 font-bold text-[10px] mb-1"><i class="fa-solid fa-plus-circle"></i> NUEVO</div><ul class="text-slate-300 text-[10px] space-y-0.5 ml-3">${note.changes.new.map(x => `<li>• ${x}</li>`).join('')}</ul></div>`;
+                changesHtml += `<div class="mb-2"><div class="text-emerald-400 font-bold text-[11px] mb-1"><i class="fa-solid fa-plus-circle"></i> NUEVO</div><ul class="text-slate-300 text-[11px] space-y-0.5 ml-3">${note.changes.new.map(x => `<li>• ${x}</li>`).join('')}</ul></div>`;
             }
             if (note.changes.buffs && note.changes.buffs.length) {
-                changesHtml += `<div class="mb-2"><div class="text-blue-400 font-bold text-[10px] mb-1"><i class="fa-solid fa-arrow-up"></i> BUFFS</div><ul class="text-slate-300 text-[10px] space-y-0.5 ml-3">${note.changes.buffs.map(x => `<li>• ${x}</li>`).join('')}</ul></div>`;
+                changesHtml += `<div class="mb-2"><div class="text-blue-400 font-bold text-[11px] mb-1"><i class="fa-solid fa-arrow-up"></i> BUFFS</div><ul class="text-slate-300 text-[11px] space-y-0.5 ml-3">${note.changes.buffs.map(x => `<li>• ${x}</li>`).join('')}</ul></div>`;
             }
             if (note.changes.nerfs && note.changes.nerfs.length) {
-                changesHtml += `<div class="mb-2"><div class="text-orange-400 font-bold text-[10px] mb-1"><i class="fa-solid fa-arrow-down"></i> NERFS</div><ul class="text-slate-300 text-[10px] space-y-0.5 ml-3">${note.changes.nerfs.map(x => `<li>• ${x}</li>`).join('')}</ul></div>`;
+                changesHtml += `<div class="mb-2"><div class="text-orange-400 font-bold text-[11px] mb-1"><i class="fa-solid fa-arrow-down"></i> NERFS</div><ul class="text-slate-300 text-[11px] space-y-0.5 ml-3">${note.changes.nerfs.map(x => `<li>• ${x}</li>`).join('')}</ul></div>`;
             }
             if (note.changes.fixes && note.changes.fixes.length) {
-                changesHtml += `<div class="mb-2"><div class="text-purple-400 font-bold text-[10px] mb-1"><i class="fa-solid fa-wrench"></i> FIXES</div><ul class="text-slate-300 text-[10px] space-y-0.5 ml-3">${note.changes.fixes.map(x => `<li>• ${x}</li>`).join('')}</ul></div>`;
+                changesHtml += `<div class="mb-2"><div class="text-purple-400 font-bold text-[11px] mb-1"><i class="fa-solid fa-wrench"></i> FIXES</div><ul class="text-slate-300 text-[11px] space-y-0.5 ml-3">${note.changes.fixes.map(x => `<li>• ${x}</li>`).join('')}</ul></div>`;
             }
             if (note.changes.removed && note.changes.removed.length) {
-                changesHtml += `<div class="mb-2"><div class="text-red-400 font-bold text-[10px] mb-1"><i class="fa-solid fa-trash"></i> ELIMINADO</div><ul class="text-slate-300 text-[10px] space-y-0.5 ml-3">${note.changes.removed.map(x => `<li>• ${x}</li>`).join('')}</ul></div>`;
+                changesHtml += `<div class="mb-2"><div class="text-red-400 font-bold text-[11px] mb-1"><i class="fa-solid fa-trash"></i> ELIMINADO</div><ul class="text-slate-300 text-[11px] space-y-0.5 ml-3">${note.changes.removed.map(x => `<li>• ${x}</li>`).join('')}</ul></div>`;
             }
         }
         let highlightsHtml = '';
         if (note.highlights && note.highlights.length) {
-            highlightsHtml = `<div class="mb-2 bg-slate-800/60 rounded p-2"><div class="text-amber-300 font-bold text-[10px] mb-1"><i class="fa-solid fa-star"></i> DESTACADO</div><ul class="text-amber-100/80 text-[10px] space-y-0.5 ml-3">${note.highlights.map(x => `<li>• ${x}</li>`).join('')}</ul></div>`;
+            highlightsHtml = `<div class="mb-2 bg-slate-800/60 rounded p-2"><div class="text-amber-300 font-bold text-[11px] mb-1"><i class="fa-solid fa-star"></i> DESTACADO</div><ul class="text-amber-100/80 text-[11px] space-y-0.5 ml-3">${note.highlights.map(x => `<li>• ${x}</li>`).join('')}</ul></div>`;
         }
         let bodyId = 'patch-body-' + idx;
         let arrow = isLatest ? '▼' : '▶';
@@ -1448,9 +1474,9 @@ function renderPatchNotes() {
                 <button onclick="togglePatchBody(${idx})" class="w-full flex items-center justify-between px-3 py-2 active:bg-slate-800">
                     <div class="text-left">
                         <div class="text-white font-orbitron font-bold text-xs">v${note.version}${devTag} — ${note.title}</div>
-                        <div class="text-slate-500 text-[9px]">${note.date}</div>
+                        <div class="text-slate-500 text-[11px]">${note.date}</div>
                     </div>
-                    <span id="patch-arrow-${idx}" class="text-slate-400 text-[10px]">${arrow}</span>
+                    <span id="patch-arrow-${idx}" class="text-slate-400 text-[11px]">${arrow}</span>
                 </button>
                 <div id="${bodyId}" class="px-3 pb-3 ${isLatest ? '' : 'hidden'}">
                     ${highlightsHtml}
@@ -1646,10 +1672,10 @@ function renderDeckSelect() {
                 <div class="absolute inset-x-0 bottom-0 h-1/3 bg-gradient-to-t from-black/90 to-transparent pointer-events-none"></div>
                 <div class="absolute bottom-0 inset-x-0 flex items-center justify-between px-3 py-2 gap-2">
                     <span class="text-white font-orbitron font-bold text-sm truncate flex-1 drop-shadow-md cursor-pointer" onclick="openDeckForEdit('${deck.id}')">${deck.name}</span>
-                    <button onclick="event.stopPropagation(); renameDeckPrompt('${deck.id}')" class="w-8 h-8 rounded-full bg-slate-900/80 border border-slate-600 text-xs text-blue-300 shrink-0 active:scale-95" aria-label="Renombrar mazo">
+                    <button onclick="event.stopPropagation(); renameDeckPrompt('${deck.id}')" class="w-11 h-11 rounded-full bg-slate-900/80 border border-slate-600 text-xs text-blue-300 shrink-0 active:scale-95" aria-label="Renombrar mazo">
                         <i class="fa-solid fa-pen"></i>
                     </button>
-                    ${decks.length > 1 ? `<button onclick="event.stopPropagation(); if(confirm('¿Eliminar este mazo?')) { if(deleteDeck('${deck.id}')) { loadDeck(); renderDeckSelect(); } }" class="w-8 h-8 rounded-full bg-slate-900/80 border border-red-500/60 text-xs text-red-300 shrink-0 active:scale-95" aria-label="Eliminar mazo"><i class="fa-solid fa-trash"></i></button>` : ''}
+                    ${decks.length > 1 ? `<button onclick="event.stopPropagation(); if(confirm('¿Eliminar este mazo?')) { if(deleteDeck('${deck.id}')) { loadDeck(); renderDeckSelect(); } }" class="w-11 h-11 rounded-full bg-slate-900/80 border border-red-500/60 text-xs text-red-300 shrink-0 active:scale-95" aria-label="Eliminar mazo"><i class="fa-solid fa-trash"></i></button>` : ''}
                 </div>
             </div>
         `;

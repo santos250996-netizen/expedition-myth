@@ -221,13 +221,14 @@ function saveDeck() {
                 item.ondragleave = (e) => { item.classList.remove('border-cyan-400'); };
                 item.ondrop = (e) => handleDropOnCard(e, idx);
                 item.onclick = () => openCardModal(idOrCard);
+                makeActivatable(item, displayCard.name);
 
                 item.innerHTML = `
                     <div class="absolute inset-0 bg-cover bg-center" style="background-image: url('${displayCard.art}');"></div>
                     <div class="absolute inset-0 bg-gradient-to-r from-black/80 via-black/40 to-transparent"></div>
-                    <div class="absolute top-1 left-1 w-5 h-5 rounded-full bg-cyan-200 text-cyan-900 text-[10px] font-bold flex items-center justify-center border border-white">${displayCard.cost}</div>
+                    <div class="absolute top-1 left-1 w-5 h-5 rounded-full bg-cyan-200 text-cyan-900 text-[11px] font-bold flex items-center justify-center border border-white">${displayCard.cost}</div>
                     <div class="absolute bottom-1 left-2 right-9 flex justify-between items-end">
-                        <span class="text-[10px] text-white font-bold truncate drop-shadow-md">${displayCard.name}</span>
+                        <span class="text-[11px] text-white font-bold truncate drop-shadow-md">${displayCard.name}</span>
                         <div class="flex gap-1">
                             ${displayCard.kind === 'Ser' ? `
                                 <span class="stat-atk" style="width:18px;height:18px;font-size:8px;">${displayCard.atk}</span>
@@ -236,9 +237,9 @@ function saveDeck() {
                         </div>
                     </div>
                     <div class="absolute top-0 right-0 bottom-0 w-7 flex flex-col bg-black/70 border-l border-slate-600/50 z-10">
-                        <button class="move-btn flex-1 text-cyan-300 text-[10px] leading-none flex items-center justify-center hover:bg-cyan-500/20 active:bg-cyan-500/40" data-dir="-1" aria-label="Subir carta" ${idx === 0 ? 'disabled' : ''}>▲</button>
-                        <button class="move-btn flex-1 text-slate-300 text-[10px] leading-none flex items-center justify-center hover:bg-slate-500/20 active:bg-slate-500/40 border-y border-slate-600/50" data-dir="1" aria-label="Bajar carta" ${idx === playerDeck.length - 1 ? 'disabled' : ''}>▼</button>
-                        <button class="remove-btn flex-1 text-red-400 text-[10px] leading-none flex items-center justify-center hover:bg-red-500/20 active:bg-red-500/40" aria-label="Quitar del mazo">✕</button>
+                        <button class="move-btn flex-1 text-cyan-300 text-[11px] leading-none flex items-center justify-center hover:bg-cyan-500/20 active:bg-cyan-500/40" data-dir="-1" aria-label="Subir carta" ${idx === 0 ? 'disabled' : ''}>▲</button>
+                        <button class="move-btn flex-1 text-slate-300 text-[11px] leading-none flex items-center justify-center hover:bg-slate-500/20 active:bg-slate-500/40 border-y border-slate-600/50" data-dir="1" aria-label="Bajar carta" ${idx === playerDeck.length - 1 ? 'disabled' : ''}>▼</button>
+                        <button class="remove-btn flex-1 text-red-400 text-[11px] leading-none flex items-center justify-center hover:bg-red-500/20 active:bg-red-500/40" aria-label="Quitar del mazo">✕</button>
                     </div>
                 `;
                 item.querySelectorAll('.move-btn').forEach(btn => {
@@ -293,15 +294,16 @@ function saveDeck() {
                 el.ondragover = (e) => { e.preventDefault(); el.classList.add('border-cyan-400'); };
                 el.ondragleave = (e) => { el.classList.remove('border-cyan-400'); };
                 el.onclick = () => openCardModal(idOrCard);
+                makeActivatable(el, card.name);
                 let isNew = !seenCards.includes(card.id);
 
                 el.innerHTML = `
                     <div class="absolute inset-0 bg-cover bg-center" style="background-image: url('${card.art}');"></div>
                     ${isNew ? '<div class="new-card-dot"></div>' : ''}
                     <div class="absolute inset-0 bg-gradient-to-r from-black/80 via-black/40 to-transparent"></div>
-                    <div class="absolute top-1 left-1 w-5 h-5 rounded-full bg-cyan-200 text-cyan-900 text-[10px] font-bold flex items-center justify-center border border-white">${card.cost}</div>
+                    <div class="absolute top-1 left-1 w-5 h-5 rounded-full bg-cyan-200 text-cyan-900 text-[11px] font-bold flex items-center justify-center border border-white">${card.cost}</div>
                     <div class="absolute bottom-1 left-2 right-9 flex justify-between items-end">
-                        <span class="text-[10px] text-white font-bold truncate drop-shadow-md">${card.name}</span>
+                        <span class="text-[11px] text-white font-bold truncate drop-shadow-md">${card.name}</span>
                         <div class="flex gap-1">
                             ${card.kind === 'Ser' ? `
                                 <span class="stat-atk" style="width:18px;height:18px;font-size:8px;">${card.atk}</span>
