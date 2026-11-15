@@ -45,6 +45,14 @@
             setTimeout(() => wrap.remove(), fxDurationMs(0.95));
         }
 
+        // Devolver: la carta es arrastrada por el viento hacia arriba y desaparece.
+        function fxFlyAway(uid) {
+            let el = cardElByUid(uid);
+            if (!el) return;
+            el.classList.add('fx-fly-away');
+            setTimeout(() => el.classList.remove('fx-fly-away'), fxDurationMs(0.7));
+        }
+
         // Capa animada DENTRO de la carta (niebla, lágrimas, flash...).
         // Si ya hay una capa del mismo tipo se reemplaza: evita apilar
         // overlays y garantiza que la animación se vea en cada aplicación.
@@ -233,6 +241,32 @@
                                 playSoundOnce('bloqueo');
                                 fxFlash(fx.uid, 'gold');
                                 fxFloatOver(fx.side, fx.uid, fx.text, 'fx-gold fx-float-big', fx.icon);
+                                break;
+                            case 'plaga':
+                                playSoundOnce('plaga');
+                                fxFlash(fx.uid, 'green');
+                                fxFloatOver(fx.side, fx.uid, fx.text || 'PLAGA', 'fx-green fx-float-big', fx.icon);
+                                break;
+                            case 'bendicion':
+                                playSoundOnce('bendicion');
+                                fxFlash(fx.uid, 'gold');
+                                fxFloatOver(fx.side, fx.uid, fx.text || '+2 GLORIA', 'fx-gold fx-float-big', fx.icon);
+                                break;
+                            case 'devolver':
+                                playSoundOnce('devolver');
+                                fxFlash(fx.uid, 'blue');
+                                fxFloatOver(fx.side, fx.uid, fx.text || 'DEVUELTO', 'fx-blue fx-float-big', fx.icon);
+                                fxFlyAway(fx.uid);
+                                break;
+                            case 'deshonra':
+                                playSoundOnce('deshonra');
+                                fxFlash(fx.uid, 'purple');
+                                fxFloatOver(fx.side, fx.uid, fx.text || '-2 GLORIA', 'fx-purple fx-float-big', fx.icon);
+                                break;
+                            case 'laberinto':
+                                playSoundOnce('laberinto');
+                                fxGloriaBeam(fx.side, 'fx-beam-soft');
+                                fxFloatOver(fx.side, null, fx.text || '+2 GLORIA', 'fx-gold fx-float-big', fx.icon);
                                 break;
                         }
                     } catch (e) { console.error('fx:', e); }

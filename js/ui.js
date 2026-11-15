@@ -29,7 +29,12 @@ const LEYENDAS = {
     'Inmune': 'Inmune a efectos rivales X turnos.',
     'Descuento': 'Reduce en X el coste de tu proxima carta.',
     'Bloqueo': 'Amortigua hasta X puntos de reduccion de ATK o HP sobre esta carta. Al agotarse, el efecto se desactiva.',
-    'Reflejo': 'Inmune al proximo efecto rival que targetee a esta carta. El efecto se refleja y se aplica a una carta aleatoria del rival.'
+    'Reflejo': 'Inmune al proximo efecto rival que targetee a esta carta. El efecto se refleja y se aplica a una carta aleatoria del rival.',
+    'Plaga': 'Anade X cartas de Plaga al mazo rival. Cuando el rival las juega, pierde 2 Gloria por cada una.',
+    'Bendicion': 'Anade X cartas de Bendicion a tu mazo. Cuando tu las juegas, ganas 2 Gloria por cada una.',
+    'Devolver': 'Devuelve X Seres del tablero al mazo de su dueno (al fondo). No los mata: los manda al fondo del mazo, donde tardan en volver a jugarse.',
+    'Deshonra': 'Quita X Gloria al rival.',
+    'Laberinto activo': 'Mientras el Laberinto de Creta esta activo, cada vez que se exilia una carta, ganas 2 Gloria.'
 };
 
 // Vista activa dentro de la pantalla de capítulos: campaña o eventos.

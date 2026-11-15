@@ -992,7 +992,7 @@ const ALL_CARDS = [
     id: 'plaga', name: 'Plaga', kind: 'Token', subtype: 'Evento', cost: 0, atk: 0, hp: 0,
     icon: 'fa-skull',
     desc: 'Al jugarse: -2 Gloria al que la juega.',
-    lore: 'Una flecha de Apolo, invisible, se clava en el corazon del campamento. La fiebre prende en los cuerpos, y los hombres caen sin remedio.',
+    lore: 'Una flecha de Apolo, invisible, se clava en el corazon del campamento. La fiebre prende en los cuerpos, y los hombres caen sin remedio. Los que oyen el silencio de la flecha saben que la peste ya esta entre ellos, y que no hay escudo que la detenga.',
     art: 'assets/cartas/plaga.webp',
     effect: (p, opp) => {
         p.score = Math.max(0, p.score - 2);
@@ -1004,7 +1004,7 @@ const ALL_CARDS = [
     id: 'bendicion', name: 'Bendicion', kind: 'Token', subtype: 'Evento', cost: 0, atk: 0, hp: 0,
     icon: 'fa-sun',
     desc: 'Al jugarse: +2 Gloria al que la juega.',
-    lore: 'La copa de Apolo se derrama sobre el campo, y donde toca la tierra, las plantas crecen y los hombres sanan.',
+    lore: 'La copa de Apolo se derrama sobre el campo, y donde toca la tierra, las plantas crecen y los hombres sanan. Los que beben del liquido dorado sienten que la vida vuelve a sus cuerpos, y que el dios los esta mirando. No es una recompensa: es una responsabilidad.',
     art: 'assets/cartas/bendicion.webp',
     effect: (p, opp) => {
         p.score += 2;
@@ -1044,7 +1044,7 @@ const ALL_CARDS = [
     id: 'bendecida_apolo', name: 'Bendecida por Apolo', kind: 'Ser', cost: 3, atk: 2, hp: 3,
     icon: 'fa-sun',
     desc: 'Al entrar: Bendicion 2.',
-    lore: 'Entre los mortales, hay uno que camina con la luz de Apolo en los ojos. No es un sacerdote, ni un oraculo, ni un rey: es un pastor que, sin saber por que, fue tocado por el dios. Donde el pasa, las cosechas crecen, las heridas sanan, y los hombres sienten que la vida vuelve a sus cuerpos. Pero la bendicion no es gratis: el dios le ha dado su favor, y le ha pedido algo a cambio que el pastor aun no comprende.',
+    lore: 'Entre los mortales, hay uno que camina con la luz de Apolo en los ojos. No es un sacerdote, ni un oraculo, ni un rey: es un pastor que, sin saber por que, fue tocado por el dios. Donde el pasa, las cosechas crecen, las heridas sanan, y los hombres sienten que la vida vuelve a sus cuerpos. Pero el don del dios no es gratis: el pastor sabe que, algun dia, Apolo le pedira algo a cambio, y ese dia aun no ha llegado.',
     art: 'assets/cartas/apolo-bendecida.webp',
     substory: 'apolo',
     effect: (p, opp) => {
@@ -1057,7 +1057,7 @@ const ALL_CARDS = [
     id: 'boreas_viento', name: 'Boreas, el Viento del Norte', kind: 'Ser', cost: 5, atk: 1, hp: 1,
     icon: 'fa-wind',
     desc: 'Al entrar: Devolver 1 rival al mazo.',
-    lore: 'Boreas es el dios del viento del norte, el que trae el frio y la tormenta. Su aliento arrastra a los hombres fuera de sus casas, y su furia es tan grande que los propios dioses le temen. Cuando sopla, los Seres del tablero sienten que el suelo se les escapa, y son arrastrados al fondo del mazo. No es un asesino: es un viento que no se puede detener.',
+    lore: 'Boreas es el dios del viento del norte, el que trae el frio y la tormenta. Su aliento arrastra a los hombres fuera de sus casas, y su furia es tan grande que los propios dioses le temen. Cuando sopla, los arboles se doblan, las rocas ruedan, y los que se cruzan en su camino son arrastrados hacia el mar. No es un asesino: es un viento que no se puede detener.',
     art: 'assets/cartas/boreas-viento-del-norte.webp',
     substory: 'boreas',
     effect: (p, opp) => {
@@ -1070,7 +1070,7 @@ const ALL_CARDS = [
     id: 'boreas_raptor', name: 'Boreas, el Raptor', kind: 'Ser', cost: 9, atk: 1, hp: 1,
     icon: 'fa-wind',
     desc: 'Al entrar: Devolver 2 rivales al mazo.',
-    lore: 'Boreas no solo sopla: tambien rapta. Se llevo a Oritia, la hija del rey ateniense, y la hizo su esposa. Desde entonces, el viento del norte no se conforma con arrastrar a uno: se lleva a dos, a tres, a todos los que se cruzan en su camino. Los que son raptados por Boreas no vuelven al tablero: vuelven al fondo del mazo, donde el viento los guarda.',
+    lore: 'Boreas no solo sopla: tambien rapta. Se llevo a Oritia, la hija del rey ateniense, y la hizo su esposa. Desde entonces, el viento del norte no se conforma con arrastrar a uno: se lleva a dos, a tres, a todos los que se cruzan en su camino. Los que son raptados por Boreas no vuelven a sus casas: se pierden en la tormenta, y solo el viento sabe donde estan.',
     art: 'assets/cartas/boreas-raptor.webp',
     substory: 'boreas',
     effect: (p, opp) => {
@@ -1083,7 +1083,7 @@ const ALL_CARDS = [
     id: 'ojo_ciclon', name: 'El Ojo del Ciclon', kind: 'Evento', cost: 8, atk: 0, hp: 0,
     icon: 'fa-hurricane',
     desc: 'Al entrar: devuelve todos los Seres (aliados y rivales) al fondo de sus mazos.',
-    lore: 'En el centro de la tormenta, hay un ojo. Un lugar de calma absoluta, donde el viento no sopla y el mar no se mueve. Pero cuando el ojo se abre, todo lo que esta a su alrededor es arrastrado: aliados, rivales, Seres y Tokens. No queda nada en el tablero. Solo el silencio, y el recuerdo de lo que una vez estuvo alli.',
+    lore: 'En el centro de la tormenta, hay un ojo. Un lugar de calma absoluta, donde el viento no sopla y el mar no se mueve. Pero cuando el ojo se abre, todo lo que esta a su alrededor es arrastrado: hombres, bestias, arboles y rocas. No queda nada en pie. Solo el silencio, y el recuerdo de lo que una vez estuvo alli.',
     art: 'assets/cartas/boreas-ojo-ciclon.webp',
     substory: 'boreas',
     effect: (p, opp) => {

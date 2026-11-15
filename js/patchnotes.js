@@ -7,6 +7,30 @@
 
 const PATCH_NOTES = [
     {
+        version: '1.11.9',
+        date: '2026-11-14',
+        title: 'Lore de apolo y boreas + LEYENDAS + FX/SFX + modo dev',
+        highlights: [
+            'Lore de las 8 cartas de apolo y boreas corregido (sin mecanicas)',
+            'Nuevas keywords en el panel de leyenda',
+            'FX y SFX para Plaga, Bendicion, Devolver, Deshonra y Laberinto',
+            'Modo dev: formas y misiones desbloqueadas'
+        ],
+        changes: {
+            new: [
+                'LEYENDAS: Plaga, Bendicion, Devolver, Deshonra, Laberinto activo.',
+                'FX y SFX: plaga, bendicion, devolver, deshonra, laberinto.',
+                'Modo dev: todas las formas de las familias desbloqueadas y todas las misiones completadas.'
+            ],
+            buffs: [],
+            nerfs: [],
+            fixes: [
+                'Lore de las 8 cartas de apolo y boreas corregido (sin mecanicas del juego).'
+            ],
+            removed: []
+        }
+    },
+    {
         version: '1.11.7',
         date: '2026-11-14',
         title: 'Familia boreas + Devolver X',

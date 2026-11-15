@@ -1011,6 +1011,13 @@ const CARD_MISSIONS = {
 // cuenta como desbloqueada. MIGRACIÓN: si nunca se guardó, se reconstruye
 // desde ownedCardIds (el sistema anterior desbloqueaba fases añadiéndolas ahí).
 function getUnlockedForms() {
+    if (isDevMode()) {
+        let all = {};
+        for (let familyId in CARD_FAMILIES) {
+            all[familyId] = [...CARD_FAMILIES[familyId].forms];
+        }
+        return all;
+    }
     let raw = safeStorageGet('nexo_unlocked_forms_v1');
     if (!raw) {
         let migrated = {};
@@ -1098,6 +1105,22 @@ function getCardProgress() {
 function saveCardProgress(progress) { safeStorageSet('nexo_card_progress_v1', JSON.stringify(progress)); }
 
 function getProgressFor(cardId) {
+    if (isDevMode()) {
+        let mission = CARD_MISSIONS[cardId];
+        if (mission) {
+            return {
+                wins: mission.count,
+                gamesWith: mission.count,
+                exilioReceived: mission.count,
+                killsWith: mission.count,
+                invokeWith: mission.count,
+                exileWith: mission.count,
+                fortalecerWith: mission.count,
+                gloryWith: mission.count,
+                completed: true
+            };
+        }
+    }
     let progress = getCardProgress();
     return progress[cardId] || { wins: 0, exilioReceived: 0, gamesWith: 0, completed: false };
 }

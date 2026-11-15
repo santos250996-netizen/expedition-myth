@@ -1204,3 +1204,10 @@ a:focus-visible,
     }
 }
 /* --- FIN ACCESIBILIDAD Y TOUCH (v1.11.4) --- */
+
+/* --- FX DEVOLVER (v1.11.9): la carta vuela hacia arriba y desaparece --- */
+@keyframes fxFlyAway {
+    0%   { transform: translateY(0) scale(1); opacity: 1; }
+    100% { transform: translateY(-40px) scale(0.8); opacity: 0; }
+}
+.fx-fly-away { animation: fxFlyAway calc(0.7s * var(--fx-k, 1)) ease-out forwards; }
