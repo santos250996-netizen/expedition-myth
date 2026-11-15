@@ -22,7 +22,7 @@ function setSfxVolume(value) {
 
 function getSfxPath(name) {
     let base = 'assets/audio/';
-    let keywordNames = ['dano','debilitar','fortalecer','blindar','gloria','destruir','exilio','invocar','inmune','descuento','bloqueo','reflejo','plaga','bendicion','devolver','deshonra','laberinto'];
+    let keywordNames = ['dano','debilitar','fortalecer','blindar','gloria','destruir','exilio','invocar','inmune','descuento','bloqueo','reflejo','plaga','bendicion','devolver','deshonra','laberinto','veneno'];
     let triggerNames = ['al_entrar','inicio_turno','al_morir','embestida','enfurecer','sacrificio'];
     let baseNames = ['carta_jugada','turno'];
     if (keywordNames.includes(name)) return base + 'keywords/' + name + '.ogg';
@@ -48,7 +48,7 @@ function playSfx(name) {
 }
 
 function preloadSfx() {
-    let names = ['dano','debilitar','fortalecer','blindar','gloria','destruir','exilio','invocar','inmune','descuento','bloqueo','reflejo','plaga','bendicion','devolver','deshonra','laberinto','al_entrar','inicio_turno','al_morir','embestida','enfurecer','sacrificio','carta_jugada','turno'];
+    let names = ['dano','debilitar','fortalecer','blindar','gloria','destruir','exilio','invocar','inmune','descuento','bloqueo','reflejo','plaga','bendicion','devolver','deshonra','laberinto','veneno','al_entrar','inicio_turno','al_morir','embestida','enfurecer','sacrificio','carta_jugada','turno'];
     names.forEach(name => {
         let path = getSfxPath(name);
         if (!path) return;

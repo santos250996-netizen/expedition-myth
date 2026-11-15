@@ -268,6 +268,12 @@
                                 fxGloriaBeam(fx.side, 'fx-beam-soft');
                                 fxFloatOver(fx.side, null, fx.text || '+2 GLORIA', 'fx-gold fx-float-big', fx.icon);
                                 break;
+                            case 'veneno':
+                                playSoundOnce('veneno');
+                                fxFlash(fx.uid, 'green');
+                                fxOverlayOnCard(fx.uid, 'fx-poison-ov');
+                                fxFloatOver(fx.side, fx.uid, fx.text || 'VENENO', 'fx-green fx-float-big', fx.icon);
+                                break;
                         }
                     } catch (e) { console.error('fx:', e); }
                 }, delay);

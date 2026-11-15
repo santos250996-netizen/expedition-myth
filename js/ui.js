@@ -34,7 +34,11 @@ const LEYENDAS = {
     'Bendicion': 'Anade X cartas de Bendicion a tu mazo. Cuando tu las juegas, ganas 2 Gloria por cada una.',
     'Devolver': 'Devuelve X Seres del tablero al mazo de su dueno (al fondo). No los mata: los manda al fondo del mazo, donde tardan en volver a jugarse.',
     'Deshonra': 'Quita X Gloria al rival.',
-    'Laberinto activo': 'Mientras el Laberinto de Creta esta activo, cada vez que se exilia una carta, ganas 2 Gloria.'
+    'Laberinto activo': 'Mientras el Laberinto de Creta esta activo, cada vez que se exilia una carta, ganas 4 Gloria.',
+    'Manada': 'Si hay al menos otro Ser aliado en el tablero, se dispara el efecto.',
+    'Lider': 'Mientras esta carta este en la cima de tu columna (Fila 1), se dispara el efecto.',
+    'Lider rival': 'La carta en la cima de la columna rival (Fila 1 rival).',
+    'Veneno': 'El objetivo pierde X HP al inicio de cada turno durante Y turnos. No es dano: no dispara reacciones al dano.'
 };
 
 // Vista activa dentro de la pantalla de capítulos: campaña o eventos.
@@ -89,7 +93,7 @@ function renderCardModalContent(card) {
     let descEl = document.getElementById('modal-card-desc');
     if (descEl) {
         let descHtml = displayCard.desc || '';
-        let triggerKeys = ['Al entrar','Inicio de turno','Al morir','Embestida','Enfurecer','Sacrificio'];
+        let triggerKeys = ['Al entrar','Inicio de turno','Al morir','Embestida','Enfurecer','Sacrificio','Manada','Lider','Lider rival'];
         // Ordenar por longitud descendente para evitar que "Daño" se
         // coma "Daño 2" dentro de otra palabra.
         let allKeys = Object.keys(LEYENDAS).sort((a,b) => b.length - a.length);

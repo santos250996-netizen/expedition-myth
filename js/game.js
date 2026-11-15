@@ -152,14 +152,16 @@ function exilio(player, opp, X) {
     playSfx('exilio');
 
     // Efecto del Laberinto de Creta (a10): cada jugador
-    // con laberintoActive gana 2 Gloria por cada Exilio.
+    // con laberintoActive gana laberintoGloria (4 desde v1.12.0) por cada Exilio.
     if (gameState.p1.laberintoActive) {
-        gameState.p1.score += 2;
-        queueFx({ t: 'gloria', side: 'p1', text: '+2 GLORIA', icon: 'fa-dungeon', num: 2 });
+        let g = gameState.p1.laberintoGloria || 4;
+        gameState.p1.score += g;
+        queueFx({ t: 'laberinto', side: 'p1', text: '+' + g + ' GLORIA', icon: 'fa-dungeon', num: g });
     }
     if (gameState.p2.laberintoActive) {
-        gameState.p2.score += 2;
-        queueFx({ t: 'gloria', side: 'p2', text: '+2 GLORIA', icon: 'fa-dungeon', num: 2 });
+        let g = gameState.p2.laberintoGloria || 4;
+        gameState.p2.score += g;
+        queueFx({ t: 'laberinto', side: 'p2', text: '+' + g + ' GLORIA', icon: 'fa-dungeon', num: g });
     }
 
     // Mision exile_with: solo cuenta para la carta que exilia (caster),
@@ -234,7 +236,9 @@ function summonCard(player, cardTemplate) {
         reflectCharges: 0,
         bloqueo: cardTemplate.bloqueo || 0,
         immuneThisTurn: false,
-        enfurecerCounter: 0
+        enfurecerCounter: 0,
+        venenoAmount: 0,
+        venenoTurns: 0
     };
     // Mision invoke_with: solo cuenta para la carta que invoca (caster)
     // desde un efecto; los Eventos tambien cuentan, no estan en activeBoard (v1.11.5).
@@ -320,6 +324,26 @@ function gameTick() {
                     showTutorialMessage("Has jugado un Evento", "Los Eventos hacen su efecto y desaparecen. ¡Úsalos para debilitar al rival o ganar Gloria!");
                 }
             }
+            // Veneno (v1.12.0): cada carta envenenada pierde X HP al inicio
+            // de cada turno durante Y turnos. No es dano: no dispara
+            // reacciones al dano (Titan c12) ni se refleja.
+            [gameState.p1, gameState.p2].forEach(owner => {
+                owner.activeBoard.forEach(c => {
+                    if (c.venenoTurns > 0 && !c.dying) {
+                        c.hp -= c.venenoAmount;
+                        c.venenoTurns--;
+                        queueFx({ t: 'debuff', side: sideOf(owner), uid: c.uid, text: '-' + c.venenoAmount + ' HP', icon: 'fa-droplet', overlay: 'hit' });
+                        if (c.hp <= 0) {
+                            c.hp = 0;
+                            killCard(c, sideOf(owner));
+                        }
+                        if (c.venenoTurns <= 0) {
+                            c.venenoAmount = 0;
+                            c.venenoTurns = 0;
+                        }
+                    }
+                });
+            });
             // --- LIMPIEZA DE LA COLA DE MUERTE (del turno anterior) ---
             gameState.deathQueue = [];
 
@@ -354,11 +378,11 @@ function gameTick() {
                     _currentCaster = null;
                 }
             });
-            gameState.p1.activeBoard.slice().forEach(card => {
-                if (card.startTurn) { _currentCaster = card; card.startTurn(card, gameState.p1, gameState.p2); _currentCaster = null; }
+            gameState.p1.activeBoard.slice().forEach((card, idx) => {
+                if (card.startTurn && cumpleCondicion(card, gameState.p1, gameState.p2, idx)) { _currentCaster = card; card.startTurn(card, gameState.p1, gameState.p2); _currentCaster = null; }
             });
-            gameState.p2.activeBoard.slice().forEach(card => {
-                if (card.startTurn) { _currentCaster = card; card.startTurn(card, gameState.p2, gameState.p1); _currentCaster = null; }
+            gameState.p2.activeBoard.slice().forEach((card, idx) => {
+                if (card.startTurn && cumpleCondicion(card, gameState.p2, gameState.p1, idx)) { _currentCaster = card; card.startTurn(card, gameState.p2, gameState.p1); _currentCaster = null; }
             });
             gameState.clashQueue.forEach(h => {
                 dealDamage(h.target, h.amount || 1, h.side || ownerSideOf(h.target));
@@ -475,7 +499,7 @@ function gameTick() {
             playSfx('carta_jugada');
             return {
                 card: nextCard,
-                inst: { ...nextCard, uid: Math.random().toString(36).slice(2, 9), tempAtkMod: 0, tempHpMod: 0, stunned: false, exilioTurns: 0, reflectCharges: 0, bloqueo: nextCard.bloqueo || 0, enfurecerCounter: 0 },
+                inst: { ...nextCard, uid: Math.random().toString(36).slice(2, 9), tempAtkMod: 0, tempHpMod: 0, stunned: false, exilioTurns: 0, reflectCharges: 0, bloqueo: nextCard.bloqueo || 0, enfurecerCounter: 0, venenoAmount: 0, venenoTurns: 0 },
                 discount: oracleDiscount
             };
         }
@@ -824,4 +848,25 @@ function devolver(player, X) {
         serres = serres.filter(c => c !== chosen);
         queueFx({ t: 'debuff', side: sideOf(player), uid: chosen.uid, text: 'DEVUELTO', icon: 'fa-wind' });
     }
+}
+
+// --- ETIQUETAS (v1.12.0): Manada y Lider ---
+// Las condicion controlan si el startTurn de la carta se dispara.
+// 'lider': solo si la carta ocupa la cima de su columna (idx 0).
+// 'manada': solo si hay al menos otro Ser aliado vivo en el tablero.
+function cumpleCondicion(c, owner, opp, idx) {
+    if (!c.condicion) return true;
+    if (c.condicion === 'lider') return idx === 0;
+    if (c.condicion === 'manada') return owner.activeBoard.some(o => o !== c && o.kind === 'Ser' && !o.dying);
+    return true;
+}
+
+// --- KEYWORD: VENENO X (Y) (v1.12.0) ---
+// El objetivo pierde X HP al inicio de cada turno durante
+// Y turnos. No es dano: no dispara reacciones al dano
+// (Titan c12) ni se refleja. Se aplica en gameTick.
+function veneno(target, amount, turns) {
+    if (!target || target.dying) return;
+    target.venenoAmount = amount;
+    target.venenoTurns = turns;
 }

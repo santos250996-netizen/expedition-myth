@@ -1211,3 +1211,14 @@ a:focus-visible,
     100% { transform: translateY(-40px) scale(0.8); opacity: 0; }
 }
 .fx-fly-away { animation: fxFlyAway calc(0.7s * var(--fx-k, 1)) ease-out forwards; }
+
+/* --- FX VENENO (v1.12.0): capa verde toxica sobre la carta --- */
+@keyframes fxPoisonOv {
+    0%   { opacity: 0; }
+    30%  { opacity: 0.8; }
+    100% { opacity: 0; }
+}
+.fx-poison-ov {
+    background: radial-gradient(circle at 50% 50%, rgba(74,222,128,0.5) 0%, rgba(22,101,52,0.3) 60%, transparent 80%);
+    animation: fxPoisonOv calc(0.9s * var(--fx-k, 1)) ease-out forwards;
+}

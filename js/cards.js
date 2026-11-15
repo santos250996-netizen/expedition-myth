@@ -13,9 +13,10 @@ const ALL_CARDS = [
             { 
                 id: 'c2', name: 'Sátiro de los Bosques', kind: 'Ser', cost: 2, atk: 0, hp: 2, 
                 icon: 'fa-leaf', 
-                desc: 'Inicio de turno (si hay aliados): Fortalecer 1 por cada otro aliado.', 
+                desc: 'Manada: Inicio de turno: Fortalecer 1 por cada otro aliado.', 
                 lore: 'De la espesura más profunda de los matorrales surge una criatura híbrida de torso humano y patas caprinas. Es un ser salvaje y caótico que no obedece a ninguna ley humana, merodeando los bordes de los caminos para asustar y desorientar a los viajeros. Es el cortejo de Dioniso, el dios del vino y el éxtasis, y su sola presencia anuncia el caos.',
                 art: 'assets/cartas/carta-02-satiro-de-los-bosques.webp',
+                condicion: 'manada',
                 effect: null, 
                 startTurn: (self, player) => { self.atk = 0; let others = player.activeBoard.filter(c => c.uid !== self.uid && c.kind === 'Ser' && !c.dying).length; if (others > 0) { self.atk += others; queueFx({ t: 'buff', side: sideOf(player), uid: self.uid, text: '+' + others + ' ATK', icon: 'fa-arrow-trend-up' }); } } 
             },
@@ -56,7 +57,7 @@ const ALL_CARDS = [
             { 
                 id: 'c6', name: 'Ninfas de las Fuentes Secas', kind: 'Ser', cost: 2, atk: 1, hp: 2, 
                 icon: 'fa-water', 
-                desc: 'Al entrar: Debilitar 1 a Fila 1 rival.', 
+                desc: 'Al entrar: Debilitar 1 a Lider rival.',
                 lore: 'Las protectoras de los manantiales sufren la corrupción de la niebla. Al verse marchitas y sin agua pura, pierden la razón y se convierten en espectros errantes que lloran desconsoladamente, confundiendo con sus cantos a cualquiera que se acerque. Son las ninfas de Poseidón, hijas del mar y de los ríos, ahora corrompidas por el Caos.',
                 art: 'assets/cartas/carta-06-ninfas-de-las-fuentes-secas.webp',
                 effect: (p, opp) => {
@@ -96,7 +97,7 @@ const ALL_CARDS = [
                 effect: (p) => { p.pendingEventDiscount = (p.pendingEventDiscount || 0) + 1; queueFx({ t: 'discount', side: sideOf(p), text: '-1' }); }, startTurn: null 
             },
             { 
-                id: 'c9', name: 'Pacto de Sangre', kind: 'Evento', cost: 5, atk: 0, hp: 0,
+                id: 'c9', name: 'Pacto de Sangre', kind: 'Evento', cost: 3, atk: 0, hp: 0,
                 icon: 'fa-droplet', 
                 desc: 'Sacrificio 4: Gloria 4. Destruir 1 rival con menos HP.', 
                 lore: 'Desesperados por detener las malas cosechas y los ataques, los mortales construyen altares toscos de roca y entregan la vida de sus cazadores en un ritual oscuro para apaciguar a las fuerzas que los acechan. Es un pacto con Hades, el dios del inframundo, que acepta la sangre como moneda de cambio.',
@@ -262,12 +263,13 @@ const ALL_CARDS = [
 {
     id: 'a10', name: 'Laberinto de Creta', kind: 'Evento', cost: 2, atk: 0, hp: 0,
     icon: 'fa-dungeon',
-    desc: 'Al entrar: durante el resto de la partida, cada vez que se exilie una carta, ganas 2 Gloria.',
+    desc: 'Al entrar: durante el resto de la partida, cada vez que se exilie una carta, ganas 4 Gloria.',
     lore: 'En las profundidades del palacio de Cnosos, bajo los cimientos de piedra, se extiende una red de pasillos que no llevan a ninguna parte. Sus muros son frios, sus antorchas no dan calor, y el aire huele a polvo y a miedo. Quien entra en el Laberinto de Creta no encuentra la salida: encuentra el silencio, y luego los pasos de algo que se arrastra en la oscuridad.',
     art: 'assets/cartas/asterion-a10-construccion-laberinto.webp',
     substory: 'asterion',
     effect: (p) => {
         p.laberintoActive = true;
+        p.laberintoGloria = 4;
         queueFx({ t: 'buff', side: sideOf(p), text: 'LABERINTO ACTIVO', icon: 'fa-dungeon' });
     },
     startTurn: null
@@ -313,9 +315,10 @@ const ALL_CARDS = [
 {
     id: 'b2', name: 'Medusa, la Gorgona', kind: 'Ser', cost: 6, atk: 2, hp: 2,
     icon: 'fa-snake',
-    desc: 'Al entrar: Exilio 2 a 1 rival aleatorio. Inicio de turno (si esta en Fila 1): Daño 1 a Fila 1 rival. Al morir: Invocar 2 Serpientes de la Cabeza.',
+    desc: 'Al entrar: Exilio 2 a 1 rival aleatorio. Lider: Inicio de turno: Daño 1 a Lider rival. Al morir: Invocar 2 Serpientes de la Cabeza.',
     lore: 'Atenea no distinguió entre el culpable y la víctima. El cabello de Medusa se enroscó en serpientes, y su mirada se volvió piedra. Huyó al norte, donde las Gorgonas la acogieron, y desde entonces ningún hombre que la mirara volvió a contar lo que vio.',
     art: 'assets/cartas/medusa-b2-gorgona.webp',
+    condicion: 'lider',
     substory: 'medusa',
     effect: (p, opp) => { exilio(p, opp, 2); },
     startTurn: (self, player, opp) => {
@@ -342,7 +345,7 @@ const ALL_CARDS = [
 {
     id: 'b4', name: 'Euríale, la Errante', kind: 'Ser', cost: 3, atk: 2, hp: 3,
     icon: 'fa-eye',
-    desc: 'Al entrar: Debilitar 1 a Fila 1 rival.',
+    desc: 'Al entrar: Debilitar 1 a Lider rival.',
     lore: 'La tercera Gorgona, errante y silenciosa. Se dice que podía ver el futuro en el vuelo de los cuervos. Fue ella quien advirtió a Medusa de que un héroe con sandalias aladas cruzaba el mar, pero Medusa ya no podía escuchar.',
     art: 'assets/cartas/medusa-b4-euriale.webp',
     substory: 'medusa',
@@ -559,7 +562,7 @@ const ALL_CARDS = [
 {
     id: 'sat_pan', name: 'Pan, el del Grito', kind: 'Ser', cost: 4, atk: 1, hp: 5,
     icon: 'fa-bullhorn',
-    desc: 'Al entrar: Exilio 1 a Fila 1 rival.',
+    desc: 'Al entrar: Exilio 1 a Lider rival.',
     lore: 'Pan es el mas antiguo de los satiros, el que tocaba la flauta en las cumbres de Arcadia cuando los dioses aun no tenian nombre. Los pastores le ofrecen leche y miel para que cuide de sus rebanos, y el, a cambio, les ensena los secretos de la musica. Pero Pan es tambien el dios del panico: cuando grita, los ejercitos huyen sin saber por que. En la Batalla de Maraton, su voz helo la sangre de los persas, y desde entonces los hombres llaman "panico" al miedo que no tiene causa.',
     art: 'assets/cartas/satiro-sat-pan.webp',
     substory: 'satiro',
@@ -895,7 +898,7 @@ const ALL_CARDS = [
 {
     id: 'pegaso_belerofonte', name: 'Pegaso, el Derribador', kind: 'Ser', cost: 4, atk: 3, hp: 3,
     icon: 'fa-horse',
-    desc: 'Al entrar: Dano 3 a 1 rival aleatorio.',
+    desc: 'Al entrar: Dano 2 a 1 rival aleatorio.',
     lore: 'Pegaso llevo a Belerofonte a la victoria contra la Quimera y las Amazonas, pero el heroe se volvio arrogante. Cuando Belerofonte quiso volar al Olimpo para sentarse entre los dioses, Pegaso se nego. El caballo alado derribo a su jinete en pleno vuelo, y Belerofonte cayo a la tierra, condenado a vagar ciego y solo. Pegaso volvio al Olimpo, fiel a Zeus, y desde entonces ningun mortal volvio a montarlo.',
     art: 'assets/cartas/pegaso-belerofonte.webp',
     substory: 'pegaso',
@@ -903,8 +906,8 @@ const ALL_CARDS = [
         let alive = opp.activeBoard.filter(c => !c.dying && !c.stunned);
         if (!alive.length) return;
         let target = alive[Math.floor(Math.random() * alive.length)];
-        dealDamage(target, 3, sideOf(opp));
-        queueFx({ t: 'debuff', side: sideOf(opp), uid: target.uid, text: '-3 HP', icon: 'fa-horse', overlay: 'hit' });
+        dealDamage(target, 2, sideOf(opp));
+        queueFx({ t: 'debuff', side: sideOf(opp), uid: target.uid, text: '-2 HP', icon: 'fa-horse', overlay: 'hit' });
     },
     startTurn: null
 },
@@ -927,12 +930,14 @@ const ALL_CARDS = [
 {
     id: 'crisaor_cabeza', name: 'Crisaor, el Portador', kind: 'Ser', cost: 4, atk: 2, hp: 3,
     icon: 'fa-sword',
-    desc: 'Al entrar: Exilio 1 a 1 rival aleatorio.',
+    desc: 'Al entrar: Exilio 1 a 1 rival aleatorio. Gloria 2.',
     lore: 'Cuando Perseo corto la cabeza de Medusa, nadie se atrevio a tocarla. Las serpientes seguian moviendose, y la mirada de piedra aun brillaba en los ojos vacios. Pero Crisaor, nacido de la misma sangre que Medusa, se acerco sin miedo. Recogio la cabeza con sus propias manos y la entrego a Atenea, que la clavo en su egida, y desde entonces su espada de oro protege el trofeo de los que osan robarlo.',
     art: 'assets/cartas/crisaor-cabeza-de-medusa.webp',
     substory: 'crisaor',
     effect: (p, opp) => {
         exilio(p, opp, 1);
+        p.score += 2;
+        queueFx({ t: 'gloria', side: sideOf(p), text: '+2 GLORIA', icon: 'fa-sword', num: 2 });
     },
     startTurn: null
 },
@@ -1106,6 +1111,36 @@ const ALL_CARDS = [
         });
     },
     startTurn: null
+},
+{
+    id: 'sangre_hidra', name: 'Sangre de la Hidra', kind: 'Evento', cost: 3, atk: 0, hp: 0,
+    icon: 'fa-droplet',
+    desc: 'Al entrar: Veneno 2 (3) a 1 rival aleatorio.',
+    lore: 'La sangre de la Hidra es un veneno que no tiene cura. Heracles la uso para envenenar sus flechas, y ni los dioses podian sanar las heridas que causaban. Los que tocan la sangre sienten que el veneno les sube por las venas, y su cuerpo se pudre desde dentro. No es una herida: es una condena.',
+    art: 'assets/cartas/hidra-sangre-de-la-hidra.webp',
+    substory: 'hidra',
+    effect: (p, opp) => {
+        let alive = opp.activeBoard.filter(c => !c.dying && !c.stunned);
+        if (!alive.length) return;
+        let target = alive[Math.floor(Math.random() * alive.length)];
+        veneno(target, 2, 3);
+        queueFx({ t: 'veneno', side: sideOf(opp), uid: target.uid, text: 'VENENO 2 (3)', icon: 'fa-droplet' });
+    },
+    startTurn: null
+},
+{
+    id: 'cabeza_inmortal', name: 'Hidra, la Cabeza Inmortal', kind: 'Ser', cost: 6, atk: 2, hp: 5,
+    icon: 'fa-snake',
+    desc: 'Al morir: Invocar 1 Hidra, la Cabeza Inmortal.',
+    lore: 'De las nueve cabezas de la Hidra, ocho eran mortales. Pero la novena, la del centro, era inmortal. Heracles no pudo matarla: tuvo que enterrarla bajo una gran roca, en el camino sagrado entre Lerna y Eleunte. Desde entonces, la cabeza inmortal sigue alli, odiando y sonando, esperando el dia en que alguien la libere. Y cuando eso pase, la Hidra volvera a nacer.',
+    art: 'assets/cartas/hidra-cabeza-inmortal.webp',
+    substory: 'hidra',
+    effect: null,
+    startTurn: null,
+    onDeath: (owner) => {
+        let tpl = ALL_CARDS.find(c => c.id === 'cabeza_inmortal');
+        if (tpl) summonCard(owner, tpl);
+    }
 }
         ];
 

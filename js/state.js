@@ -302,6 +302,11 @@ const CARD_FAMILIES = {
         id: 'boreas',
         name: 'Boreas, el Viento del Norte',
         forms: ['boreas_viento', 'boreas_raptor', 'ojo_ciclon']
+    },
+    hidra: {
+        id: 'hidra',
+        name: 'Hidra de Lerna',
+        forms: ['e5', 'sangre_hidra', 'cabeza_inmortal']
     }
 };
 
@@ -1004,7 +1009,14 @@ const CARD_MISSIONS = {
         type: 'wins', count: 5, previousCardId: 'boreas_raptor',
         familyId: 'boreas', formIndex: 2,
         description: 'Gana 5 combates con Boreas, el Raptor en el tablero.'
-    }
+    },
+    // Familia hidra
+    sangre_hidra: { type: 'games_with', count: 10, previousCardId: 'e5', familyId: 'hidra', formIndex: 1, description: 'Juega a Hidra de Lerna en 10 partidas distintas.' },
+    sangre_hidra_2: { type: 'wins', count: 5, previousCardId: 'e5', familyId: 'hidra', formIndex: 1, description: 'Gana 5 combates con Hidra de Lerna en el tablero.' },
+    cabeza_inmortal: { type: 'games_with', count: 15, previousCardId: 'e5', familyId: 'hidra', formIndex: 2, description: 'Juega a Hidra de Lerna en 15 partidas distintas.' },
+    cabeza_inmortal_2: { type: 'wins', count: 10, previousCardId: 'e5', familyId: 'hidra', formIndex: 2, description: 'Gana 10 combates con Hidra de Lerna en el tablero.' },
+    cabeza_inmortal_3: { type: 'games_with', count: 10, previousCardId: 'sangre_hidra', familyId: 'hidra', formIndex: 2, description: 'Juega a Sangre de la Hidra en 10 partidas distintas.' },
+    cabeza_inmortal_4: { type: 'wins', count: 5, previousCardId: 'sangre_hidra', familyId: 'hidra', formIndex: 2, description: 'Gana 5 combates con Sangre de la Hidra en el mazo.' }
 };
 
 // Formas desbloqueadas: { [familyId]: [formId, ...] }. La forma base siempre

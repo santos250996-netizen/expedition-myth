@@ -7,6 +7,37 @@
 
 const PATCH_NOTES = [
     {
+        version: '1.12.0',
+        date: '2026-11-15',
+        title: 'Balance + etiquetas + familia hidra',
+        highlights: [
+            'Balance: Laberinto 4 Gloria, Pacto coste 3, Pegaso Dano 2, Crisaor Gloria 2',
+            'Etiquetas: Manada, Lider, Lider rival',
+            'Nueva familia hidra: Hidra de Lerna, Sangre de la Hidra, Hidra la Cabeza Inmortal',
+            'Nueva keyword Veneno X (Y)'
+        ],
+        changes: {
+            new: [
+                'Familia hidra: e5 (base), sangre_hidra (forma 2), cabeza_inmortal (forma 3).',
+                'Keyword Veneno X (Y): X HP por turno durante Y turnos. PPT X x Y (x2 si multi-target).',
+                'Etiquetas Manada, Lider y Lider rival en el LEYENDAS.',
+                'FX y SFX de Veneno.'
+            ],
+            buffs: [
+                'Laberinto de Creta (a10): 2 Gloria -> 4 Gloria por Exilio.',
+                'Crisaor, el Portador (crisaor_cabeza): + Gloria 2 al entrar.'
+            ],
+            nerfs: [
+                'Pegaso, el Derribador (pegaso_belerofonte): Dano 3 -> Dano 2.',
+                'Pacto de Sangre (c9): coste 5 -> 3.'
+            ],
+            fixes: [
+                'Etiquetas Manada, Lider y Lider rival implementadas en el motor y en el LEYENDAS.'
+            ],
+            removed: []
+        }
+    },
+    {
         version: '1.11.9',
         date: '2026-11-14',
         title: 'Lore de apolo y boreas + LEYENDAS + FX/SFX + modo dev',
