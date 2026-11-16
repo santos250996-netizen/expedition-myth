@@ -91,7 +91,9 @@ function getBgmPath(name) {
 }
 
 function playBgm(name, options) {
-    // name: 'menu', 'combate', 'victoria', 'derrota'
+    // name: 'menu', 'combate', 'victoria', 'derrota' o la BGM de un
+    // capitulo/evento ('cap1', 'asterion', 'medusa'; desde v1.12.1 el campo
+    // bgm de CHAPTERS llega aqui y getBgmPath antepone 'bgm_')
     // options: { loop: true/false, fadeIn: ms, fadeOut: ms }
     if (BGM_CURRENT === name) return; // ya esta sonando
     let opts = options || {};

@@ -1191,9 +1191,12 @@ function launchChapterCombat() {
     // demas vistas (home, mazos, perfil, opciones).
     safeStorageSet('nexo_last_chapter_art_v1', currentChapter.art);
     startGame();
-    // v1.11.1 (Bloque 5a): musica de combate en loop (el fade out de la
-    // BGM anterior lo hace playBgm).
-    playBgm('combate', { loop: true, fadeIn: 800 });
+    // v1.12.1: cada capitulo/evento puede tener su BGM propia (campo bgm en
+    // CHAPTERS, sin el prefijo 'bgm_' porque getBgmPath lo antepone). Si el
+    // capitulo no tiene bgm, se usa bgm_combate (fallback). El fade out de la
+    // BGM anterior lo hace playBgm.
+    let bgmName = (currentChapter && currentChapter.bgm) ? currentChapter.bgm : 'combate';
+    playBgm(bgmName, { loop: true, fadeIn: 800 });
     // Tutorial: el paso 4 se activa DESPUÉS de arrancar el combate, para que
     // el toast didáctico encuentre el juego en marcha y pueda pausarlo.
     if (tutorialActive && tutorialStep === 3) setTutorialStep(4);

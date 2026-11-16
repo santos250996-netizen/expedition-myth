@@ -18,6 +18,9 @@ const CHAPTERS = [
         epilogue: 'La fe de los mortales encendió la primera chispa y el Olimpo respondió: la primera intervención divina marca el amanecer de una nueva era. La Niebla del Caos retrocede por ahora, pero las criaturas siguen acechando entre los bosques antiguos... y la Hélade necesitará héroes para lo que viene.',
         art: 'assets/capitulos/capitulo-01-el-despertar-en-la-helade.webp',
         rival: { name: 'Hélade', sub: 'DESPERTAR' },
+        // BGM propia del capitulo (getBgmPath antepone 'bgm_'); sin bgm se
+        // usa bgm_combate como fallback.
+        bgm: 'cap1',
         // Mazo del bot: mismo conjunto de 10 cartas únicas que el jugador
         // puede conseguir, pero en 3 órdenes distintos (aggressive,
         // defensive, balanced). Elegido al azar en cada combate. Sin
@@ -43,6 +46,7 @@ const CHAPTERS = [
     epilogue: 'El laberinto quedó en silencio y el toro cayó. Pero el hilo de Ariadna solo marca la salida para quien ya conoce la entrada: los que entraron no volvieron igual, y Creta nunca olvidó el precio de su maldición.',
     art: 'assets/capitulos/evento-asterion-el-laberinto-de-creta.webp',
     rival: { name: 'Asterión', sub: 'LABERINTO' },
+    bgm: 'asterion',
     isEvent: true,
     unlockedBy: 1,
     botDecks: [
@@ -66,6 +70,7 @@ const CHAPTERS = [
     epilogue: 'La cabeza de Medusa fue entregada a Atenea, que la clavó en su égida para petrificar a sus enemigos. Pero el mito no termina con la muerte: Pegaso voló al Olimpo, Crisaor empuñó su espada, y las Gorgonas lloraron a su hermana. La piedra que una vez fue mujer sigue mirando desde el escudo de la diosa, y quien se atreva a mirarla de frente, aún hoy, se convierte en estatua.',
     art: 'assets/capitulos/evento-medusa-la-gorgona.webp',
     rival: { name: 'Medusa', sub: 'GORGONA' },
+    bgm: 'medusa',
     isEvent: true,
     unlockedBy: 'asterion',
     botDecks: [

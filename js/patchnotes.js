@@ -7,6 +7,29 @@
 
 const PATCH_NOTES = [
     {
+        version: '1.12.1',
+        date: '2026-11-16',
+        title: 'BGM para cada capitulo y evento',
+        highlights: [
+            'BGM propia para Cap 1, evento Asterion y evento Medusa',
+            'Cada BGM tiene su identidad (esperanza, misterio, petrificacion)',
+            'Adrenalina multicapa (cuerdas, flauta, lira, trompetas, coro, textura)'
+        ],
+        changes: {
+            new: [
+                'bgm_cap1.ogg: BGM epica de comienzo de aventura.',
+                'bgm_asterion.ogg: BGM de misterio y laberinto.',
+                'bgm_medusa.ogg: BGM de serpientes y petrificacion.',
+                'Campo bgm en CHAPTERS para asignar BGM a cada capitulo/evento.',
+                'launchChapterCombat usa la BGM del capitulo/evento.'
+            ],
+            buffs: [],
+            nerfs: [],
+            fixes: [],
+            removed: []
+        }
+    },
+    {
         version: '1.12.0',
         date: '2026-11-15',
         title: 'Balance + etiquetas + familia hidra',

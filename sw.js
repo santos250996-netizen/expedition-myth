@@ -11,25 +11,25 @@
 // y un 304 Not Modified impide que el SWR refresque una misma URL. Un CACHE
 // nuevo fuerza reinstall + precache completo (los .ogg se re-descargan) y
 // el activate purga el cache anterior con los SFX viejos.
-const CACHE = 'nexo-v20261123a';
+const CACHE = 'nexo-v20261123b';
 
 const PRECACHE = [
     './', './index.html', './manifest.json', './icon.svg',
-    './css/styles.css?v=20261123a',
-    './js/cards.js?v=20261123a',
-    './js/state.js?v=20261123a',
-    './js/fx.js?v=20261123a',
-    './js/deck.js?v=20261123a',
-    './js/chapters.js?v=20261123a',
-    './js/patchnotes.js?v=20261123a',
-    './js/ui.js?v=20261123a',
-    './js/game.js?v=20261123a',
-    './js/dev.js?v=20261123a',
-    './js/main.js?v=20261123a',
+    './css/styles.css?v=20261123b',
+    './js/cards.js?v=20261123b',
+    './js/state.js?v=20261123b',
+    './js/fx.js?v=20261123b',
+    './js/deck.js?v=20261123b',
+    './js/chapters.js?v=20261123b',
+    './js/patchnotes.js?v=20261123b',
+    './js/ui.js?v=20261123b',
+    './js/game.js?v=20261123b',
+    './js/dev.js?v=20261123b',
+    './js/main.js?v=20261123b',
     // Dependencias vendorizadas (antes CDN): Tailwind precompilado,
     // Font Awesome y Google Fonts. Sin ellas offline el juego perdería
     // estilos y tipografía.
-    './css/vendor/tailwind.min.css?v=20261123a',
+    './css/vendor/tailwind.min.css?v=20261123b',
     './css/vendor/all.min.css',
     './css/webfonts/fa-solid-900.woff2',
     './css/webfonts/fa-regular-400.woff2',
@@ -117,7 +117,10 @@ const PRECACHE = [
     './assets/audio/bgm/bgm_menu.ogg',
     './assets/audio/bgm/bgm_combate.ogg',
     './assets/audio/bgm/bgm_victoria.ogg',
-    './assets/audio/bgm/bgm_derrota.ogg'
+    './assets/audio/bgm/bgm_derrota.ogg',
+    './assets/audio/bgm/bgm_cap1.ogg',
+    './assets/audio/bgm/bgm_asterion.ogg',
+    './assets/audio/bgm/bgm_medusa.ogg'
 ];
 
 self.addEventListener('install', (event) => {
