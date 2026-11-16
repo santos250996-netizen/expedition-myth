@@ -12,12 +12,12 @@ const PATCH_NOTES = [
         title: 'BGM para cada capitulo y evento',
         highlights: [
             'BGM propia para Cap 1, evento Asterion y evento Medusa',
-            'Estructura de 4 fases: introduccion, boom epico, mantenimiento, cierre para loop',
+            'Estructura por fases con boom epico y cierre para loop (Cap 1: tema de 5 fases)',
             'Cada BGM con identidad sonora distinta'
         ],
         changes: {
             new: [
-                'bgm_cap1.ogg: boom de descubrimiento, aulos, coro mixto, trompeta luminosa.',
+                'bgm_cap1.ogg: tema de aventura estilo Zimmer, boom de orquesta al unisono en el segundo 12, metales luminosos, puentes de tremolo cada 8s y silencio antes del cierre.',
                 'bgm_asterion.ogg: boom de acecho, cuerdas arrastradas, eco multiple, coro masculino.',
                 'bgm_medusa.ogg: boom de petrificacion, siseo multiple, coro femenino, trompeta aguda.',
                 'Campo bgm en CHAPTERS para asignar BGM a cada capitulo/evento.',

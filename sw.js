@@ -11,7 +11,7 @@
 // y un 304 Not Modified impide que el SWR refresque una misma URL. Un CACHE
 // nuevo fuerza reinstall + precache completo (los .ogg se re-descargan) y
 // el activate purga el cache anterior con los SFX viejos.
-const CACHE = 'nexo-v20261123b';
+const CACHE = 'nexo-v20261123c';
 
 const PRECACHE = [
     './', './index.html', './manifest.json', './icon.svg',
