@@ -12,14 +12,14 @@ const PATCH_NOTES = [
         title: 'BGM para cada capitulo y evento',
         highlights: [
             'BGM propia para Cap 1, evento Asterion y evento Medusa',
-            'Cada BGM tiene su identidad (esperanza, misterio, petrificacion)',
-            'Adrenalina multicapa (cuerdas, flauta, lira, trompetas, coro, textura)'
+            'Estructura de 4 fases: introduccion, boom epico, mantenimiento, cierre para loop',
+            'Cada BGM con identidad sonora distinta'
         ],
         changes: {
             new: [
-                'bgm_cap1.ogg: BGM epica de comienzo de aventura.',
-                'bgm_asterion.ogg: BGM de misterio y laberinto.',
-                'bgm_medusa.ogg: BGM de serpientes y petrificacion.',
+                'bgm_cap1.ogg: boom de descubrimiento, aulos, coro mixto, trompeta luminosa.',
+                'bgm_asterion.ogg: boom de acecho, cuerdas arrastradas, eco multiple, coro masculino.',
+                'bgm_medusa.ogg: boom de petrificacion, siseo multiple, coro femenino, trompeta aguda.',
                 'Campo bgm en CHAPTERS para asignar BGM a cada capitulo/evento.',
                 'launchChapterCombat usa la BGM del capitulo/evento.'
             ],
